@@ -13,14 +13,20 @@ python3 -m http.server 8080
 
 ## Gitea へ初回 push
 
-リポジトリルートは本ディレクトリです。Gitea で空リポジトリを作成したあと、次を実行してください（`<URL>` は HTTPS または SSH の clone URL に置き換え）。
+リポジトリルートは本ディレクトリです。Gitea で空リポジトリを作成したあと、次のいずれかで push できます（`<URL>` は HTTPS または SSH の clone URL に置き換え）。
+
+```bash
+./scripts/push-gitea.sh <URL>
+```
+
+または手動で:
 
 ```bash
 git remote add origin <URL>
 git push -u origin main
 ```
 
-既に `origin` がある場合は `git remote set-url origin <URL>` を利用してください。
+既に `origin` がある場合は `git remote set-url origin <URL>` を利用するか、`push-gitea.sh` が URL を上書き設定してから push します。
 
 ### 注意
 
