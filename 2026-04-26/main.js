@@ -9,6 +9,161 @@
       for (const el of document.querySelectorAll(".reveal")) io.observe(el);
 
       (function () {
+        const root = document.getElementById("hero-field-words");
+        if (!root) return;
+
+        const TERMS = [
+          "Design",
+          "Art",
+          "Photography",
+          "Manga and Animation",
+          "Internet",
+          "Video",
+          "Literature",
+          "New Media",
+          "Workshop"
+        ];
+
+        /** 語順シャッフルの次のサイクルまでの待ち（ms） */
+        const CYCLE_MS = 10000;
+
+        /**
+         * RandomText 既定値に対し、`_` から文字が見え始めるまでを約 1.5 倍に伸ばす。
+         * （既定: speed 2 / frameOffset 30 / charOffset 20 / charStep 10）
+         */
+        const RT_SPEED = 4 / 3;
+        const RT_FRAME_OFFSET = 45;
+        const RT_CHAR_OFFSET = 30;
+        const RT_CHAR_STEP = 7;
+
+        function shuffle(arr) {
+          const a = arr.slice();
+          for (let i = a.length - 1; i > 0; i -= 1) {
+            const j = Math.floor(Math.random() * (i + 1));
+            const t = a[i];
+            a[i] = a[j];
+            a[j] = t;
+          }
+          return a;
+        }
+
+        const n = TERMS.length;
+        /** 1 行あたり「全分野を一通りシャッフルした並び」を何回つなぐか（各分野はこの回数だけ等しく出る） */
+        const repeatsPerLine = 3;
+
+        /** 分野語をシャッフルした列を、行の長さが足りるまで繰り返しつなぐ（各分野は各ブロックで 1 回ずつ） */
+        function buildLineFieldWords() {
+          const parts = [];
+          for (let r = 0; r < repeatsPerLine; r += 1) {
+            parts.push(...shuffle(TERMS));
+          }
+          return `${parts.join(" / ")} / `;
+        }
+
+        root.textContent = "";
+        const lineEls = [];
+        for (let row = 0; row < n; row += 1) {
+          const p = document.createElement("p");
+          p.className = "hero-field-words-line";
+          p.textContent = buildLineFieldWords();
+          root.appendChild(p);
+          lineEls.push(p);
+        }
+
+        function applyHeroFieldWordVerticalTighten() {
+          let sumL = 0;
+          for (const el of root.children) {
+            sumL += el.offsetHeight;
+          }
+          const free = Math.max(0, root.clientHeight - sumL);
+          const pad = free / 6;
+          root.style.setProperty("--hero-field-pad-v", `${pad}px`);
+        }
+
+        requestAnimationFrame(() => {
+          applyHeroFieldWordVerticalTighten();
+          requestAnimationFrame(applyHeroFieldWordVerticalTighten);
+        });
+        window.addEventListener("resize", applyHeroFieldWordVerticalTighten);
+        if (document.fonts?.ready) {
+          document.fonts.ready.then(applyHeroFieldWordVerticalTighten);
+        }
+
+        const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        const hasRandomText = typeof window.RandomText === "function";
+
+        let activeHeroRTs = [];
+        let activeHeroTimeouts = [];
+
+        function cancelHeroFieldScramble() {
+          for (const id of activeHeroTimeouts) window.clearTimeout(id);
+          activeHeroTimeouts = [];
+          for (const rt of activeHeroRTs) {
+            try {
+              rt.stop();
+            } catch {
+              /* noop */
+            }
+          }
+          activeHeroRTs = [];
+        }
+
+        function runHeroFieldScrambleCycle() {
+          cancelHeroFieldScramble();
+          if (reduceMotion || !hasRandomText) {
+            for (let row = 0; row < n; row += 1) {
+              lineEls[row].textContent = buildLineFieldWords();
+            }
+            requestAnimationFrame(applyHeroFieldWordVerticalTighten);
+            return;
+          }
+
+          const targets = lineEls.map(() => buildLineFieldWords());
+
+          let completed = 0;
+          const onLineDone = () => {
+            completed += 1;
+            if (completed >= n) {
+              requestAnimationFrame(applyHeroFieldWordVerticalTighten);
+            }
+          };
+
+          /** 行ごとに開始だけ少しずらす */
+          const rowStartGapMs = 140;
+
+          for (let row = 0; row < n; row += 1) {
+            const el = lineEls[row];
+            const str = targets[row];
+            const delayMs = row * rowStartGapMs;
+            const tid = window.setTimeout(() => {
+              const rt = new window.RandomText({
+                str,
+                speed: RT_SPEED,
+                frameOffset: RT_FRAME_OFFSET,
+                charOffset: RT_CHAR_OFFSET,
+                charStep: RT_CHAR_STEP,
+                onProgress: (s) => {
+                  el.textContent = s;
+                },
+                onComplete: (s) => {
+                  el.textContent = s;
+                  onLineDone();
+                },
+              });
+              activeHeroRTs.push(rt);
+              rt.start();
+            }, delayMs);
+            activeHeroTimeouts.push(tid);
+          }
+        }
+
+        window.setInterval(runHeroFieldScrambleCycle, CYCLE_MS);
+        document.addEventListener("visibilitychange", () => {
+          if (document.visibilityState === "hidden") cancelHeroFieldScramble();
+        });
+      })();
+
+      (function () {
         const track = document.getElementById("exhTrack");
         const prev = document.querySelector(".exh-prev");
         const next = document.querySelector(".exh-next");
@@ -162,7 +317,7 @@
           }
           modalType.textContent = type;
           modalTitle.textContent = title;
-          modalTime.textContent = [dateLine, timeLine].filter(Boolean).join("\n") || "—";
+          modalTime.textContent = [dateLine, timeLine].filter(Boolean).join("\n") || "-";
           if (field) {
             modalField.textContent = field;
             modalFieldWrap.classList.add("is-visible");

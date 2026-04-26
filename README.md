@@ -32,3 +32,4 @@ git push -u origin main
 
 - ホスティングで「リポジトリのルート＝公開ドキュメントルート」とする場合は、`2026-04-26` の中身をデプロイ先にコピーするか、サブパス公開の設定が必要です。
 - `main.js` 内の Google Maps API キーは公開リポジトリに push する前に、Cloud Console でリファラー制限の見直し・必要ならキーのローテーションを推奨します。
+- SNS 用 OGP（`og:image` / `twitter:image`）は、本番公開時に **`https://` 始まりの絶対 URL** に差し替えると Facebook / X 等でのプレビューが安定しやすいです（`2026-04-26/index.html` 内のコメント参照）。

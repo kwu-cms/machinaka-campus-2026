@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MEDIA x MOTOMACHI — まちなかキャンパス 2026</title>
+    <title>MEDIA x MOTOMACHI - まちなかキャンパス 2026</title>
     <meta
       name="description"
       content="甲南女子大学 文学部 メディア表現学科が街へひらく2日間。上映・展示・イベントを通して、問いと表現が交差する。"
@@ -14,14 +14,29 @@
       content="2026年7月18日(土)-19日(日) 開催。神戸元町でひらかれる学外イベント。入場無料。"
     />
     <meta property="og:type" content="website" />
+    <meta property="og:locale" content="ja_JP" />
+    <!-- 本番: og:image / twitter:image は https://ドメイン/... の絶対URLにすると SNS で確実に展開されます -->
+    <meta
+      property="og:image"
+      content="./images/image_1.jpeg"
+    />
+    <meta property="og:image:alt" content="MEDIA x MOTOMACHI まちなかキャンパス 2026" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="MEDIA x MOTOMACHI まちなかキャンパス 2026" />
+    <meta
+      name="twitter:description"
+      content="2026年7月18日(土)-19日(日) 開催。神戸元町でひらかれる学外イベント。入場無料。"
+    />
+    <meta name="twitter:image" content="./images/image_1.jpeg" />
     <meta name="theme-color" content="#0f1115" />
+    <link rel="icon" href="./images/favicon.svg" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Shippori+Mincho+B1:wght@400;800&family=Noto+Sans+JP:wght@400;500;700&display=swap"
       rel="stylesheet"
     />
-        <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./styles.css" />
 
   </head>
   <body>
@@ -73,6 +88,7 @@
           </div>
         </div>
         <div class="hero-scrim" aria-hidden="true"></div>
+        <div class="hero-field-words" id="hero-field-words" aria-hidden="true"></div>
         <div class="hero-grain" aria-hidden="true"></div>
         <div class="hero-inner">
           <p class="hero-kicker reveal">Machi-naka campus / Kobe motomachi</p>
@@ -81,7 +97,7 @@
             MOTOMACHI
           </h1>
           <p class="hero-sub reveal">問いが、街へひらく。</p>
-          <p class="hero-date reveal">2026年7月18日（土）— 19日（日）／入場無料</p>
+          <p class="hero-date reveal">2026年7月18日（土）- 19日（日）/ 入場無料</p>
           <p class="hero-lead reveal">
             上映・展示・イベントの3プログラムで、観る・つくる・話すの往復を体験する2日間。神戸・元町の会場で、メディア表現学科で行う学びの現在と未来をひらきます。
           </p>
@@ -110,7 +126,7 @@
 
       <section id="news" aria-labelledby="news-heading">
         <div class="container">
-          <p class="section-label reveal">— News</p>
+          <p class="section-label reveal">- News</p>
           <h2 id="news-heading" class="section-title reveal">お知らせ</h2>
           <p class="section-note reveal">公式Instagram（@mediastudies_kwu）更新予定です。</p>
           <div class="news-list">
@@ -132,14 +148,14 @@
 
       <section id="program" aria-labelledby="program-heading">
         <div class="container">
-          <p class="section-label reveal">— Program</p>
+          <p class="section-label reveal">- Program</p>
           <h2 id="program-heading" class="section-title reveal">プログラム</h2>
 
           <div class="program-list">
             <article class="program-item reveal program-item--screening" id="screening">
               <header class="program-head">
                 <div class="program-head-main">
-                  <p class="program-kicker">— P01 - Screening</p>
+                  <p class="program-kicker">- P01 - Screening</p>
                   <h3 class="program-title">上映</h3>
                 </div>
                 <span class="program-venue">元町映画館</span>
@@ -156,14 +172,14 @@
                         <tr>
                           <th scope="row">7月18日（土）</th>
                           <td>
-                            17:30 開場／18:00 上映開始（2時間枠・予定）
+                            17:30 開場 / 18:00 上映開始（2時間枠・予定）
                             <span class="tt-note">上映プログラム・作品構成は追ってお知らせします。</span>
                           </td>
                         </tr>
                         <tr>
                           <th scope="row">7月19日（日）</th>
                           <td>
-                            17:30 開場／18:00 上映開始（2時間枠・予定）
+                            17:30 開場 / 18:00 上映開始（2時間枠・予定）
                             <span class="tt-note">内容は土曜日と異なる予定です（詳細は後日）。</span>
                           </td>
                         </tr>
@@ -209,14 +225,14 @@
             <article class="program-item reveal" id="exhibition">
               <header class="program-head">
                 <div class="program-head-main">
-                  <p class="program-kicker">— P02 - Exhibition</p>
+                  <p class="program-kicker">- P02 - Exhibition</p>
                   <h3 class="program-title">展示</h3>
                 </div>
                 <span class="program-venue">まちづくり会館 2Fホール</span>
               </header>
               <div class="program-body">
                 <p class="program-copy">
-                  在学生・卒業生による作品展示を行います。ゲーム、映像、写真集、立体造形、マンガ、インスタレーション——素材も形も問いも、一人ひとり違います。
+                  在学生・卒業生による作品展示を行います。ゲーム、映像、写真集、立体造形、マンガ、インスタレーション - 素材も形も問いも、一人ひとり違います。
                   さまざまな表現を体験してください。
                 </p>
                 <h4 class="program-subhd">展示作品</h4>
@@ -285,7 +301,7 @@
             <article class="program-item reveal" id="event">
               <header class="program-head">
                 <div class="program-head-main">
-                  <p class="program-kicker">— P03 - Event</p>
+                  <p class="program-kicker">- P03 - Event</p>
                   <h3 class="program-title">イベント</h3>
                 </div>
                 <span class="program-venue">まちづくり会館 3F多目的室</span>
@@ -298,9 +314,9 @@
                 <div class="event-groups">
                   <h4 class="program-subhd program-subhd--lecture">レクチャー</h4>
                   <ul class="event-list event-list--cards event-list--lecture">
-                    <li data-detail="デザインリサーチの成果を、制作プロセスと社会実装の視点から紹介します。診断体験を交え、観察から問いを立てる方法とメディア設計の関係を共有します。"><span class="ev-time"><span class="ev-date">7/18（土）</span><span class="ev-time-range">時間未定</span></span><img class="ev-thumb" src="images/image_14.jpeg" alt="診断×メディアのイメージ" loading="lazy" decoding="async" /><div class="ev-body"><strong>診断×メディア「デザインリサーチ成果発表」</strong><span class="ev-field-tag">クリエイション/AI</span></div><span class="ev-status ev-status--free">申込み不要</span></li>
-                    <li data-detail="授業内で取り組んだチェキワークショップを公開形式で実施します。撮影と編集を往復しながら、記録を表現へ変換する流れを来場者に体験してもらいます。"><span class="ev-time"><span class="ev-date">7/18（土）</span><span class="ev-time-range">13:00-17:00</span></span><img class="ev-thumb" src="images/image_15.jpeg" alt="チェキワークショップのイメージ" loading="lazy" decoding="async" /><div class="ev-body"><strong>チェキWS【在校生限定・授業公開】</strong><span class="ev-field-tag">ソーシャルデザイン</span></div><span class="ev-status ev-status--free">申込み不要</span></li>
-                    <li data-detail="3Dプリンタと玩具を使った実演展示を通じて、ものづくりの発想を共有します。素材選びから試作までを公開し、来場者との対話で企画を更新していく実験です。"><span class="ev-time"><span class="ev-date">7/19（日）（仮）</span><span class="ev-time-range">時間未定</span></span><img class="ev-thumb" src="images/image_16.jpeg" alt="玩具イベントのイメージ" loading="lazy" decoding="async" /><div class="ev-body"><strong>イロドリ＆3Dプリンタ＆玩具イベント</strong></div><span class="ev-status ev-status--free">申込み不要</span></li>
+                    <li data-detail="デザインリサーチの成果を、制作プロセスと社会実装の視点から紹介します。診断体験を交え、観察から問いを立てる方法とメディア設計の関係を共有します。"><span class="ev-time"><span class="ev-date">7/18（土）</span><span class="ev-time-range">時間未定</span></span><img class="ev-thumb" src="images/image_14.jpeg" alt="診断×メディアのイメージ" loading="lazy" decoding="async" /><div class="ev-body"><strong>診断×メディア「デザインリサーチ成果発表」</strong><span class="ev-field-tag">クリエイション/AI</span></div></li>
+                    <li data-detail="授業内で取り組んだチェキワークショップを公開形式で実施します。撮影と編集を往復しながら、記録を表現へ変換する流れを来場者に体験してもらいます。"><span class="ev-time"><span class="ev-date">7/18（土）</span><span class="ev-time-range">13:00-17:00</span></span><img class="ev-thumb" src="images/image_15.jpeg" alt="チェキワークショップのイメージ" loading="lazy" decoding="async" /><div class="ev-body"><strong>チェキWS【在校生限定・授業公開】</strong><span class="ev-field-tag">ソーシャルデザイン</span></div></li>
+                    <li data-detail="3Dプリンタと玩具を使った実演展示を通じて、ものづくりの発想を共有します。素材選びから試作までを公開し、来場者との対話で企画を更新していく実験です。"><span class="ev-time"><span class="ev-date">7/19（日）（仮）</span><span class="ev-time-range">時間未定</span></span><img class="ev-thumb" src="images/image_16.jpeg" alt="玩具イベントのイメージ" loading="lazy" decoding="async" /><div class="ev-body"><strong>イロドリ＆3Dプリンタ＆玩具イベント</strong></div></li>
                   </ul>
 
                   <h4 class="program-subhd program-subhd--workshop">ワークショップ</h4>
@@ -313,9 +329,9 @@
 
                   <h4 class="program-subhd program-subhd--permanent">常設企画</h4>
                   <ul class="event-list event-list--cards event-list--permanent">
-                    <li data-detail="3Dプリンタで制作した小品を配布し、制作背景や設計プロセスを紹介する常設企画です。短時間でも体験できる導線を用意し、気軽に立ち寄れる展示を目指します。"><span class="ev-time"><span class="ev-date">7/18（土）・19（日）</span><span class="ev-time-range">常設</span></span><img class="ev-thumb" src="images/image_21.jpeg" alt="メディア表現ガチャのイメージ" loading="lazy" decoding="async" /><div class="ev-body"><strong>3Dプリント制作物の配布：メディア表現ガチャ</strong><span class="ev-field-tag">クリエイション/AI</span></div><span class="ev-status ev-status--free">申込み不要</span></li>
-                    <li data-detail="推し文化をテーマに、語りと交換を組み合わせた対話イベントです。参加者同士が持ち寄った物語を通して、メディアとコミュニティの関係を考える場をつくります。"><span class="ev-time"><span class="ev-date">7/18（土）（仮）</span><span class="ev-time-range">15:00（仮）</span></span><img class="ev-thumb" src="images/image_22.jpeg" alt="推し語りイベントのイメージ" loading="lazy" decoding="async" /><div class="ev-body"><strong>推し語り・もの交換トーク</strong></div><span class="ev-status ev-status--free">申込み不要</span></li>
-                    <li data-detail="研究室設備を街へ持ち出し、3Dプリンタの活用例を紹介する常設企画です。デモと相談を通して、学科での制作環境を具体的に体験できる内容にしています。"><span class="ev-time"><span class="ev-date">7/18（土）・19（日）（仮）</span><span class="ev-time-range">常設</span></span><img class="ev-thumb" src="images/image_23.jpeg" alt="出張メディアラボのイメージ" loading="lazy" decoding="async" /><div class="ev-body"><strong>出張！メディアラボ（3Dプリンタ）</strong></div><span class="ev-status ev-status--free">申込み不要</span></li>
+                    <li data-detail="3Dプリンタで制作した小品を配布し、制作背景や設計プロセスを紹介する常設企画です。短時間でも体験できる導線を用意し、気軽に立ち寄れる展示を目指します。"><span class="ev-time"><span class="ev-date">7/18（土）・19（日）</span><span class="ev-time-range">常設</span></span><img class="ev-thumb" src="images/image_21.jpeg" alt="メディア表現ガチャのイメージ" loading="lazy" decoding="async" /><div class="ev-body"><strong>3Dプリント制作物の配布：メディア表現ガチャ</strong><span class="ev-field-tag">クリエイション/AI</span></div></li>
+                    <li data-detail="推し文化をテーマに、語りと交換を組み合わせた対話イベントです。参加者同士が持ち寄った物語を通して、メディアとコミュニティの関係を考える場をつくります。"><span class="ev-time"><span class="ev-date">7/18（土）（仮）</span><span class="ev-time-range">15:00（仮）</span></span><img class="ev-thumb" src="images/image_22.jpeg" alt="推し語りイベントのイメージ" loading="lazy" decoding="async" /><div class="ev-body"><strong>推し語り・もの交換トーク</strong></div></li>
+                    <li data-detail="研究室設備を街へ持ち出し、3Dプリンタの活用例を紹介する常設企画です。デモと相談を通して、学科での制作環境を具体的に体験できる内容にしています。"><span class="ev-time"><span class="ev-date">7/18（土）・19（日）（仮）</span><span class="ev-time-range">常設</span></span><img class="ev-thumb" src="images/image_23.jpeg" alt="出張メディアラボのイメージ" loading="lazy" decoding="async" /><div class="ev-body"><strong>出張！メディアラボ（3Dプリンタ）</strong></div></li>
                   </ul>
                 </div>
               </div>
@@ -326,7 +342,7 @@
 
       <section id="about" aria-labelledby="about-heading">
         <div class="container">
-          <p class="section-label reveal">— About</p>
+          <p class="section-label reveal">- About</p>
           <h2 id="about-heading" class="section-title reveal">開催概要</h2>
           <div class="about-grid">
             <p class="about-copy reveal">
@@ -338,7 +354,7 @@
               <dt>会期</dt>
               <dd>2026年7月18日（土）・19日（日）</dd>
               <dt>会場</dt>
-              <dd>こうべまちづくり会館 2F・3F／元町映画館</dd>
+              <dd>こうべまちづくり会館 2F・3F / 元町映画館</dd>
               <dt>入場</dt>
               <dd>無料</dd>
               <dt>主催</dt>
@@ -350,7 +366,7 @@
 
       <section id="access" aria-labelledby="access-heading">
         <div class="container">
-          <p class="section-label reveal">— Access</p>
+          <p class="section-label reveal">- Access</p>
           <h2 id="access-heading" class="section-title reveal">会場アクセス</h2>
           <p class="section-note reveal">
           </p>
@@ -426,8 +442,12 @@
 
     <div class="event-modal" id="event-modal" aria-hidden="true">
       <div class="event-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="event-modal-title">
-        <button type="button" class="event-modal-close" id="event-modal-close" aria-label="閉じる">×</button>
-        <img id="event-modal-image" class="event-modal-image" src="" alt="" />
+        <button type="button" class="event-modal-close" id="event-modal-close" aria-label="閉じる">
+          <span class="event-modal-close-icon" aria-hidden="true"></span>
+        </button>
+        <div class="event-modal-media">
+          <img id="event-modal-image" class="event-modal-image" src="" alt="" />
+        </div>
         <div class="event-modal-body">
           <p class="event-modal-overline">イベント詳細</p>
           <p id="event-modal-type" class="event-modal-type"></p>
@@ -449,14 +469,26 @@
 
     <footer class="footer">
       <div class="container footer-inner">
-        <p class="footer-copy">© 2026 Konan Women's University, Creative Media Studies</p>
-        <nav class="footer-links" aria-label="関連サイト">
-          <a class="btn-light" href="https://www.konan-wu.ac.jp/" target="_blank" rel="noopener noreferrer">甲南女子大学 公式サイト</a>
-          <a class="btn-light" href="https://www.konan-wu.ac.jp/dept_grad/dept_letters/new/media/" target="_blank" rel="noopener noreferrer">文学部 メディア表現学科</a>
-          <a class="btn-light" href="https://www.instagram.com/mediastudies_kwu/" target="_blank" rel="noopener noreferrer">Instagram @mediastudies_kwu</a>
-        </nav>
+        <div class="footer-col" aria-labelledby="footer-label-site">
+          <p id="footer-label-site" class="footer-col-label">このサイト</p>
+          <p class="footer-copy">© 2026 Konan Women's University, Creative Media Studies</p>
+        </div>
+        <div class="footer-col" aria-labelledby="footer-label-academic">
+          <p id="footer-label-academic" class="footer-col-label">大学・学科</p>
+          <nav class="footer-col-stack" aria-label="大学および学科の公式サイト">
+            <a class="btn-light" href="https://www.konan-wu.ac.jp/" target="_blank" rel="noopener noreferrer">甲南女子大学 公式サイト</a>
+            <a class="btn-light" href="https://www.konan-wu.ac.jp/dept_grad/dept_letters/new/media/" target="_blank" rel="noopener noreferrer">文学部 メディア表現学科</a>
+          </nav>
+        </div>
+        <div class="footer-col" aria-labelledby="footer-label-follow">
+          <p id="footer-label-follow" class="footer-col-label">フォロー</p>
+          <nav class="footer-col-stack" aria-label="SNS">
+            <a class="btn-light" href="https://www.instagram.com/mediastudies_kwu/" target="_blank" rel="noopener noreferrer">Instagram @mediastudies_kwu</a>
+          </nav>
+        </div>
       </div>
     </footer>
+    <script src="./random-text.umd.js" defer></script>
     <script src="./main.js" defer></script>
   </body>
 </html>
