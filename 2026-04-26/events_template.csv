@@ -1,0 +1,11 @@
+id,category,title,division,date_line1,time_line2,venue,image,description,apply_required,apply_url,status,sort_order
+evt-01,lecture,診断×メディア「デザインリサーチ成果発表」,クリエイション/AI,7/18（土）,時間未定,,images/image_14.jpeg,,false,,published,10
+evt-02,lecture,チェキWS【在校生限定・授業公開】,ソーシャルデザイン,7/18（土）,13:00-17:00,,images/image_15.jpeg,,false,,published,20
+evt-03,lecture,イロドリ＆3Dプリンタ＆玩具イベント,,7/19（日）（仮）,時間未定,,images/image_16.jpeg,,false,,draft,30
+evt-04,workshop,プログラミングと表現WS（中高生向け）,クリエイション/AI,7/18（土）or 7/19（日）（仮）,時間未定,,images/image_17.jpeg,,true,https://forms.office.com/r/VjRVWgbLhj,published,40
+evt-05,workshop,ワークショップデザインA有志イベント【高校生・在校生】,ソーシャルデザイン,7/19（日）,10:00-12:00,,images/image_18.jpeg,,true,https://forms.office.com/r/VjRVWgbLhj,published,50
+evt-06,workshop,3DスキャンまちアーカイブWS（高砂市連携）,ソーシャルデザイン,7/19（日）,13:00-17:00,,images/image_19.jpeg,,true,https://forms.office.com/r/VjRVWgbLhj,published,60
+evt-07,workshop,卒業制作を使って遊ぶ（カルタ・令和考現学）,,7/19（日）（仮）,14:00（仮）,,images/image_20.jpeg,,true,https://forms.office.com/r/VjRVWgbLhj,draft,70
+evt-08,permanent,3Dプリント制作物の配布：メディア表現ガチャ,クリエイション/AI,7/18（土）・19（日）,常設,,images/image_21.jpeg,,false,,published,80
+evt-09,permanent,推し語り・もの交換トーク,,7/18（土）（仮）,15:00（仮）,,images/image_22.jpeg,,false,,draft,90
+evt-10,permanent,出張！メディアラボ（3Dプリンタ）,,7/18（土）・19（日）（仮）,常設,,images/image_23.jpeg,,false,,draft,100
