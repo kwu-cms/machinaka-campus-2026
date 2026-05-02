@@ -1,4 +1,4 @@
-id,category,title,division,date_line1,time_line2,venue,image,description,apply_required,apply_url,status,sort_order
+ID,カテゴリ,イベント名,担当分野,日付1行目,時間2行目,会場,画像パス,説明,申込要否,申込URL,公開状態,表示順
 evt-01,lecture,診断×メディア「デザインリサーチ成果発表」,クリエイション/AI,7/18（土）,時間未定,,images/image_14.jpeg,,false,,published,10
 evt-02,lecture,チェキWS【在校生限定・授業公開】,ソーシャルデザイン,7/18（土）,13:00-17:00,,images/image_15.jpeg,,false,,published,20
 evt-03,lecture,イロドリ＆3Dプリンタ＆玩具イベント,,7/19（日）（仮）,時間未定,,images/image_16.jpeg,,false,,draft,30

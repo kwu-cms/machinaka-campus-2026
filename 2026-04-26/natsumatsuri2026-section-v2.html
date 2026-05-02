@@ -1,0 +1,440 @@
+<!--
+  夏祭り2026 イベントスケジュール section
+  ─ 単一カラム・通し表示・読みやすさ優先版 ─
+  貼り付け対象: <style> → head / <section> + <script> → body
+-->
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>夏祭り2026 スケジュール</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+<style>
+/* ─── デモ用ベース（既存サイトCSS代替） ─── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --color-bg:      #f2ede4;
+  --color-surface: #e8e1d5;
+  --color-ink:     #1a1813;
+  --color-ink-mid: #4a4640;
+  --color-ink-sub: #6e6860;
+  --color-line:    #ccc5b5;
+  --color-accent:  #3a6b7e;
+  --color-warm:    #b87c3a;
+  --color-green:   #5c7a50;
+  --font: 'Noto Sans JP', sans-serif;
+}
+body {
+  font-family: var(--font);
+  background: var(--color-bg);
+  color: var(--color-ink);
+  padding: 40px 20px 80px;
+}
+/* ─── END デモ用ベース ─── */
+
+
+/* ══════ 貼り付け対象 style ══════ */
+
+.ev-section {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 64px 0 40px;
+}
+
+/* セクション見出し */
+.ev-section .sec-label {
+  font-size: 11px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--color-ink-sub);
+  margin-bottom: 8px;
+}
+.ev-section h2 {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 6px;
+}
+.ev-section .sec-note {
+  font-size: 14px;
+  color: var(--color-ink-mid);
+  line-height: 1.7;
+  margin-bottom: 40px;
+}
+
+/* ── 日付区切りヘッダー ── */
+.day-sep {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 32px 0 4px;
+}
+.day-sep:first-of-type { margin-top: 0; }
+.day-sep-line {
+  flex: 1;
+  height: 1px;
+  background: var(--color-ink);
+}
+.day-sep-text {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .05em;
+  white-space: nowrap;
+  color: var(--color-ink);
+}
+
+/* ── 常設バナー ── */
+.ev-permanent {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  background: #fff;
+  border: 1px solid var(--color-line);
+  border-left: 4px solid var(--color-green);
+  padding: 14px 18px;
+  margin-bottom: 8px;
+}
+.ev-permanent-badge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--color-green);
+  white-space: nowrap;
+  padding-top: 2px;
+}
+.ev-permanent-name {
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.45;
+  color: var(--color-ink);
+}
+.ev-permanent-sub {
+  font-size: 12px;
+  color: var(--color-ink-sub);
+  margin-top: 3px;
+}
+
+/* ── イベントカード ── */
+.ev-card {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  gap: 0;
+  background: #fff;
+  border: 1px solid var(--color-line);
+  margin-bottom: 6px;
+  transition: border-color .15s;
+}
+.ev-card:hover { border-color: #aaa49a; }
+
+/* 時間列 */
+.ev-time {
+  padding: 16px 12px 16px 16px;
+  border-right: 1px solid var(--color-line);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+.ev-time-start {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-ink);
+  line-height: 1;
+  letter-spacing: -.01em;
+}
+.ev-time-end {
+  font-size: 11px;
+  color: var(--color-ink-sub);
+  line-height: 1;
+}
+
+/* 本文列 */
+.ev-body {
+  padding: 14px 18px;
+}
+
+.ev-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+/* カテゴリバッジ */
+.ev-cat {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 2px;
+}
+.ev-cat-lecture  { background: rgba(184,124,58,.18); color: #8a5a1e; }
+.ev-cat-workshop { background: rgba(58,107,126,.18); color: #26566a; }
+
+/* ドメインタグ */
+.ev-domain {
+  font-size: 11px;
+  color: var(--color-ink-sub);
+}
+
+/* ステータス */
+.ev-status {
+  font-size: 10px;
+  letter-spacing: .06em;
+  padding: 1px 6px;
+  border-radius: 2px;
+}
+.ev-status-published { background: rgba(92,122,80,.15); color: #3d6030; }
+.ev-status-draft     { color: var(--color-ink-sub); border: 1px solid var(--color-line); }
+
+/* タイトル */
+.ev-title {
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--color-ink);
+  margin-bottom: 4px;
+}
+
+/* 申込バッジ */
+.ev-apply-inline {
+  font-size: 11px;
+  color: var(--color-accent);
+  font-weight: 500;
+}
+
+/* 詳細展開 */
+.ev-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font);
+  font-size: 12px;
+  color: var(--color-ink-sub);
+  padding: 0;
+  margin-top: 4px;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.ev-toggle:hover { color: var(--color-ink); }
+.ev-toggle .arrow { transition: transform .2s; }
+.ev-card.open .ev-toggle .arrow { transform: rotate(180deg); }
+
+.ev-detail {
+  display: none;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-line);
+}
+.ev-card.open .ev-detail { display: block; }
+.ev-desc {
+  font-size: 13.5px;
+  line-height: 1.85;
+  color: var(--color-ink-mid);
+  white-space: pre-line;
+}
+.ev-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 10px;
+}
+.ev-tag {
+  font-size: 11px;
+  padding: 2px 10px;
+  border: 1px solid var(--color-line);
+  border-radius: 100px;
+  color: var(--color-ink-sub);
+}
+.ev-apply-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  font-size: 13px;
+  padding: 8px 18px;
+  background: var(--color-accent);
+  color: #fff;
+  border-radius: 3px;
+  text-decoration: none;
+  font-family: var(--font);
+}
+.ev-apply-btn:hover { background: #2f5866; }
+
+/* 脚注 */
+.ev-footer {
+  margin-top: 28px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-line);
+  font-size: 12px;
+  color: var(--color-ink-sub);
+  line-height: 1.8;
+}
+
+/* ══════ end style ══════ */
+</style>
+</head>
+<body>
+
+<!-- ══════ 貼り付け対象 section ══════ -->
+<section id="schedule" class="ev-section">
+
+  <p class="sec-label">P03 - Event / Schedule</p>
+  <h2>2日間スケジュール</h2>
+  <p class="sec-note">
+    まちづくり会館 3F多目的室にて実施。<br>
+    ※ワークショップは事前申込制です。
+  </p>
+
+  <!-- 常設（両日） -->
+  <div class="ev-permanent">
+    <span class="ev-permanent-badge">常設</span>
+    <div>
+      <div class="ev-permanent-name">3Dプリント制作物の配布：メディア表現ガチャ</div>
+      <div class="ev-permanent-sub">7/18（土）・19（日）終日 &nbsp;·&nbsp; クリエイション/AI</div>
+    </div>
+  </div>
+
+  <!-- イベントリスト（JSで生成） -->
+  <div id="ev-list"></div>
+
+  <p class="ev-footer">
+    ＊プログラムは変更となる場合があります。最新情報はInstagram（@mediastudies_kwu）でご確認ください。<br>
+    ＊ワークショップへの参加には事前申込が必要です。
+  </p>
+
+</section>
+<!-- ══════ end section ══════ -->
+
+<script>
+/* ══════ 貼り付け対象 script ══════ */
+(function () {
+
+  // イベントデータ（CSVから手動転記 or 将来的にfetchで取得）
+  const EVENTS = [
+    /* ── 7/18 土 ── */
+    {
+      id: 'evt-02', day: 'sat', dayLabel: '7/18（土）',
+      cat: 'lecture', catLabel: 'Lecture',
+      name: '診断メディアのデザインリサーチ',
+      domain: 'クリエイション/AI',
+      timeStart: '13:00', timeEnd: '14:30', timeSort: 780,
+      status: 'published',
+      apply: false, applyUrl: '',
+      tags: ['SNS','診断メディア','デザインリサーチ','情報デザイン','メディア表現発展演習Ⅰ'],
+      desc: `MBTIをはじめとしたさまざまな診断メディアの結果がSNSで拡散し続けるのはなぜでしょうか。人は分類されることで「自分自身をわかってもらえた」と感じると同時に、他者を分類することで世界を整理します。診断メディアは、その認知的欲求を形にしたメディアです。\n\n「メディア表現発展演習Ⅰ」では、この問いをデザインリサーチで探りました。学生たちは実際の診断ツールを体験・分析するところから出発し、デスクリサーチで診断メディアの歴史と構造を調査。ユーザーインタビューで「診断する・される」体験の意味を掘り起こし、ペルソナ分析を通じて企画へと落とし込みました。`,
+    },
+    {
+      id: 'evt-04', day: 'sat', dayLabel: '7/18（土）',
+      cat: 'lecture', catLabel: 'Lecture',
+      name: 'イロドリ＆3Dプリンタ＆玩具イベント',
+      domain: 'クリエイション/AI',
+      timeStart: '15:00', timeEnd: '16:00', timeSort: 900,
+      status: 'draft',
+      apply: false, applyUrl: '', tags: [], desc: '',
+    },
+    /* ── 7/19 日 ── */
+    {
+      id: 'evt-05', day: 'sun', dayLabel: '7/19（日）',
+      cat: 'workshop', catLabel: 'Workshop',
+      name: '3DスキャンまちアーカイブWS（高砂市連携）',
+      domain: 'ソーシャルデザイン',
+      timeStart: '10:00', timeEnd: '12:00', timeSort: 600,
+      status: 'draft',
+      apply: true, applyUrl: 'https://forms.office.com/r/VjRVWgbLhj',
+      tags: [], desc: '',
+    },
+    {
+      id: 'evt-01', day: 'sun', dayLabel: '7/19（日）',
+      cat: 'lecture', catLabel: 'Lecture',
+      name: '「デザイン思考」導入のための講座',
+      domain: 'ヴィジュアルカルチャー',
+      timeStart: '13:00', timeEnd: '14:30', timeSort: 780,
+      status: 'draft',
+      apply: false, applyUrl: '', tags: [], desc: '',
+    },
+    {
+      id: 'evt-03', day: 'sun', dayLabel: '7/19（日）',
+      cat: 'lecture', catLabel: 'Lecture',
+      name: 'チェキWS【在校生限定・授業公開】',
+      domain: 'ソーシャルデザイン',
+      timeStart: '13:00', timeEnd: '17:00', timeSort: 780,
+      status: 'draft',
+      apply: false, applyUrl: '', tags: [], desc: '',
+    },
+  ];
+
+  function cardHTML(ev) {
+    const hasDetail = ev.desc || ev.tags.length || ev.apply;
+    const detailInner = [
+      ev.desc  ? `<p class="ev-desc">${ev.desc}</p>` : '',
+      ev.tags.length ? `<div class="ev-tags">${ev.tags.map(t=>`<span class="ev-tag">${t}</span>`).join('')}</div>` : '',
+      ev.apply && ev.applyUrl ? `<a class="ev-apply-btn" href="${ev.applyUrl}" target="_blank" rel="noopener">参加申し込み →</a>` : '',
+    ].join('');
+
+    return `
+    <div class="ev-card" id="${ev.id}">
+      <div class="ev-time">
+        <span class="ev-time-start">${ev.timeStart}</span>
+        <span class="ev-time-end">– ${ev.timeEnd}</span>
+      </div>
+      <div class="ev-body">
+        <div class="ev-meta">
+          <span class="ev-cat ev-cat-${ev.cat}">${ev.catLabel}</span>
+          <span class="ev-domain">${ev.domain}</span>
+          <span class="ev-status ev-status-${ev.status}">${ev.status}</span>
+          ${ev.apply ? '<span class="ev-apply-inline">要申込</span>' : ''}
+        </div>
+        <div class="ev-title">${ev.name}</div>
+        ${hasDetail ? `<button class="ev-toggle" onclick="evToggle('${ev.id}')">
+          詳細 <span class="arrow">▾</span>
+        </button>
+        <div class="ev-detail">${detailInner}</div>` : ''}
+      </div>
+    </div>`;
+  }
+
+  function render() {
+    const days = [
+      { key: 'sat', label: '7/18（土）Saturday' },
+      { key: 'sun', label: '7/19（日）Sunday' },
+    ];
+    const container = document.getElementById('ev-list');
+    let html = '';
+
+    days.forEach(({ key, label }) => {
+      const evs = EVENTS
+        .filter(e => e.day === key)
+        .sort((a, b) => a.timeSort - b.timeSort);
+      if (!evs.length) return;
+
+      html += `<div class="day-sep">
+        <span class="day-sep-text">${label}</span>
+        <span class="day-sep-line"></span>
+      </div>`;
+      html += evs.map(cardHTML).join('');
+    });
+
+    container.innerHTML = html;
+  }
+
+  window.evToggle = function (id) {
+    const card = document.getElementById(id);
+    card.classList.toggle('open');
+  };
+
+  render();
+})();
+/* ══════ end script ══════ */
+</script>
+</body>
+</html>

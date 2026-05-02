@@ -2,6 +2,9 @@
 Thumbs.db
 *.log
 
+# Lighthouse レポート（scripts/perf-lighthouse.sh）
+.lighthouse/
+
 # Editor / local
 .cursor/
 *.swp

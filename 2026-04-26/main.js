@@ -1,12 +1,73 @@
-      const io = new IntersectionObserver(
-        (entries) => {
-          for (const e of entries) {
-            if (e.isIntersecting) e.target.classList.add("show");
+      (function () {
+        const io = new IntersectionObserver(
+          (entries) => {
+            for (const e of entries) {
+              if (e.isIntersecting) e.target.classList.add("show");
+            }
+          },
+          { threshold: 0.12, rootMargin: "0px 0px -8% 0px" }
+        );
+
+        document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
+
+        function newsDateLabel(item) {
+          if (item.dateDisplay) return item.dateDisplay;
+          return (item.date || "").replace(/-/g, ".");
+        }
+
+        function appendHeroMarqueeCycle(track, items) {
+          for (const item of items) {
+            const label = document.createElement("span");
+            label.className = "hero-news-label";
+            label.textContent = "NEWS";
+            const row = document.createElement("span");
+            row.className = "hero-news-item";
+            const dateEl = document.createElement("span");
+            dateEl.className = "hero-news-date";
+            dateEl.textContent = newsDateLabel(item);
+            row.appendChild(dateEl);
+            row.appendChild(document.createTextNode(item.text || ""));
+            track.appendChild(label);
+            track.appendChild(row);
           }
-        },
-        { threshold: 0.12, rootMargin: "0px 0px -8% 0px" }
-      );
-      for (const el of document.querySelectorAll(".reveal")) io.observe(el);
+        }
+
+        (async function loadNewsJson() {
+          const track = document.querySelector(".hero-news-track");
+          const list = document.querySelector(".news-list");
+          if (!track || !list) return;
+          try {
+            const res = await fetch("./news.json", { cache: "no-cache" });
+            if (!res.ok) return;
+            const data = await res.json();
+            const items = Array.isArray(data.items) ? data.items : [];
+            if (items.length === 0) return;
+
+            track.textContent = "";
+            appendHeroMarqueeCycle(track, items);
+            appendHeroMarqueeCycle(track, items);
+
+            list.textContent = "";
+            for (const item of items) {
+              const article = document.createElement("article");
+              article.className = "news-item reveal";
+              const timeEl = document.createElement("time");
+              timeEl.className = "news-date";
+              if (item.date) timeEl.setAttribute("datetime", item.date);
+              timeEl.textContent = newsDateLabel(item);
+              const p = document.createElement("p");
+              p.className = "news-text";
+              p.textContent = item.text || "";
+              article.appendChild(timeEl);
+              article.appendChild(p);
+              list.appendChild(article);
+              io.observe(article);
+            }
+          } catch {
+            /* news.json が無い・fetch不可のときはヒーローマーキー・リストは空のまま */
+          }
+        })();
+      })();
 
       (function () {
         const root = document.getElementById("hero-field-words");
@@ -21,7 +82,11 @@
           "Video",
           "Literature",
           "New Media",
-          "Workshop"
+          "Place Making",
+          "Creation ,AI",
+          "Visual Culture",
+          "Social Design",
+          "Design Thinking",
         ];
 
         /** 語順シャッフルの次のサイクルまでの待ち（ms） */
@@ -31,8 +96,8 @@
          * RandomText 既定値に対し、`_` から文字が見え始めるまでを約 1.5 倍に伸ばす。
          * （既定: speed 2 / frameOffset 30 / charOffset 20 / charStep 10）
          */
-        const RT_SPEED = 4 / 3;
-        const RT_FRAME_OFFSET = 45;
+        const RT_SPEED = 1;
+        const RT_FRAME_OFFSET = 30;
         const RT_CHAR_OFFSET = 30;
         const RT_CHAR_STEP = 7;
 
@@ -252,11 +317,15 @@
           dots.forEach((d, j) => d.classList.toggle("is-active", j === i));
         };
 
-        slides.forEach((_, j) => {
+        slides.forEach((slideEl, j) => {
           const b = document.createElement("button");
           b.type = "button";
           b.className = "screening-dot";
-          b.setAttribute("aria-label", `スライド ${j + 1}`);
+          const cap = slideEl.querySelector("figcaption");
+          b.setAttribute(
+            "aria-label",
+            cap && cap.textContent.trim() ? cap.textContent.trim() : `スライド ${j + 1}`,
+          );
           b.addEventListener("click", () => {
             setActive(j);
             if (timer) window.clearInterval(timer);
@@ -273,104 +342,291 @@
       })();
 
       (function () {
-        const rows = document.querySelectorAll("#event .event-list--cards li");
-        const modal = document.getElementById("event-modal");
-        const closeBtn = document.getElementById("event-modal-close");
-        const modalImage = document.getElementById("event-modal-image");
-        const modalType = document.getElementById("event-modal-type");
-        const modalTitle = document.getElementById("event-modal-title");
-        const modalTime = document.getElementById("event-modal-time");
-        const modalFieldWrap = document.getElementById("event-modal-field-wrap");
-        const modalField = document.getElementById("event-modal-field");
-        const modalDetail = document.getElementById("event-modal-detail");
-        const modalApply = document.getElementById("event-modal-apply");
-        if (
-          !rows.length ||
-          !modal ||
-          !closeBtn ||
-          !modalImage ||
-          !modalType ||
-          !modalTitle ||
-          !modalTime ||
-          !modalFieldWrap ||
-          !modalField ||
-          !modalDetail ||
-          !modalApply
-        )
-          return;
+        const permanentHost = document.getElementById("ev-permanent-list");
+        const listHost = document.getElementById("ev-list");
+        const sectionRoot = document.querySelector("#event .ev-section");
+        if (!permanentHost || !listHost) return;
 
-        let lastFocused = null;
+        const CSV_URL =
+          "https://docs.google.com/spreadsheets/d/1hXldiXUl2klbJe6v7BraKEFCXL8cxd5WAjc0RRNzlPo/export?format=csv&gid=651546877";
+        const DETAIL_PLACEHOLDER =
+          "詳細テキストは準備中です。開催にあわせて内容を更新します。最新情報はInstagram（@mediastudies_kwu）もご確認ください。";
 
-        function openModal(row) {
-          const title = row.querySelector(".ev-body strong")?.textContent?.trim() || "";
-          const dateLine = row.querySelector(".ev-time .ev-date")?.textContent?.trim() || "";
-          const timeLine = row.querySelector(".ev-time .ev-time-range")?.textContent?.trim() || "";
-          const field = row.querySelector(".ev-field-tag")?.textContent?.trim() || "";
-          const image = row.querySelector(".ev-thumb");
-          const type = row.closest("ul")?.previousElementSibling?.textContent?.trim() || "イベント";
-          const detail = row.dataset.detail || "詳細情報は後日更新予定です。";
-          const applyLink = row.querySelector(".ev-status--apply");
-
-          if (image) {
-            modalImage.src = image.src;
-            modalImage.alt = image.alt || title;
-          }
-          modalType.textContent = type;
-          modalTitle.textContent = title;
-          modalTime.textContent = [dateLine, timeLine].filter(Boolean).join("\n") || "-";
-          if (field) {
-            modalField.textContent = field;
-            modalFieldWrap.classList.add("is-visible");
-          } else {
-            modalField.textContent = "";
-            modalFieldWrap.classList.remove("is-visible");
-          }
-          modalDetail.textContent = detail;
-          if (applyLink && applyLink.getAttribute("href")) {
-            modalApply.href = applyLink.getAttribute("href");
-            modalApply.hidden = false;
-          } else {
-            modalApply.hidden = true;
-            modalApply.removeAttribute("href");
-          }
-          modal.classList.add("is-open");
-          modal.setAttribute("aria-hidden", "false");
-          document.body.style.overflow = "hidden";
-          closeBtn.focus();
-        }
-
-        function closeModal() {
-          modal.classList.remove("is-open");
-          modal.setAttribute("aria-hidden", "true");
-          document.body.style.overflow = "";
-          if (lastFocused && typeof lastFocused.focus === "function") lastFocused.focus();
-        }
-
-        rows.forEach((row) => {
-          row.tabIndex = 0;
-          row.setAttribute("role", "button");
-          row.setAttribute("aria-label", "イベント詳細を開く");
-          row.addEventListener("click", (e) => {
-            if (e.target.closest(".ev-status--apply")) return;
-            lastFocused = row;
-            openModal(row);
-          });
-          row.addEventListener("keydown", (e) => {
-            if (e.key === "Enter" || e.key === " ") {
-              e.preventDefault();
-              lastFocused = row;
-              openModal(row);
+        function parseCSV(text) {
+          const rows = [];
+          let row = [];
+          let field = "";
+          let inQuotes = false;
+          for (let i = 0; i < text.length; i++) {
+            const c = text[i];
+            if (inQuotes) {
+              if (c === '"') {
+                if (text[i + 1] === '"') {
+                  field += '"';
+                  i++;
+                } else {
+                  inQuotes = false;
+                }
+              } else {
+                field += c;
+              }
+            } else if (c === '"') {
+              inQuotes = true;
+            } else if (c === ",") {
+              row.push(field);
+              field = "";
+            } else if (c === "\n" || c === "\r") {
+              if (c === "\r" && text[i + 1] === "\n") i++;
+              row.push(field);
+              if (row.some((cell) => cell.trim() !== "")) rows.push(row);
+              row = [];
+              field = "";
+            } else {
+              field += c;
             }
-          });
-        });
+          }
+          row.push(field);
+          if (row.some((cell) => cell.trim() !== "")) rows.push(row);
+          return rows;
+        }
 
-        closeBtn.addEventListener("click", closeModal);
-        modal.addEventListener("click", (e) => {
-          if (e.target === modal) closeModal();
-        });
-        document.addEventListener("keydown", (e) => {
-          if (e.key === "Escape" && modal.classList.contains("is-open")) closeModal();
-        });
+        function escapeHtml(s) {
+          return String(s)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;");
+        }
+
+        function hashLabel(s) {
+          const t = String(s).trim();
+          if (!t) return "";
+          return t.startsWith("#") ? t : `#${t}`;
+        }
+
+        function parseBool(v) {
+          const t = String(v).trim().toUpperCase();
+          return t === "TRUE" || t === "1" || t === "YES";
+        }
+
+        function dayKeyFromDateStr(dateStr) {
+          const s = String(dateStr).trim();
+          if (!s) return null;
+          if (s.includes("7/18") && s.includes("7/19")) return "both";
+          if (s.includes("7/18")) return "sat";
+          if (s.includes("7/19")) return "sun";
+          return null;
+        }
+
+        function timeSortKey(timeLine) {
+          const m = String(timeLine).match(/(\d{1,2}):(\d{2})/);
+          if (!m) return 9999;
+          return Number(m[1]) * 60 + Number(m[2]);
+        }
+
+        /** 終了時刻（範囲の2つ目）。並び替えの第2キー用 */
+        function timeEndSortKey(timeLine) {
+          const t = String(timeLine || "").trim();
+          const sep = /[–\-〜～]/;
+          const parts = t.split(sep);
+          const endPart = (parts.length > 1 ? parts[1] : parts[0] || "").trim();
+          const m = endPart.match(/(\d{1,2}):(\d{2})/);
+          if (!m) return 9999;
+          return Number(m[1]) * 60 + Number(m[2]);
+        }
+
+        function splitTimeDisplay(ev) {
+          const t = String(ev.timeLine || "").trim();
+          if (ev.cat === "permanent" || t === "常設") {
+            return { start: "常設", end: "" };
+          }
+          if (!t) return { start: "—", end: "—" };
+          const sep = /[–\-〜～]/;
+          const parts = t.split(sep);
+          const start = (parts[0] || "").trim();
+          let end = (parts[1] || "").trim();
+          if (!end) end = start;
+          return { start, end };
+        }
+
+        function catLabel(cat) {
+          if (cat === "workshop") return "Workshop";
+          if (cat === "lecture") return "Lecture";
+          if (cat === "permanent") return "常設";
+          return cat;
+        }
+
+        function tagsFromCell(tagCell) {
+          if (!tagCell || /^false$/i.test(String(tagCell).trim())) return [];
+          return String(tagCell)
+            .split(/[,、]/)
+            .map((t) => t.trim())
+            .filter(Boolean);
+        }
+
+        function rowToObj(headers, cells) {
+          const o = {};
+          headers.forEach((h, i) => {
+            o[h] = cells[i] != null ? cells[i].trim() : "";
+          });
+          return o;
+        }
+
+        function detailBlocks(ev) {
+          const tags = tagsFromCell(ev.tagsRaw);
+          const parts = [];
+          if (ev.desc) {
+            parts.push(`<p class="ev-desc">${escapeHtml(ev.desc)}</p>`);
+          } else {
+            parts.push(
+              `<p class="ev-desc ev-desc--placeholder">${escapeHtml(DETAIL_PLACEHOLDER)}</p>`,
+            );
+          }
+          if (tags.length) {
+            parts.push(
+              `<div class="ev-tags">${tags
+                .map((t) => `<span class="ev-tag">${escapeHtml(hashLabel(t))}</span>`)
+                .join("")}</div>`,
+            );
+          }
+          if (ev.apply && ev.applyUrl) {
+            parts.push(
+              `<a class="ev-apply-btn" href="${escapeHtml(ev.applyUrl)}" target="_blank" rel="noopener noreferrer">参加申し込み</a>`,
+            );
+          }
+          return parts.join("");
+        }
+
+        function timeColumnHtml(ev) {
+          const { start, end } = splitTimeDisplay(ev);
+          if (ev.cat === "permanent" || start === "常設") {
+            return `<div class="ev-time-inner ev-time-inner--single"><span class="ev-time-part">${escapeHtml(start)}</span></div>`;
+          }
+          const hasDistinctRange = Boolean(end && end !== start);
+          if (hasDistinctRange) {
+            return `<div class="ev-time-inner" aria-label="${escapeHtml(start)}から${escapeHtml(end)}まで">
+              <span class="ev-time-part">${escapeHtml(start)}</span><span class="ev-time-sep" aria-hidden="true">–</span><span class="ev-time-part">${escapeHtml(end)}</span>
+            </div>`;
+          }
+          return `<div class="ev-time-inner"><span class="ev-time-part">${escapeHtml(start)}</span></div>`;
+        }
+
+        function cardHTML(ev) {
+          const detailInner = detailBlocks(ev);
+          const domainHtml = ev.domain
+            ? `<span class="ev-domain">${escapeHtml(hashLabel(ev.domain))}</span>`
+            : "";
+
+          return `<div class="ev-card ev-card--${escapeHtml(ev.cat)}" id="${escapeHtml(ev.id)}">
+            <div class="ev-time">
+              ${timeColumnHtml(ev)}
+            </div>
+            <div class="ev-body">
+              <div class="ev-meta">
+                <span class="ev-cat ev-cat-${escapeHtml(ev.cat)}">${escapeHtml(hashLabel(catLabel(ev.cat)))}</span>
+                ${domainHtml}
+                ${ev.apply ? '<span class="ev-apply-inline">要申込</span>' : ""}
+              </div>
+              <div class="ev-title">${escapeHtml(ev.name)}</div>
+              <div class="ev-detail">${detailInner}</div>
+            </div>
+          </div>`;
+        }
+
+        async function load() {
+          let records;
+          try {
+            const res = await fetch(CSV_URL, { cache: "no-store" });
+            if (!res.ok) throw new Error(String(res.status));
+            const text = await res.text();
+            const matrix = parseCSV(text);
+            if (!matrix.length) throw new Error("empty");
+            const headers = matrix[0].map((h) => h.trim());
+            records = matrix.slice(1).map((cells) => rowToObj(headers, cells));
+          } catch {
+            listHost.innerHTML =
+              '<p class="ev-load-error" role="alert">イベントデータを読み込めませんでした。しばらくしてから再度お試しください。</p>';
+            permanentHost.innerHTML = "";
+            permanentHost.hidden = true;
+            if (sectionRoot) sectionRoot.setAttribute("aria-busy", "false");
+            return;
+          }
+
+          const DESC_KEY = "説明（200文字程度）";
+
+          const events = records.map((r) => ({
+            id: r["ID"] || "",
+            cat: (r["カテゴリ"] || "").trim().toLowerCase(),
+            name: (r["イベント名"] || "").replace(/\s+/g, " ").trim(),
+            domain: r["担当分野"] || "",
+            dateLine: r["日付1行目"] || "",
+            timeLine: r["時間2行目"] || "",
+            tagsRaw: r["タグ"] || "",
+            desc: (r[DESC_KEY] || "").trim(),
+            apply: parseBool(r["申込要否"] || ""),
+            applyUrl: (r["申込URL"] || "").trim(),
+            sort: Number((r["表示順"] || "999").trim()) || 999,
+            day: dayKeyFromDateStr(r["日付1行目"] || ""),
+          }));
+
+          const permanents = events
+            .filter((e) => e.cat === "permanent")
+            .sort((a, b) => {
+              const ta = timeSortKey(a.timeLine || "");
+              const tb = timeSortKey(b.timeLine || "");
+              if (ta !== tb) return ta - tb;
+              const ea = timeEndSortKey(a.timeLine || "");
+              const eb = timeEndSortKey(b.timeLine || "");
+              if (ea !== eb) return ea - eb;
+              return a.sort - b.sort;
+            });
+          if (permanents.length) {
+            permanentHost.hidden = false;
+            permanentHost.innerHTML = `<div class="day-sep">
+              <span class="day-sep-text">常設プログラム</span>
+              <span class="day-sep-line"></span>
+            </div>${permanents.map(cardHTML).join("")}`;
+          } else {
+            permanentHost.hidden = true;
+            permanentHost.innerHTML = "";
+          }
+
+          const timed = events.filter((e) => e.cat !== "permanent" && e.day && e.day !== "both");
+
+          const days = [
+            { key: "sat", label: "7/18（土）" },
+            { key: "sun", label: "7/19（日）" },
+          ];
+
+          let html = "";
+          days.forEach(({ key, label }) => {
+            const evs = timed
+              .filter((e) => e.day === key)
+              .sort((a, b) => {
+                const ta = timeSortKey(a.timeLine || "");
+                const tb = timeSortKey(b.timeLine || "");
+                if (ta !== tb) return ta - tb;
+                const ea = timeEndSortKey(a.timeLine || "");
+                const eb = timeEndSortKey(b.timeLine || "");
+                if (ea !== eb) return ea - eb;
+                return a.sort - b.sort;
+              });
+            if (!evs.length) return;
+            html += `<div class="day-sep">
+              <span class="day-sep-text">${escapeHtml(label)}</span>
+              <span class="day-sep-line"></span>
+            </div>`;
+            html += evs.map(cardHTML).join("");
+          });
+
+          listHost.innerHTML =
+            html ||
+            '<p class="ev-empty">タイムテーブルに表示できるイベントがありません。</p>';
+
+          if (sectionRoot) sectionRoot.setAttribute("aria-busy", "false");
+        }
+
+        load();
       })();
 
       (function () {
