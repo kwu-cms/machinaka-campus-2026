@@ -1,6 +1,21 @@
 # 学科学外イベント Web（まちなかキャンパス 2026）
 
-サイトの入口は **`2026-04-26/index.html`** です。CSS / JS / 画像はすべて `2026-04-26/` 以下の相対パスで参照されています。
+サイトの入口は **`2026-04-26/index.html`** です。CSS は `css/`、JS は `js/`、データ（CSV / JSON）は `data/`、画像は `images/` に置き、`index.html` から相対パスで参照されています。
+
+- **公開用アセット**は `2026-04-26/` のみです（GitHub Actions はこのフォルダの中身だけを Pages に載せます）。
+- **ドラフト・構成メモ**はリポジトリルートの **`_draft/`** にあります（公開サイトには含まれません）。
+- **`data/events.csv`** は実行時には使わず（イベント一覧は Google スプレッドシートを `js/main.js` の `SITE_CONFIG.eventsCsvUrl` から取得）、編集用・バックアップ用として同梱している場合があります。
+
+## GitHub Pages で公開（プロジェクトサイト）
+
+`https://<ユーザー名>.github.io/<リポジトリ名>/` で公開する想定です。
+
+1. GitHub リポジトリの **Settings → Pages** で、**Build and deployment** の Source を **GitHub Actions** に変更します。
+2. `main` へ push すると [`.github/workflows/pages.yml`](.github/workflows/pages.yml) が動き、`2026-04-26/` の内容だけが artifact としてデプロイされます（リポジトリルートに `index.html` を置く必要はありません）。
+3. ワークフローはデプロイ直前に [`2026-04-26/index.html`](2026-04-26/index.html) 内の **`__SITE_ORIGIN__`** を、オーナー名とリポジトリ名から組み立てた  
+   `https://<owner>.github.io/<repository>/`  
+   に置換し、`og:image` / `twitter:image` を絶対 URL にします（具体的には `.github/workflows/pages.yml` 内の `sed` を参照）。
+4. **ローカル**で `index.html` を開くときは `__SITE_ORIGIN__` は置換されないため、OGP 用メタは本番と異なります（プレビュー検証は公開 URL かデバッガで行ってください）。
 
 ## ローカルで確認
 
@@ -56,6 +71,5 @@ git push -u origin main
 
 ### 注意
 
-- ホスティングで「リポジトリのルート＝公開ドキュメントルート」とする場合は、`2026-04-26` の中身をデプロイ先にコピーするか、サブパス公開の設定が必要です。
-- `main.js` 内の Google Maps API キーは公開リポジトリに push する前に、Cloud Console でリファラー制限の見直し・必要ならキーのローテーションを推奨します。
-- SNS 用 OGP（`og:image` / `twitter:image`）は、本番公開時に **`https://` 始まりの絶対 URL** に差し替えると Facebook / X 等でのプレビューが安定しやすいです（`2026-04-26/index.html` 内のコメント参照）。
+- GitHub Pages 以外でホストする場合も、配信のドキュメントルートには **`2026-04-26/` の中身** を載せれば、相対パスはそのまま動きます。
+- Google Maps API キーは [`2026-04-26/js/main.js`](2026-04-26/js/main.js) の **`SITE_CONFIG.googleMapsApiKey`** にあります。公開リポジトリでは Cloud Console のリファラー制限の見直し・必要ならキーのローテーションを推奨します。

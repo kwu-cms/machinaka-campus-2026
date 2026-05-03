@@ -1,0 +1,41 @@
+name: Deploy GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "2026-04-26/**"
+      - ".github/workflows/pages.yml"
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Inject public site origin for OGP
+        run: |
+          ORIGIN="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}"
+          sed -i "s|__SITE_ORIGIN__|${ORIGIN}|g" 2026-04-26/index.html
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: 2026-04-26
+
+      - id: deployment
+        uses: actions/deploy-pages@v4
