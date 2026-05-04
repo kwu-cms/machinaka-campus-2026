@@ -1,3 +1,5 @@
+import { animate, scrambleText } from "https://esm.sh/animejs@4.4.0/es2022/animejs.mjs";
+
       /** fetch 先・外部 API。公開リポジトリでは Maps キーのリファラー制限を別途確認してください。 */
       const SITE_CONFIG = Object.freeze({
         newsJsonUrl: "./data/news.json",
@@ -269,19 +271,19 @@
         /** 語順シャッフルの次のサイクルまでの待ち（ms） */
         const CYCLE_MS = 10000;
 
-        /**
-         * RandomText 既定値に対し、`_` から文字が見え始めるまでを約 1.5 倍に伸ばす。
-         * （既定: speed 2 / frameOffset 30 / charOffset 20 / charStep 10）
-         */
-        const RT_SPEED = 1;
-        const RT_FRAME_OFFSET = 30;
-        const RT_CHAR_OFFSET = 30;
-        const RT_CHAR_STEP = 7;
-        /** RandomText: 英語モードは ASCII、日本語モードは BMP（スペース〜）でラップ */
-        const RT_MIN_ASCII = 32;
-        const RT_MAX_ASCII = 122;
-        const RT_MIN_JP = 0x20;
-        const RT_MAX_JP = 0xffff;
+        /** anime.js scrambleText: 英語行の仮文字プール（スペース・記号は原文を維持しやすいよう広めに） */
+        const SCRAMBLE_CHARS_EN = "a-zA-Z0-9!%#_|*+= ";
+        /** かな中心（漢字プールは肥大化するため含めない）。ランダム化はこれらで代用 */
+        const SCRAMBLE_CHARS_JA = (() => {
+          let s = "";
+          for (let u = 0x3041; u <= 0x3096; u += 1) s += String.fromCharCode(u);
+          for (let u = 0x30a1; u <= 0x30f6; u += 1) s += String.fromCharCode(u);
+          return s;
+        })();
+        /** scrambleText の体感スピード（RandomText 時代に近い長さになるよう調整） */
+        const SCRAMBLE_REVEAL_RATE = 52;
+        const SCRAMBLE_SETTLE_MS = 320;
+        const SCRAMBLE_SETTLE_RATE = 28;
 
         /** M PLUS 1 Code が Font Loading API で読めてから日本語スクランブルを有効にする */
         let heroFieldMplusReady = false;
@@ -389,30 +391,28 @@
         }
 
         const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        const hasRandomText = typeof window.RandomText === "function";
-
-        let activeHeroRTs = [];
+        let activeHeroAnims = [];
         let activeHeroTimeouts = [];
 
         function cancelHeroFieldScramble() {
           for (const id of activeHeroTimeouts) window.clearTimeout(id);
           activeHeroTimeouts = [];
-          for (const rt of activeHeroRTs) {
+          for (const anim of activeHeroAnims) {
             try {
-              rt.stop();
+              anim.cancel();
             } catch {
               /* noop */
             }
           }
-          activeHeroRTs = [];
+          activeHeroAnims = [];
         }
 
         function runHeroFieldScrambleCycle() {
           heroWordCycleIndex = (heroWordCycleIndex + 1) % 4;
           cancelHeroFieldScramble();
           const modeJa = heroWordCycleIndex === 3;
-          /* 日本語: M PLUS 1 Code 未読込時は即時差し替え（RandomText のコードレンジと描画の両方を安定させる） */
-          if (reduceMotion || !hasRandomText || (modeJa && !heroFieldMplusReady)) {
+          /* 日本語: M PLUS 1 Code 未読込時は即時差し替え（スクランブル描画を安定させる） */
+          if (reduceMotion || (modeJa && !heroFieldMplusReady)) {
             for (let row = 0; row < n; row += 1) {
               lineEls[row].textContent = buildLineHeroWords(heroWordCycleIndex);
             }
@@ -421,8 +421,7 @@
           }
 
           const targets = lineEls.map(() => buildLineHeroWords(heroWordCycleIndex));
-          const minC = modeJa ? RT_MIN_JP : RT_MIN_ASCII;
-          const maxC = modeJa ? RT_MAX_JP : RT_MAX_ASCII;
+          const scrambleChars = modeJa ? SCRAMBLE_CHARS_JA : SCRAMBLE_CHARS_EN;
 
           let completed = 0;
           const onLineDone = () => {
@@ -440,24 +439,22 @@
             const str = targets[row];
             const delayMs = row * rowStartGapMs;
             const tid = window.setTimeout(() => {
-              const rt = new window.RandomText({
-                str,
-                speed: RT_SPEED,
-                frameOffset: RT_FRAME_OFFSET,
-                charOffset: RT_CHAR_OFFSET,
-                charStep: RT_CHAR_STEP,
-                minCharCode: minC,
-                maxCharCode: maxC,
-                onProgress: (s) => {
-                  el.textContent = s;
-                },
-                onComplete: (s) => {
-                  el.textContent = s;
+              const anim = animate(el, {
+                innerHTML: scrambleText({
+                  text: str,
+                  chars: scrambleChars,
+                  ease: "linear",
+                  revealRate: SCRAMBLE_REVEAL_RATE,
+                  settleDuration: SCRAMBLE_SETTLE_MS,
+                  settleRate: SCRAMBLE_SETTLE_RATE,
+                  cursor: "_",
+                }),
+                onComplete: () => {
+                  el.textContent = str;
                   onLineDone();
                 },
               });
-              activeHeroRTs.push(rt);
-              rt.start();
+              activeHeroAnims.push(anim);
             }, delayMs);
             activeHeroTimeouts.push(tid);
           }
