@@ -34,11 +34,16 @@
 
       html {
         scroll-behavior: smooth;
+        /* ページ内リンク（#news など）で sticky ナビに見出しが隠れないようにする */
+        scroll-padding-top: var(--nav-h);
       }
 
       body {
         margin: 0;
-        background: var(--bg-light);
+        background-color: #f4f1ea;
+        background-image: url("../images/ep_naturalwhite.webp");
+        background-repeat: repeat;
+        background-size: 300px 300px;
         color: var(--text-dark);
         font-family: "Noto Sans JP", sans-serif;
         font-weight: 400;
@@ -249,9 +254,11 @@
       .hero-field-words-line {
         margin: 0;
         padding: 0 calc(var(--shell-pad) * 0.2);
-        font-family: "DM Mono", monospace;
+        font-family: "M PLUS 1 Code", monospace;
+        font-optical-sizing: auto;
         font-size: clamp(1.75rem, 5.95vw, 4.55rem);
-        font-weight: 500;
+        /* M PLUS 1 Code: 可変 100–700。日本語を軽く見せるなら 300（Light） */
+        font-weight: 300;
         letter-spacing: 0.02em;
         line-height: 1;
         color: rgba(255, 255, 255, 0.11);
@@ -555,7 +562,26 @@
         color: rgba(17, 17, 17, 0.88);
       }
 
+      /* --- PROGRAM / ABOUT / ACCESS：一枚パネル（見出し〜本文が同じ面。News は従来どおり） --- */
+      #program,
+      #about,
+      #access {
+        padding-block: clamp(1.5rem, 4vw, 2.75rem);
+      }
+
+      #program > .container,
+      #about > .container,
+      #access > .container {
+        background: var(--bg-light);
+        padding-top: clamp(0.35rem, 1.2vw, 0.85rem);
+        padding-bottom: clamp(1.15rem, 2.8vw, 1.85rem);
+        border-radius: 3px;
+        box-shadow: 0 0 0 1px rgba(17, 17, 17, 0.08);
+      }
+
       /* --- PROGRAM (パネル感・シンプルな article 構造) --- */
+      /* 見出し〜3記事までは同じ面：各 article を二重に塗らない */
+
       .program-list {
         border-top: 1px solid var(--rule);
       }
@@ -563,10 +589,14 @@
       .program-item {
         position: relative;
         border-bottom: 1px solid var(--rule);
-        background: var(--bg-light);
+        background: transparent;
         overflow: hidden;
         transition: background var(--int-base) var(--int-ease), border-color var(--int-base) var(--int-ease),
           box-shadow var(--int-base) var(--int-ease);
+      }
+
+      #program .program-item:last-child {
+        border-bottom: none;
       }
 
       .program-item:nth-child(1):hover {
@@ -641,7 +671,9 @@
         max-width: 52rem;
       }
 
-      .program-item:nth-child(2) .program-body {
+      #screening .program-body,
+      #exhibition .program-body,
+      #event .program-body {
         max-width: none;
       }
 
@@ -650,12 +682,7 @@
         overflow: visible;
       }
 
-      #event .program-body {
-        max-width: none;
-      }
-
       #screening .program-body {
-        max-width: none;
         padding-top: var(--program-stack-md);
         padding-bottom: clamp(2rem, 5vw, 2.75rem);
       }
@@ -706,6 +733,17 @@
         text-decoration-color: rgba(255, 106, 61, 0.55);
       }
 
+      /* タイトル＋コピーを1つのブロックとして縦線でまとめる（コピーだけに線が付かないようにする） */
+      .screening-program-lede {
+        display: flex;
+        flex-direction: column;
+        gap: 0.38rem;
+        margin: 0 0 var(--program-stack-md);
+        max-width: min(40rem, 100%);
+        padding: 0.15rem 0 0.15rem 0.85rem;
+        border-left: 3px solid var(--accent);
+      }
+
       .screening-program-name {
         margin: 0;
         font-family: "Shippori Mincho B1", serif;
@@ -714,6 +752,19 @@
         letter-spacing: 0.05em;
         line-height: 1.35;
         color: rgba(17, 17, 17, 0.93);
+      }
+
+      /* 見出しと同じ明朝で階層だけ落とし、字間は詰めて全角スペースの開きが過剰にならないようにする */
+      .screening-program-tagline {
+        margin: 0;
+        padding: 0;
+        border: none;
+        font-family: "Shippori Mincho B1", serif;
+        font-size: clamp(0.92rem, 2.1vw, 1.05rem);
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        line-height: 1.65;
+        color: rgba(17, 17, 17, 0.52);
       }
 
       /* ── 南女シネマ（movies.csv）カード・作品モーダル ── */
@@ -991,11 +1042,78 @@
       }
 
       .movie-dialog-meta {
-        margin: 0 0 0.85rem;
+        margin: 0 0 0.75rem;
         font-size: 0.84rem;
         font-weight: 500;
         line-height: 1.55;
         color: rgba(17, 17, 17, 0.62);
+      }
+
+      /* 上映日時・会場: 右寄せ・インラインブロック（カード枠なしで軽く） */
+      .movie-dialog-showtime {
+        margin: 0 0 0.75rem;
+        text-align: right;
+        line-height: 1.35;
+      }
+
+      .movie-dialog-showtime-inner {
+        display: inline-flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 0.08rem;
+        text-align: right;
+        max-width: 100%;
+      }
+
+      .movie-dialog-showtime-date {
+        font-size: 0.81rem;
+        font-weight: 600;
+        letter-spacing: 0.03em;
+        color: rgba(17, 17, 17, 0.78);
+      }
+
+      .movie-dialog-showtime-slot {
+        font-family: "DM Mono", monospace;
+        font-size: 0.72rem;
+        font-weight: 500;
+        letter-spacing: 0.05em;
+        color: rgba(17, 17, 17, 0.48);
+      }
+
+      .movie-dialog-showtime-venue-row {
+        display: inline-flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 0.28rem;
+        margin-top: 0.12rem;
+      }
+
+      .movie-dialog-showtime-pin-wrap {
+        display: inline-flex;
+        align-items: center;
+        flex-shrink: 0;
+      }
+
+      .movie-dialog-showtime-pin {
+        display: block;
+        width: 0.75rem;
+        height: 0.75rem;
+        opacity: 0.5;
+      }
+
+      .movie-dialog-showtime-venue {
+        font-size: 0.78rem;
+        font-weight: 500;
+        letter-spacing: 0.04em;
+        color: rgba(17, 17, 17, 0.62);
+      }
+
+      .movie-dialog-showtime-unknown {
+        margin: 0;
+        font-size: 0.82rem;
+        line-height: 1.55;
+        color: rgba(180, 62, 28, 0.92);
+        text-align: left;
       }
 
       .movie-dialog-body {
@@ -1903,7 +2021,14 @@
         min-width: 0;
         width: 100%;
         -webkit-overflow-scrolling: touch;
-        scrollbar-width: thin;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+      }
+
+      .exh-track::-webkit-scrollbar {
+        display: none;
+        width: 0;
+        height: 0;
       }
 
       .exh-card {
@@ -2218,11 +2343,7 @@
       }
 
       /* --- ACCESS (1マップ・2地点=経路の A/B) --- */
-      /* 開催概要との区切り線はビューポート全体ではなく .container 幅に合わせる */
-      #access > .container {
-        border-top: 1px solid var(--rule);
-      }
-
+      /* 区切りは .access-layout の border-top のみ（container 上罫は廃止し二重線を解消） */
       .access-layout {
         display: grid;
         grid-template-columns: minmax(0, 340px) minmax(0, 1fr);
@@ -2433,11 +2554,11 @@
         border-color: rgba(255, 106, 61, 0.5);
       }
 
-      /* --- Footer --- */
+      /* --- Footer（ナビと同系のダークで上下を締める） --- */
       .footer {
-        border-top: 1px solid var(--rule);
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
         padding: 2rem 0 2.75rem;
-        background: var(--bg-light);
+        background: rgba(15, 17, 21, 0.92);
       }
 
       .footer-wrap {
@@ -2468,7 +2589,7 @@
         font-weight: 500;
         letter-spacing: 0.14em;
         text-transform: uppercase;
-        color: rgba(17, 17, 17, 0.44);
+        color: rgba(255, 255, 255, 0.48);
       }
 
       .footer-col-stack {
@@ -2484,7 +2605,7 @@
         gap: 0.48rem;
         font-size: 0.84rem;
         font-weight: 600;
-        color: rgba(17, 17, 17, 0.82);
+        color: rgba(255, 255, 255, 0.88);
         line-height: 1.45;
         transition: color var(--int-fast) var(--int-ease);
       }
@@ -2528,18 +2649,27 @@
         line-height: 1.4;
         padding: 0.72rem 1rem;
         border-radius: 10px;
+        border-color: rgba(255, 255, 255, 0.24);
+        color: rgba(255, 255, 255, 0.9);
+        background: rgba(255, 255, 255, 0.06);
+      }
+
+      .footer-col-stack .btn-light:hover {
+        border-color: rgba(255, 255, 255, 0.4);
+        color: #fff;
+        background: rgba(255, 255, 255, 0.1);
       }
 
       .footer-copy {
         margin: 0;
         padding-top: 1.25rem;
-        border-top: 1px solid var(--rule);
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
         max-width: none;
         font-family: "DM Mono", monospace;
         font-size: 0.68rem;
         letter-spacing: 0.06em;
         text-transform: uppercase;
-        color: rgba(17, 17, 17, 0.48);
+        color: rgba(255, 255, 255, 0.42);
         line-height: 1.65;
       }
 
@@ -2677,6 +2807,7 @@
 
       html.is-signage {
         overflow-x: hidden;
+        scroll-padding-top: 0;
       }
 
       body.is-signage-vertical {
@@ -2784,7 +2915,7 @@
         display: none !important;
       }
 
-      body[data-signage="screening"] #screening .screening-body > .screening-program-name {
+      body[data-signage="screening"] #screening .screening-body > .screening-program-lede {
         display: none !important;
       }
 
@@ -2797,8 +2928,22 @@
         padding-block: 0.15rem 0.35rem;
       }
 
+      body[data-signage="screening"] #screening .signage-screening-chrome .screening-program-lede--signage {
+        gap: 0.35rem;
+        margin-bottom: 0.85rem;
+        max-width: none;
+        padding: 0.2rem 0 0.2rem 0.9rem;
+      }
+
       body[data-signage="screening"] #screening .signage-screening-chrome .screening-program-name {
-        margin-top: 0.35rem;
+        margin-top: 0.05rem;
+      }
+
+      body[data-signage="screening"] #screening .signage-screening-chrome .screening-program-tagline {
+        font-size: clamp(1rem, 2.5vw, 1.15rem);
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        color: rgba(17, 17, 17, 0.55);
       }
 
       body[data-signage="screening"] #screening .mv-schedule-main .mv-program-cols {

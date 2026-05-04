@@ -34,7 +34,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Shippori+Mincho+B1:wght@400;800&family=Noto+Sans+JP:wght@400;500;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Shippori+Mincho+B1:wght@400;800&family=M+PLUS+1+Code:wght@100..700&family=Noto+Sans+JP:wght@400;500;700&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="./css/styles.css" />
@@ -141,7 +141,10 @@
               </header>
               <div class="program-body">
                 <div class="screening-body">
-                  <h4 class="screening-program-name">特別上映プログラム「南女シネマ」</h4>
+                  <div class="screening-program-lede">
+                    <h4 class="screening-program-name">特別上映プログラム「南女シネマ」</h4>
+                    <p class="screening-program-tagline">映画つくった　宝物みつけた</p>
+                  </div>
                   <p class="program-copy screening-intro">
                     元町映画館で、映像表現研究ゼミの学生・卒業生の映像作品をプログラム上映します。上映後は監督とゼミ担当教員によるトークの他、元町映画館2階ロビーでゼミ生と高校生の交流会を実施します。上映は入場無料です。プログラムの詳細は<a href="https://www.motoei.com/" target="_blank" rel="noopener noreferrer">元町映画館のWebページ</a>をご確認ください。
                   </p>
@@ -359,9 +362,9 @@
           <h2 id="about-heading" class="section-title reveal">開催概要</h2>
           <div class="about-grid">
             <p class="about-copy reveal">
-              「まちなかキャンパス 2026」は、学科が街に出ることで生まれる、新しい接点をつくる試みです。元町という日常の場に上映・展示・イベントを重ね、メディア表現学科の制作と対話のプロセスをそのまま公開します。
+              「まちなかキャンパス 2026」は、学科が街に出ることで生まれる、新しい接点をつくる試みです。上映・展示・イベントといった異なる発表方法で、メディア表現学科の制作と思考のプロセスをそのまま公開します。
               <br /><br />
-              2027年度からはカリキュラムを刷新し、社会の問いとデザインおよびメディア表現をつなぐ学びをより具体的に展開していきます。このイベントはその始まりとして、作品を「観る」だけでなく、ワークショップやトークを通して「体験する」入口を用意しました。学科の現在地とこれからを、街の中で体験としてお伝えします。
+              2027年度からのカリキュラム刷新では、デザイン思考を軸に、ヴィジュアルカルチャー・クリエイション／AI・ソーシャルデザインの3分野を横断しながら、社会の問いとメディア表現をつなぐ学びをより具体的に展開していきます。作品を「観る」だけでなく、ワークショップやトークを通して「参加する」——作りながら考え、その問いを街へひらく学科の今とこれからを、元町の2会場で体験してください。
             </p>
             <dl class="facts reveal">
               <dt>会期</dt>
@@ -512,6 +515,12 @@
         </div>
         <h3 id="movie-dialog-title" class="movie-dialog-title"></h3>
         <p class="movie-dialog-meta"></p>
+        <div
+          id="movie-dialog-showtime"
+          class="movie-dialog-showtime"
+          role="group"
+          aria-label="上映日時と会場"
+        ></div>
         <div class="movie-dialog-body"></div>
       </div>
     </dialog>

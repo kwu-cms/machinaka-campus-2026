@@ -9,6 +9,9 @@
         googleMapsApiKey: "AIzaSyDSfeNa_ftv6Orh--hQQOvZOVyRCuUvBqg",
       });
 
+      /** 上映スライド（#screeningSlideshow・上映サイネージのヒーロー）の自動送り間隔 */
+      const SCREENING_SLIDESHOW_INTERVAL_MS = 12000;
+
       /** 縦型サイネージ（1080×1920 想定）。`?signage=screening|event` または `#signage-screening` / `#signage-event` */
       (function initSignageMode() {
         function getSignageMode() {
@@ -183,6 +186,60 @@
           "Design Thinking",
         ];
 
+        /** ヒーロー背景テキスト・モード3（循環の最後）。語順は各サイクルでシャッフル */
+        const VERBS = [
+          "観察する",
+          "読み解く",
+          "考える",
+          "構想する",
+          "企てる",
+          "定義する",
+          "設計する",
+          "試す",
+          "作る",
+          "組み立てる",
+          "配置する",
+          "描く",
+          "撮る",
+          "切り取る",
+          "つなぐ",
+          "重ねる",
+          "動かす",
+          "区切る",
+          "連ねる",
+          "間をつくる",
+          "書く",
+          "タイプする",
+          "物語る",
+          "描写する",
+          "たとえる",
+          "書き換える",
+          "推敲する",
+          "整える",
+          "編集する",
+          "まとめる",
+          "選ぶ",
+          "比べる",
+          "位置づける",
+          "問いを立てる",
+          "引き出す",
+          "対話する",
+          "共有する",
+          "振り返る",
+          "記録する",
+          "伝える",
+          "広める",
+          "関わる",
+          "振る舞う",
+          "介入する",
+          "組み替える",
+          "接続する",
+          "検証する",
+          "判断する",
+          "発見する",
+          "展開する",
+        ];
+
         /** デザイン思考プロセス・リサーチ用語（英語）— 語順は各サイクルでシャッフル */
         const DESIGN_PROCESS_TERMS = [
           "Empathize",
@@ -220,6 +277,33 @@
         const RT_FRAME_OFFSET = 30;
         const RT_CHAR_OFFSET = 30;
         const RT_CHAR_STEP = 7;
+        /** RandomText: 英語モードは ASCII、日本語モードは BMP（スペース〜）でラップ */
+        const RT_MIN_ASCII = 32;
+        const RT_MAX_ASCII = 122;
+        const RT_MIN_JP = 0x20;
+        const RT_MAX_JP = 0xffff;
+
+        /** M PLUS 1 Code が Font Loading API で読めてから日本語スクランブルを有効にする */
+        let heroFieldMplusReady = false;
+        (function loadHeroFieldFont() {
+          const markReady = () => {
+            heroFieldMplusReady = true;
+            requestAnimationFrame(() => {
+              applyHeroFieldWordVerticalTighten();
+            });
+          };
+          try {
+            const load =
+              document.fonts?.load?.('300 16px "M PLUS 1 Code"') ?? Promise.resolve();
+            Promise.all([load, document.fonts?.ready ?? Promise.resolve()])
+              .then(markReady)
+              .catch(() => {
+                /* 取得失敗時は日本語モードのみ即時差し替えのまま */
+              });
+          } catch {
+            document.fonts?.ready?.then(markReady);
+          }
+        })();
 
         function shuffle(arr) {
           const a = arr.slice();
@@ -241,9 +325,10 @@
 
         /**
          * hero 背景テキストのモード（順に循環）
-         * 0: 分野配列 TERMS をシャッフル（従来どおり）
+         * 0: 分野配列 TERMS をシャッフル
          * 1: Creative Media Studies のみ羅列
          * 2: デザイン思考プロセス英語をシャッフル
+         * 3: 動詞（日本語）VERBS をシャッフル — 最後
          */
         let heroWordCycleIndex = 0;
 
@@ -268,7 +353,10 @@
             const parts = Array(targetItemsPerLine).fill(CMS_ONLY_LABEL);
             return `${parts.join(" / ")} / `;
           }
-          return buildShuffledLineToLength(DESIGN_PROCESS_TERMS);
+          if (mode === 2) {
+            return buildShuffledLineToLength(DESIGN_PROCESS_TERMS);
+          }
+          return buildShuffledLineToLength(VERBS);
         }
 
         root.textContent = "";
@@ -320,9 +408,11 @@
         }
 
         function runHeroFieldScrambleCycle() {
-          heroWordCycleIndex = (heroWordCycleIndex + 1) % 3;
+          heroWordCycleIndex = (heroWordCycleIndex + 1) % 4;
           cancelHeroFieldScramble();
-          if (reduceMotion || !hasRandomText) {
+          const modeJa = heroWordCycleIndex === 3;
+          /* 日本語: M PLUS 1 Code 未読込時は即時差し替え（RandomText のコードレンジと描画の両方を安定させる） */
+          if (reduceMotion || !hasRandomText || (modeJa && !heroFieldMplusReady)) {
             for (let row = 0; row < n; row += 1) {
               lineEls[row].textContent = buildLineHeroWords(heroWordCycleIndex);
             }
@@ -331,6 +421,8 @@
           }
 
           const targets = lineEls.map(() => buildLineHeroWords(heroWordCycleIndex));
+          const minC = modeJa ? RT_MIN_JP : RT_MIN_ASCII;
+          const maxC = modeJa ? RT_MAX_JP : RT_MAX_ASCII;
 
           let completed = 0;
           const onLineDone = () => {
@@ -354,6 +446,8 @@
                 frameOffset: RT_FRAME_OFFSET,
                 charOffset: RT_CHAR_OFFSET,
                 charStep: RT_CHAR_STEP,
+                minCharCode: minC,
+                maxCharCode: maxC,
                 onProgress: (s) => {
                   el.textContent = s;
                 },
@@ -577,7 +671,10 @@
             setActive(j);
             clearMxmScreeningHeroSlideTimer();
             if (!reduced) {
-              mxmScreeningHeroSlideTimer = window.setInterval(() => setActive(index + 1), 5200);
+              mxmScreeningHeroSlideTimer = window.setInterval(
+                () => setActive(index + 1),
+                SCREENING_SLIDESHOW_INTERVAL_MS,
+              );
             }
           });
           dotsHost.appendChild(b);
@@ -586,7 +683,10 @@
         setActive(0);
 
         if (!reduced) {
-          mxmScreeningHeroSlideTimer = window.setInterval(() => setActive(index + 1), 5200);
+          mxmScreeningHeroSlideTimer = window.setInterval(
+            () => setActive(index + 1),
+            SCREENING_SLIDESHOW_INTERVAL_MS,
+          );
         }
       }
 
@@ -807,6 +907,36 @@
           return "";
         }
 
+        /** 詳細モーダル: 一覧の各日列と同じプログラム枠・会場 */
+        const MV_DIALOG_SLOT_RANGE = "17:00～19:10";
+        const MV_DIALOG_VENUE = "元町映画館";
+        const MV_DIALOG_PIN_SRC = "./images/fa-location-pin.svg";
+
+        /**
+         * @returns {string} HTML（escapeHtml 済みパーツのみ結合）
+         */
+        function movieDialogShowtimeHtml(m) {
+          const pinImg = `<img class="movie-dialog-showtime-pin" src="${escapeHtml(MV_DIALOG_PIN_SRC)}" alt="" width="14" height="14" decoding="async" loading="lazy" />`;
+          let dateLabel = "";
+          if (m.day === "sat") dateLabel = "7/18（土）";
+          else if (m.day === "sun") dateLabel = "7/19（日）";
+          else {
+            const d = String(m.dateLabel || "").trim();
+            if (d) dateLabel = d;
+            else {
+              return `<p class="movie-dialog-showtime-unknown" role="status">上映日が設定されていません。<code class="inline-code">上映日</code>列または ID（scr-1…6）を確認してください。</p>`;
+            }
+          }
+          return `<div class="movie-dialog-showtime-inner">
+      <span class="movie-dialog-showtime-date">${escapeHtml(dateLabel)}</span>
+      <span class="movie-dialog-showtime-slot">${escapeHtml(MV_DIALOG_SLOT_RANGE)}</span>
+      <span class="movie-dialog-showtime-venue-row">
+        <span class="movie-dialog-showtime-pin-wrap" aria-hidden="true">${pinImg}</span>
+        <span class="movie-dialog-showtime-venue">${escapeHtml(MV_DIALOG_VENUE)}</span>
+      </span>
+    </div>`;
+        }
+
         /** 監督・上映時間・卒制メタを「／」区切りの1行にまとめる */
         function mvFloatPanelMetaLineJoined(m) {
           const parts = [];
@@ -937,7 +1067,10 @@
               </div>
               <span class="program-venue">元町映画館</span>
             </header>
-            <h4 class="screening-program-name signage-screening-chrome-program-name">特別上映プログラム「南女シネマ」</h4>
+            <div class="screening-program-lede screening-program-lede--signage">
+              <h4 class="screening-program-name signage-screening-chrome-program-name">特別上映プログラム「南女シネマ」</h4>
+              <p class="screening-program-tagline">映画つくった　宝物みつけた</p>
+            </div>
           </div>`;
         }
 
@@ -972,7 +1105,6 @@
         }
 
         function wireSignagePageHeroSlideshow(host) {
-          const SIGNAGE_SCREENING_HERO_INTERVAL_MS = 15000;
           const root = host.querySelector(".signage-mv-page-slideshow");
           if (!root) return;
           const slides = Array.from(root.querySelectorAll(".signage-mv-page-slide"));
@@ -1005,7 +1137,7 @@
               setActive(j);
               if (timer) window.clearInterval(timer);
               if (!reduced) {
-                timer = window.setInterval(() => setActive(index + 1), SIGNAGE_SCREENING_HERO_INTERVAL_MS);
+                timer = window.setInterval(() => setActive(index + 1), SCREENING_SLIDESHOW_INTERVAL_MS);
               }
             });
             dotsHost.appendChild(b);
@@ -1013,10 +1145,11 @@
 
           setActive(0);
           if (reduced) return;
-          timer = window.setInterval(() => setActive(index + 1), SIGNAGE_SCREENING_HERO_INTERVAL_MS);
+          timer = window.setInterval(() => setActive(index + 1), SCREENING_SLIDESHOW_INTERVAL_MS);
         }
 
         const titleEl = dialog.querySelector("#movie-dialog-title");
+        const showtimeEl = dialog.querySelector("#movie-dialog-showtime");
         const metaEl = dialog.querySelector(".movie-dialog-meta");
         const bodyEl = dialog.querySelector(".movie-dialog-body");
         const mediaWrap = dialog.querySelector(".movie-dialog-media");
@@ -1031,6 +1164,9 @@
           const titleShown = formatDisplayTitle(m.title);
           titleEl.textContent = titleShown;
           metaEl.textContent = metaLine(m, true) || "";
+          if (showtimeEl) {
+            showtimeEl.innerHTML = movieDialogShowtimeHtml(m);
+          }
           const synopsis = String(m.synopsis || "").trim();
           bodyEl.innerHTML = `<p class="movie-dialog-desc">${escapeHtml(synopsis || SYNOPSIS_PLACEHOLDER)}</p>`;
 
