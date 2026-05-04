@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Lighthouse で Performance カテゴリのみ計測（HTML + JSON を .lighthouse/ に出力）
-# 事前に別ターミナルで: cd 2026-04-26 && python3 -m http.server 8080
+# 事前に別ターミナルで: cd リポジトリルート && python3 -m http.server 8080
 #
 # 使い方:
 #   ./scripts/perf-lighthouse.sh
@@ -24,7 +24,7 @@ LH_VER="11.7.1"
 if ! curl -sf -o /dev/null --max-time 3 "$URL"; then
   echo "エラー: ${URL} に接続できません（HTTP が返らないかタイムアウト）。"
   echo "先にローカルサーバーを起動してください。例:"
-  echo "  cd \"${ROOT}/2026-04-26\" && python3 -m http.server 8080"
+  echo "  cd \"${ROOT}\" && python3 -m http.server 8080"
   exit 1
 fi
 

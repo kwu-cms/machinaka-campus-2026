@@ -92,10 +92,11 @@
         <div class="hero-grain" aria-hidden="true"></div>
         <div class="hero-inner">
           <p class="hero-kicker reveal">Machi-naka campus / Kobe motomachi</p>
-          <h1 id="hero-heading" class="hero-title reveal">
+          <h1 id="hero-heading" class="hero-title reveal" aria-describedby="hero-series">
             MEDIA <span class="x">x</span><br />
             MOTOMACHI
           </h1>
+          <p id="hero-series" class="hero-series reveal" lang="ja">まちなかキャンパス 2026</p>
           <p class="hero-sub reveal">問いを、街へひらく。</p>
           <p class="hero-date reveal">2026年7月18日（土）- 19日（日）/ 入場無料</p>
           <p class="hero-lead reveal">
@@ -199,7 +200,7 @@
               </header>
               <div class="program-body">
                 <p class="program-copy">
-                  在学生・卒業生による作品展示を行います。ゲーム、映像、写真集、立体造形、マンガ、インスタレーション - 素材も形も問いも、一人ひとり違います。
+                  在学生・卒業生による作品展示を行います。ゲーム、映像、写真集、造形、グラフィックデザイン、マンガ、インスタレーション - メディアも表現手法も、問いもその答え方も一人ひとり違います。
                   さまざまな表現を体験してください。
                 </p>
                 <h4 class="program-subhd">展示作品</h4>
@@ -481,6 +482,27 @@
         <p class="footer-copy">© 2026 Konan Women's University, Creative Media Studies</p>
       </div>
     </footer>
+    <!-- test-page-notice: 本番では TEST_PAGE_NOTICE.ENABLED を false にするか、この dialog ブロックを削除 -->
+    <dialog
+      id="test-page-notice-dialog"
+      class="test-page-notice-dialog"
+      aria-labelledby="test-page-notice-heading"
+      aria-describedby="test-page-notice-desc"
+    >
+      <div class="test-page-notice-panel">
+        <h2 id="test-page-notice-heading" class="test-page-notice-title">テストページについて</h2>
+        <div id="test-page-notice-desc" class="test-page-notice-body">
+          <p>
+            現在ご覧のページは、本番公開前のテスト用ページです。ご利用の環境や表示内容に不具合がある場合があります。
+          </p>
+          <p>
+            開催に向けた情報は順次反映します。また掲載している画像・テキスト・レイアウトなどの内容は、今後、内容の追加・修正・差し替えが生じることがあります。最新の正式な情報は、改めて公開される本番サイトや関連の案内をご確認ください。
+          </p>
+          <p class="test-page-notice-note">本メッセージは初回アクセス時のみ表示され、ブラウザに保存した設定に基づき再表示されません（別のブラウザ・端末では再度表示されます）。</p>
+        </div>
+        <button type="button" class="btn btn-light test-page-notice-btn" data-test-notice-confirm>内容を確認しました</button>
+      </div>
+    </dialog>
     <!-- 上映作品カード（data/movies.csv）から開く詳細 -->
     <dialog id="movie-detail-dialog" class="movie-dialog" aria-labelledby="movie-dialog-title">
       <div class="movie-dialog-panel">

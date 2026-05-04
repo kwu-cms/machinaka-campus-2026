@@ -99,13 +99,13 @@
         font-size: clamp(0.68rem, 1.5vw, 0.78rem);
         letter-spacing: 0.12em;
         text-transform: uppercase;
-        color: rgba(255, 255, 255, 0.88);
+        color: rgba(255, 255, 255, 0.72);
         line-height: 1.35;
       }
 
       .brand small {
         display: block;
-        color: rgba(255, 255, 255, 0.5);
+        color: rgba(255, 255, 255, 0.92);
         font-weight: 400;
         font-size: clamp(0.62rem, 1.35vw, 0.72rem);
         letter-spacing: 0.1em;
@@ -388,11 +388,21 @@
         font-style: italic;
       }
 
+      .hero-series {
+        font-family: "Shippori Mincho B1", serif;
+        font-size: clamp(1.12rem, 2.6vw, 1.55rem);
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        color: rgba(255, 255, 255, 0.9);
+        margin: 0 0 0.55rem;
+      }
+
       .hero-sub {
         font-family: "Shippori Mincho B1", serif;
-        font-size: clamp(1rem, 2.2vw, 1.4rem);
-        color: rgba(255, 255, 255, 0.72);
-        letter-spacing: 0.1em;
+        font-size: clamp(0.88rem, 1.75vw, 1.08rem);
+        font-weight: 400;
+        color: rgba(255, 255, 255, 0.52);
+        letter-spacing: 0.12em;
         margin: 0 0 0.65rem;
       }
 
@@ -802,19 +812,19 @@
         text-align: left;
       }
 
+      /* サムネあり: .mv-card の background 短縮形（白）を打ち消し、下層に写真 div を置く */
       #screening .mv-schedule-main .mv-card--thumb {
         position: relative;
         overflow: hidden;
         background-color: rgba(248, 246, 242, 0.65);
+        background-image: none;
         min-height: 7.5rem;
       }
 
-      #screening .mv-schedule-main .mv-card--thumb::before {
-        content: "";
+      #screening .mv-schedule-main .mv-card-bg {
         position: absolute;
         inset: 0;
         z-index: 0;
-        background-image: var(--mv-thumb);
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
@@ -824,20 +834,21 @@
         transition:
           transform 0.55s var(--int-ease),
           filter 0.5s var(--int-ease);
+        pointer-events: none;
       }
 
-      #screening .mv-schedule-main .mv-card--thumb:hover::before {
+      #screening .mv-schedule-main .mv-card--thumb:hover .mv-card-bg {
         transform: scale(1.08);
         filter: blur(0);
       }
 
       @media (prefers-reduced-motion: reduce) {
-        #screening .mv-schedule-main .mv-card--thumb::before {
+        #screening .mv-schedule-main .mv-card-bg {
           transition: none;
           filter: blur(0);
         }
 
-        #screening .mv-schedule-main .mv-card--thumb:hover::before {
+        #screening .mv-schedule-main .mv-card--thumb:hover .mv-card-bg {
           transform: scale(1);
         }
       }
@@ -1000,6 +1011,67 @@
         white-space: pre-line;
       }
 
+      /* test-page-notice: 本番では TEST_PAGE_NOTICE.ENABLED を false にするか、このブロックと index の dialog を削除 */
+      .test-page-notice-dialog {
+        padding: 0;
+        border: none;
+        border-radius: 4px;
+        max-width: calc(100vw - 2rem);
+        width: min(32rem, 100%);
+        background: #fff;
+        box-shadow: 0 24px 60px rgba(15, 17, 21, 0.22);
+      }
+
+      .test-page-notice-dialog::backdrop {
+        background: rgba(15, 17, 21, 0.5);
+      }
+
+      .test-page-notice-panel {
+        padding: clamp(1.25rem, 3.2vw, 1.65rem) clamp(1.1rem, 3vw, 1.45rem) clamp(1.2rem, 3vw, 1.5rem);
+      }
+
+      .test-page-notice-title {
+        margin: 0 0 0.85rem;
+        font-family: "Shippori Mincho B1", serif;
+        font-size: clamp(1.05rem, 2.5vw, 1.22rem);
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        line-height: 1.45;
+        color: rgba(17, 17, 17, 0.94);
+      }
+
+      .test-page-notice-body {
+        margin: 0 0 1.15rem;
+        font-size: 0.88rem;
+        line-height: 1.85;
+        color: rgba(17, 17, 17, 0.78);
+      }
+
+      .test-page-notice-body p {
+        margin: 0 0 0.75rem;
+      }
+
+      .test-page-notice-body p:last-child {
+        margin-bottom: 0;
+      }
+
+      .test-page-notice-note {
+        font-size: 0.8rem;
+        line-height: 1.75;
+        color: rgba(17, 17, 17, 0.55);
+      }
+
+      .test-page-notice-btn {
+        width: 100%;
+        justify-content: center;
+        font-family: "Noto Sans JP", sans-serif;
+        font-size: 0.86rem;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: none;
+        padding: 0.75rem 1rem;
+      }
+
       .screening-visual {
         position: static;
         display: flex;
@@ -1094,6 +1166,138 @@
       .screening-dot.is-active {
         background: rgba(17, 17, 17, 0.55);
         border-color: rgba(17, 17, 17, 0.55);
+      }
+
+      .screening-slide-fallback {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          145deg,
+          rgba(106, 90, 168, 0.28) 0%,
+          rgba(45, 42, 52, 0.85) 42%,
+          rgba(15, 17, 21, 1) 100%
+        );
+      }
+
+      .screening-slide:has(.mv-float-panel)::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        pointer-events: none;
+        background: linear-gradient(to top, rgba(15, 17, 21, 0.52) 0%, rgba(15, 17, 21, 0.06) 42%, transparent 68%);
+      }
+
+      .screening-slide.is-active {
+        pointer-events: auto;
+      }
+
+      .screening-slide.is-active img {
+        pointer-events: none;
+      }
+
+      /* CSV 差し替え後の上映ヒーロー：サムネ上フロート（サイネージと同マークアップ） */
+      .screening-slide .mv-float-panel.screening-carousel-float {
+        position: absolute;
+        right: clamp(8px, 1.6vw, 14px);
+        bottom: clamp(8px, 1.6vw, 14px);
+        z-index: 2;
+        /* 従来比 1.2 倍の横幅（折り返し行数を減らして縦に収める） */
+        width: min(91.2%, 22.2rem);
+        max-width: calc(100% - 18px);
+        max-height: min(46%, 16rem);
+        margin: 0;
+        padding: 0.52rem 0.68rem 0.58rem;
+        box-sizing: border-box;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        background: rgba(15, 17, 21, 0.56);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+        overflow-x: hidden;
+        overflow-y: hidden;
+      }
+
+      /* 上映ヒーローでは「あらすじ」ラベルを省き、本文の余白を詰める */
+      .screening-slide .mv-float-panel.screening-carousel-float .mv-float-panel-lead {
+        display: none;
+      }
+
+      .screening-slide .mv-float-panel.screening-carousel-float .mv-float-panel-body {
+        padding-top: 0.3rem;
+      }
+
+      .screening-slide .mv-float-panel.screening-carousel-float .mv-float-panel-synopsis {
+        line-height: 1.44;
+      }
+
+      .mv-float-panel .mv-float-panel-head {
+        margin: 0 0 0.28rem;
+      }
+
+      .mv-float-panel .mv-float-panel-date {
+        margin: 0 0 0.26rem;
+      }
+
+      .mv-float-panel .mv-float-panel-date-badge {
+        display: inline-block;
+        padding: 0.13rem 0.416rem 0.156rem;
+        border-radius: 3px;
+        font-family: "Shippori Mincho B1", serif;
+        font-size: 0.62rem;
+        font-weight: 800;
+        letter-spacing: 0.05em;
+        color: rgba(255, 255, 255, 0.98);
+        background: rgba(106, 90, 168, 0.9);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+      }
+
+      .mv-float-panel .mv-float-panel-title {
+        margin: 0 0 0.28rem;
+        font-family: "Shippori Mincho B1", serif;
+        font-size: clamp(0.78rem, 2vw, 0.92rem);
+        font-weight: 800;
+        line-height: 1.28;
+        letter-spacing: 0.02em;
+        color: rgba(255, 255, 255, 0.98);
+      }
+
+      .mv-float-panel .mv-float-panel-meta-line {
+        margin: 0;
+        font-family: "Noto Sans JP", sans-serif;
+        font-size: clamp(0.62rem, 1.55vw, 0.72rem);
+        font-weight: 600;
+        line-height: 1.35;
+        letter-spacing: 0.02em;
+        color: rgba(255, 255, 255, 0.86);
+      }
+
+      .mv-float-panel .mv-float-panel-body {
+        margin: 0;
+        padding-top: 0.416rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.12);
+      }
+
+      .mv-float-panel .mv-float-panel-lead {
+        margin: 0 0 0.14rem;
+        font-family: "DM Mono", monospace;
+        font-size: 0.52rem;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.42);
+      }
+
+      .mv-float-panel .mv-float-panel-synopsis {
+        margin: 0;
+        font-family: "Noto Sans JP", sans-serif;
+        font-size: clamp(0.62rem, 1.55vw, 0.74rem);
+        font-weight: 500;
+        line-height: 1.48;
+        letter-spacing: 0.02em;
+        color: rgba(255, 255, 255, 0.85);
+        white-space: pre-line;
       }
 
       .program-body .program-copy {
@@ -2464,4 +2668,408 @@
           justify-self: start;
           margin-top: 0.28rem;
         }
+      }
+
+      /* =============================================================================
+         縦型サイネージ（1080×1920 想定）
+         ?signage=screening | ?signage=event または #signage-screening | #signage-event
+         ============================================================================= */
+
+      html.is-signage {
+        overflow-x: hidden;
+      }
+
+      body.is-signage-vertical {
+        overflow-x: hidden;
+      }
+
+      body[data-signage] header.nav,
+      body[data-signage] main > .hero,
+      body[data-signage] main > #news,
+      body[data-signage] main > #about,
+      body[data-signage] main > #access,
+      body[data-signage] > .footer {
+        display: none !important;
+      }
+
+      body[data-signage="screening"] #program .program-item:not(#screening),
+      body[data-signage="event"] #program .program-item:not(#event) {
+        display: none !important;
+      }
+
+      body[data-signage] main {
+        display: block;
+        min-height: 100vh;
+        min-height: 100dvh;
+        padding: 0;
+        margin: 0;
+      }
+
+      body[data-signage] #program {
+        margin: 0;
+        padding: 0;
+      }
+
+      body[data-signage] #program .container {
+        max-width: 1080px;
+        width: 100%;
+        margin: 0 auto;
+        padding: 1.25rem clamp(1rem, 3vw, 1.75rem) 2.5rem;
+        box-sizing: border-box;
+      }
+
+      body[data-signage="screening"] #program .container {
+        padding: 0.65rem 0.85rem 1rem;
+      }
+
+      body[data-signage="screening"] #screening .program-body {
+        padding-top: 0.5rem;
+        padding-bottom: 0.85rem;
+      }
+
+      body[data-signage="screening"] #screening .screening-body {
+        gap: 1rem;
+      }
+
+      body[data-signage] #program .section-label {
+        margin-bottom: 0.2rem;
+      }
+
+      body[data-signage] #program .section-title {
+        margin-bottom: 0.65rem;
+      }
+
+      body[data-signage="screening"] #program > .container > .section-label,
+      body[data-signage="screening"] #program > .container > .section-title {
+        display: none;
+      }
+
+      body[data-signage] #program .program-list {
+        border-top: none;
+      }
+
+      body[data-signage] #program .program-item {
+        border-bottom: none;
+      }
+
+      body[data-signage] .reveal {
+        opacity: 1;
+        transform: none;
+        transition: none;
+      }
+
+      body[data-signage] #program .program-head {
+        min-height: unset;
+        padding-block: 0.35rem 0.5rem;
+      }
+
+      body[data-signage="screening"] #program .program-head {
+        padding-block: 0.35rem 0.55rem;
+      }
+
+      /* 上映サイネージ：スライド・長い導入は非表示。2カラム＝7/18列・7/19列 */
+      body[data-signage="screening"] #screening.program-item {
+        overflow: visible;
+      }
+
+      body[data-signage="screening"] #screening .screening-hero {
+        display: none !important;
+      }
+
+      body[data-signage="screening"] #screening .program-copy.screening-intro {
+        display: none;
+      }
+
+      body[data-signage="screening"] #screening > header.program-head {
+        display: none !important;
+      }
+
+      body[data-signage="screening"] #screening .screening-body > .screening-program-name {
+        display: none !important;
+      }
+
+      body[data-signage="screening"] #screening .signage-screening-chrome {
+        margin: 0 0 1.05rem;
+      }
+
+      body[data-signage="screening"] #screening .signage-screening-chrome .program-head {
+        min-height: unset;
+        padding-block: 0.15rem 0.35rem;
+      }
+
+      body[data-signage="screening"] #screening .signage-screening-chrome .screening-program-name {
+        margin-top: 0.35rem;
+      }
+
+      body[data-signage="screening"] #screening .mv-schedule-main .mv-program-cols {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.85rem 1rem;
+        align-items: start;
+        margin-top: 0.35rem;
+      }
+
+      body[data-signage="screening"] #screening .mv-schedule-main .mv-program-col {
+        gap: 0.8rem;
+      }
+
+      body[data-signage="screening"] #screening .mv-schedule-main .mv-program-col-title {
+        padding-bottom: 0.5rem;
+        gap: 0.45rem 1rem;
+      }
+
+      body[data-signage="screening"] #screening .mv-schedule-main .mv-program-col-date {
+        font-size: clamp(1.28rem, 3.6vw, 1.56rem);
+        font-weight: 800;
+        line-height: 1.25;
+        letter-spacing: 0;
+        color: rgba(17, 17, 17, 0.96);
+      }
+
+      body[data-signage="screening"] #screening .mv-schedule-main .mv-program-col-meta {
+        font-size: clamp(0.94rem, 2.5vw, 1.09rem);
+        font-weight: 600;
+        letter-spacing: 0.035em;
+        color: rgba(17, 17, 17, 0.74);
+        gap: 0.4rem 0.5rem;
+      }
+
+      body[data-signage="screening"] #screening .mv-schedule-main .mv-program-col-time {
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        color: rgba(17, 17, 17, 0.82);
+      }
+
+      body[data-signage="screening"] #screening .mv-schedule-main .mv-program-col-venue {
+        font-size: clamp(0.88rem, 2.35vw, 1.02rem);
+        font-weight: 600;
+        color: rgba(17, 17, 17, 0.72);
+      }
+
+      body[data-signage="screening"] #screening .mv-schedule-main .mv-program-col-pin {
+        width: 1rem;
+        height: 1rem;
+        opacity: 0.72;
+      }
+
+      body[data-signage="screening"] #screening .mv-schedule-main .mv-program-col-list {
+        gap: 0.62rem;
+      }
+
+      /* ページ先頭：全作品ビジュアル — コンテナを突き抜け viewport 全幅 */
+      body[data-signage="screening"] #screening .signage-mv-page-hero {
+        width: 100vw;
+        width: 100dvw;
+        max-width: none;
+        margin-left: calc(50% - 50vw);
+        margin-right: calc(50% - 50vw);
+        margin-top: 0;
+        margin-bottom: 0.85rem;
+        position: relative;
+        box-sizing: border-box;
+      }
+
+      @supports (width: 100dvw) {
+        body[data-signage="screening"] #screening .signage-mv-page-hero {
+          margin-left: calc(50% - 50dvw);
+          margin-right: calc(50% - 50dvw);
+        }
+      }
+
+      body[data-signage="screening"] #screening .signage-mv-page-slideshow {
+        border-radius: 0;
+        overflow: hidden;
+        border: none;
+        box-shadow: 0 12px 40px rgba(15, 17, 21, 0.18);
+        background: #0f1115;
+      }
+
+      body[data-signage="screening"] #screening .signage-mv-page-slides-inner {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        background: rgba(15, 17, 21, 0.92);
+      }
+
+      body[data-signage="screening"] #screening .signage-mv-page-slide {
+        position: absolute;
+        inset: 0;
+        margin: 0;
+        opacity: 0;
+        transition: opacity 1s ease-in-out;
+        pointer-events: none;
+      }
+
+      body[data-signage="screening"] #screening .signage-mv-page-slide.is-active {
+        opacity: 1;
+        z-index: 1;
+        pointer-events: auto;
+      }
+
+      body[data-signage="screening"] #screening .signage-mv-page-slide img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+        display: block;
+        position: relative;
+        z-index: 0;
+        pointer-events: none;
+      }
+
+      body[data-signage="screening"] #screening .signage-mv-page-slide-placeholder {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        z-index: 0;
+        background: linear-gradient(
+          145deg,
+          rgba(106, 90, 168, 0.38) 0%,
+          rgba(45, 42, 52, 0.96) 42%,
+          rgba(15, 17, 21, 1) 100%
+        );
+      }
+
+      body[data-signage="screening"] #screening .signage-mv-page-slide::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        pointer-events: none;
+        background: linear-gradient(to top, rgba(15, 17, 21, 0.55) 0%, rgba(15, 17, 21, 0.12) 38%, transparent 62%);
+      }
+
+      body[data-signage="screening"] #screening .signage-mv-page-synopsis-float {
+        position: absolute;
+        right: 18px;
+        bottom: 18px;
+        z-index: 2;
+        width: min(46%, 26rem);
+        max-width: calc(100% - 36px);
+        max-height: min(46%, 18rem);
+        margin: 0;
+        padding: 0.624rem 0.806rem 0.715rem;
+        box-sizing: border-box;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        background: rgba(15, 17, 21, 0.58);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        box-shadow: 0 12px 44px rgba(0, 0, 0, 0.38);
+        overflow-x: hidden;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      body[data-signage="screening"] #screening .signage-mv-page-synopsis-float .mv-float-panel-title {
+        font-size: clamp(0.88rem, 2.35vw, 1.05rem);
+        margin-bottom: 0.32rem;
+      }
+
+      body[data-signage="screening"] #screening .signage-mv-page-synopsis-float .mv-float-panel-date-badge {
+        font-size: clamp(0.66rem, 1.75vw, 0.78rem);
+        padding: 0.156rem 0.494rem 0.182rem;
+      }
+
+      body[data-signage="screening"] #screening .signage-mv-page-synopsis-float .mv-float-panel-meta-line {
+        font-size: clamp(0.66rem, 1.75vw, 0.78rem);
+        line-height: 1.38;
+      }
+
+      body[data-signage="screening"] #screening .signage-mv-page-synopsis-float .mv-float-panel-synopsis {
+        font-size: clamp(0.66rem, 1.75vw, 0.8rem);
+        line-height: 1.52;
+      }
+
+      body[data-signage="screening"] #screening .signage-mv-page-dots {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+        justify-content: center;
+        padding: 0.55rem clamp(0.85rem, 3.5vw, 1.25rem) 0.85rem;
+        background: var(--bg-light);
+      }
+
+      body[data-signage="screening"] #screening .signage-mv-page-dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 999px;
+        border: 1px solid rgba(17, 17, 17, 0.24);
+        background: rgba(17, 17, 17, 0.08);
+        padding: 0;
+        cursor: pointer;
+      }
+
+      body[data-signage="screening"] #screening .signage-mv-page-dot.is-active {
+        background: rgba(106, 90, 168, 0.88);
+        border-color: rgba(106, 90, 168, 0.92);
+      }
+
+      body[data-signage="screening"] #screening .mv-signage-col-empty {
+        margin: 0.35rem 0 0;
+        padding: 0.65rem 0.75rem;
+        font-size: 0.8rem;
+        line-height: 1.55;
+        color: rgba(17, 17, 17, 0.55);
+        background: rgba(17, 17, 17, 0.04);
+        border-radius: 2px;
+      }
+
+      body[data-signage="screening"] #screening .mv-schedule-main .mv-card--signage-hero {
+        cursor: default;
+        text-align: left;
+        padding: 0.72rem 0.78rem 0.78rem;
+        min-height: unset;
+        border-left-width: 5px;
+        box-shadow: 0 8px 26px rgba(15, 17, 21, 0.08);
+      }
+
+      body[data-signage="screening"] #screening .mv-schedule-main .mv-card--signage-hero:hover {
+        box-shadow: 0 10px 30px rgba(15, 17, 21, 0.1);
+      }
+
+      body[data-signage="screening"] #screening .mv-signage-hero-body {
+        min-width: 0;
+      }
+
+      body[data-signage="screening"] #screening .mv-signage-hero-title {
+        margin: 0 0 0.45rem;
+        font-family: "Shippori Mincho B1", serif;
+        font-size: clamp(1.02rem, 2.6vw, 1.22rem);
+        font-weight: 800;
+        line-height: 1.38;
+        letter-spacing: 0.02em;
+        color: rgba(17, 17, 17, 0.95);
+      }
+
+      body[data-signage="screening"] #screening .mv-signage-hero-meta {
+        margin: 0 0 0.55rem;
+        font-family: "DM Mono", monospace;
+        font-size: clamp(0.78rem, 2vw, 0.88rem);
+        font-weight: 600;
+        letter-spacing: 0.045em;
+        line-height: 1.55;
+        color: rgba(17, 17, 17, 0.66);
+      }
+
+      body[data-signage="screening"] #screening .mv-signage-hero-desc {
+        margin: 0;
+        max-height: min(11rem, 28vh);
+        overflow-y: auto;
+        padding-top: 0.55rem;
+        border-top: 1px solid var(--rule);
+        -webkit-overflow-scrolling: touch;
+      }
+
+      body[data-signage="screening"] #screening .mv-signage-hero-desc p {
+        margin: 0;
+        font-size: 0.82rem;
+        font-weight: 500;
+        line-height: 1.72;
+        color: rgba(17, 17, 17, 0.78);
+        white-space: pre-line;
+      }
+
+      body[data-signage="event"] #event .program-copy {
+        font-size: 0.92rem;
+        line-height: 1.72;
       }

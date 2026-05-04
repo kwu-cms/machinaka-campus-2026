@@ -7,6 +7,83 @@
         googleMapsApiKey: "AIzaSyDSfeNa_ftv6Orh--hQQOvZOVyRCuUvBqg",
       });
 
+      /** 縦型サイネージ（1080×1920 想定）。`?signage=screening|event` または `#signage-screening` / `#signage-event` */
+      (function initSignageMode() {
+        function getSignageMode() {
+          let q = "";
+          try {
+            q = new URLSearchParams(window.location.search).get("signage") || "";
+          } catch {
+            q = "";
+          }
+          q = String(q).toLowerCase();
+          if (q === "event" || q === "screening") return q;
+          const h = String(window.location.hash || "")
+            .replace(/^#/, "")
+            .toLowerCase();
+          if (h === "signage-event") return "event";
+          if (h === "signage-screening") return "screening";
+          return null;
+        }
+        const mode = getSignageMode();
+        if (!mode) return;
+        document.documentElement.classList.add("is-signage");
+        document.body.classList.add("is-signage-vertical");
+        document.body.dataset.signage = mode;
+        const suffix = mode === "event" ? "イベント（サイネージ）" : "上映プログラム（サイネージ）";
+        document.title = `${document.title} — ${suffix}`;
+      })();
+
+      /**
+       * テストページの初回アクセス告知（ローカル日付が VALID_UNTIL 以前のときのみ）。
+       * 本番: `ENABLED` を false にするだけで無効化できます。
+       * 完全削除: この定数と直後の IIFE、`index.html` の test-page-notice-dialog、`styles.css` の「test-page-notice」を検索して削除。
+       */
+      const TEST_PAGE_NOTICE = Object.freeze({
+        ENABLED: true,
+        VALID_UNTIL: "2026-05-31",
+        STORAGE_KEY: "mxm2026_testPageNoticeDismissed_v1",
+      });
+
+      (function initTestPageNotice() {
+        if (!TEST_PAGE_NOTICE.ENABLED) return;
+        if (document.body.dataset.signage) return;
+        const dialog = document.getElementById("test-page-notice-dialog");
+        if (!dialog || typeof dialog.showModal !== "function") return;
+
+        const todayYmd = (() => {
+          const n = new Date();
+          const y = n.getFullYear();
+          const m = String(n.getMonth() + 1).padStart(2, "0");
+          const d = String(n.getDate()).padStart(2, "0");
+          return `${y}-${m}-${d}`;
+        })();
+        if (todayYmd > TEST_PAGE_NOTICE.VALID_UNTIL) return;
+
+        try {
+          if (localStorage.getItem(TEST_PAGE_NOTICE.STORAGE_KEY) === "1") return;
+        } catch {
+          return;
+        }
+
+        dialog.addEventListener("close", () => {
+          try {
+            localStorage.setItem(TEST_PAGE_NOTICE.STORAGE_KEY, "1");
+          } catch (_) {}
+        });
+
+        dialog.querySelector("[data-test-notice-confirm]")?.addEventListener("click", () => dialog.close());
+        dialog.addEventListener("click", (e) => {
+          if (e.target === dialog) dialog.close();
+        });
+
+        requestAnimationFrame(() => {
+          try {
+            dialog.showModal();
+          } catch (_) {}
+        });
+      })();
+
       (function () {
         const io = new IntersectionObserver(
           (entries) => {
@@ -17,7 +94,11 @@
           { threshold: 0.12, rootMargin: "0px 0px -8% 0px" }
         );
 
-        document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
+        const signage = Boolean(document.body.dataset.signage);
+        document.querySelectorAll(".reveal").forEach((el) => {
+          if (signage) el.classList.add("show");
+          else io.observe(el);
+        });
 
         function newsDateLabel(item) {
           if (item.dateDisplay) return item.dateDisplay;
@@ -42,6 +123,7 @@
         }
 
         (async function loadNewsJson() {
+          if (document.body.dataset.signage) return;
           const track = document.querySelector(".hero-news-track");
           const list = document.querySelector(".news-list");
           if (!track || !list) return;
@@ -81,6 +163,7 @@
       (function () {
         const root = document.getElementById("hero-field-words");
         if (!root) return;
+        if (document.body.dataset.signage) return;
 
         const TERMS = [
           "Design",
@@ -98,16 +181,28 @@
           "Design Thinking",
         ];
 
-        /** デザイン思考プロセス（英語）— 語順は各サイクルでシャッフル */
+        /** デザイン思考プロセス・リサーチ用語（英語）— 語順は各サイクルでシャッフル */
         const DESIGN_PROCESS_TERMS = [
           "Empathize",
           "Define",
           "Ideate",
+          "Sketch",
           "Prototyping",
           "Test",
           "Research",
           "Synthesis",
           "Iteration",
+          "Persona",
+          "Desk Research",
+          "Depth Interview",
+          "User Journey",
+          "Journey Map",
+          "Affinity Mapping",
+          "How Might We",
+          "Problem Statement",
+          "Contextual Inquiry",
+          "Field Study",
+          "Insight",
         ];
 
         const CMS_ONLY_LABEL = "Creative Media Studies";
@@ -279,6 +374,7 @@
       })();
 
       (function () {
+        if (document.body.dataset.signage) return;
         const track = document.getElementById("exhTrack");
         const prev = document.querySelector(".exh-prev");
         const next = document.querySelector(".exh-next");
@@ -392,6 +488,7 @@
       (function () {
         const heroBg = document.querySelector(".hero-bg");
         if (!heroBg) return;
+        if (document.body.dataset.signage) return;
 
         const images = Array.from({ length: 72 }, (_, i) => `images/image_${i + 1}.jpeg`);
         if (images.length === 0) return;
@@ -431,48 +528,70 @@
         }, 7000);
       })();
 
-      (function () {
-        const root = document.getElementById("screeningSlideshow");
+      /** #screeningSlideshow（静的HTMLまたは CSV 差し替え後）のドット・自動送り */
+      let mxmScreeningHeroSlideTimer = null;
+      function clearMxmScreeningHeroSlideTimer() {
+        if (mxmScreeningHeroSlideTimer != null) {
+          window.clearInterval(mxmScreeningHeroSlideTimer);
+          mxmScreeningHeroSlideTimer = null;
+        }
+      }
+
+      function initScreeningHeroSlideshow(root) {
+        clearMxmScreeningHeroSlideTimer();
         if (!root) return;
+        if (document.body.dataset.signage) return;
 
         const slides = Array.from(root.querySelectorAll(".screening-slide"));
         const dotsHost = root.querySelector(".screening-slideshow-dots");
         if (!slides.length || !dotsHost) return;
 
+        dotsHost.textContent = "";
+
         const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
         let index = 0;
-        let timer = null;
 
         const setActive = (nextIndex) => {
           const i = (nextIndex + slides.length) % slides.length;
           index = i;
           slides.forEach((s, j) => s.classList.toggle("is-active", j === i));
-          const dots = dotsHost.querySelectorAll("button");
-          dots.forEach((d, j) => d.classList.toggle("is-active", j === i));
+          dotsHost.querySelectorAll("button").forEach((d, j) => {
+            d.classList.toggle("is-active", j === i);
+          });
         };
 
         slides.forEach((slideEl, j) => {
           const b = document.createElement("button");
           b.type = "button";
           b.className = "screening-dot";
+          const panel = slideEl.querySelector(".mv-float-panel");
           const cap = slideEl.querySelector("figcaption");
+          const labelSrc = panel || cap;
           b.setAttribute(
             "aria-label",
-            cap && cap.textContent.trim() ? cap.textContent.trim() : `スライド ${j + 1}`,
+            labelSrc && labelSrc.textContent.trim() ? labelSrc.textContent.trim() : `スライド ${j + 1}`,
           );
           b.addEventListener("click", () => {
             setActive(j);
-            if (timer) window.clearInterval(timer);
-            if (!reduced) timer = window.setInterval(() => setActive(index + 1), 5200);
+            clearMxmScreeningHeroSlideTimer();
+            if (!reduced) {
+              mxmScreeningHeroSlideTimer = window.setInterval(() => setActive(index + 1), 5200);
+            }
           });
           dotsHost.appendChild(b);
         });
 
         setActive(0);
 
-        if (reduced) return;
+        if (!reduced) {
+          mxmScreeningHeroSlideTimer = window.setInterval(() => setActive(index + 1), 5200);
+        }
+      }
 
-        timer = window.setInterval(() => setActive(index + 1), 5200);
+      (function () {
+        const root = document.getElementById("screeningSlideshow");
+        if (!root || document.body.dataset.signage) return;
+        initScreeningHeroSlideshow(root);
       })();
 
       (function () {
@@ -480,6 +599,10 @@
         const sectionRoot = document.querySelector("#screening .mv-section");
         const dialog = document.getElementById("movie-detail-dialog");
         if (!listHost || !dialog) return;
+        if (document.body.dataset.signage === "event") {
+          if (sectionRoot) sectionRoot.setAttribute("aria-busy", "false");
+          return;
+        }
 
         const MOVIES_CSV_URL = SITE_CONFIG.moviesCsvUrl;
         const SYNOPSIS_PLACEHOLDER =
@@ -580,19 +703,103 @@
         function metaLine(m, forDetail) {
           const parts = [];
           if (m.director) parts.push(`${m.director} 監督`);
-          const mins = m.durationMin != null && m.durationMin !== "" ? `${m.durationMin}分` : "";
+          const mins =
+            m.durationMin != null && m.durationMin !== "" ? `上映時間${m.durationMin}分` : "";
           if (mins) parts.push(mins);
           const meta = metaExtraForDisplay(m.metaExtra, !!forDetail);
           if (meta) parts.push(meta);
           return parts.join("・");
         }
 
-        /** サムネイル URL を CSS 変数に渡し、::before で描画（ホバー拡大用） */
-        function mvCardBackgroundAttr(thumbUrl) {
-          const u = String(thumbUrl || "").trim();
-          if (!u) return "";
-          const safe = u.replace(/\\/g, "/").replace(/'/g, "%27");
-          return ` style="--mv-thumb:url('${safe}')"`;
+        function movieHeroDateLine(m) {
+          const d = String(m.dateLabel || "").trim();
+          if (d) return d;
+          if (m.day === "sat") return "7/18（土）";
+          if (m.day === "sun") return "7/19（日）";
+          return "";
+        }
+
+        /** 監督・上映時間・卒制メタを「／」区切りの1行にまとめる */
+        function mvFloatPanelMetaLineJoined(m) {
+          const parts = [];
+          if (m.director) parts.push(`監督：${m.director}`);
+          if (m.durationMin != null && String(m.durationMin).trim() !== "") {
+            parts.push(`上映時間：${String(m.durationMin).trim()}分`);
+          }
+          const metaFull = metaExtraForDisplay(m.metaExtra, true);
+          if (metaFull) parts.push(metaFull);
+          return parts.join("／");
+        }
+
+        /**
+         * 上映ヒーロー共通：日付・タイトル・メタ1行・あらすじ
+         * @param {object} m movies.csv 行オブジェクト
+         * @param {string} [synopsisFallback]
+         */
+        function mvFloatPanelInnerHTML(m, synopsisFallback, uniqueKey) {
+          const fb = synopsisFallback ?? SYNOPSIS_PLACEHOLDER;
+          const dateLine = movieHeroDateLine(m);
+          const titleShown = formatDisplayTitle(m.title);
+          const synopsis = String(m.synopsis || "").trim() || fb;
+          const titleId =
+            uniqueKey != null && String(uniqueKey).trim() !== ""
+              ? `mv-float-title-${escapeHtml(m.id)}-${escapeHtml(uniqueKey)}`
+              : `mv-float-title-${escapeHtml(m.id)}`;
+
+          const metaJoined = mvFloatPanelMetaLineJoined(m);
+          const metaHtml = metaJoined
+            ? `<p class="mv-float-panel-meta-line">${escapeHtml(metaJoined)}</p>`
+            : "";
+
+          return `<div class="mv-float-panel-head">
+      ${dateLine ? `<p class="mv-float-panel-date"><span class="mv-float-panel-date-badge">${escapeHtml(dateLine)}</span></p>` : ""}
+      <h3 class="mv-float-panel-title" id="${titleId}">${escapeHtml(titleShown)}</h3>
+      ${metaHtml}
+    </div>
+    <div class="mv-float-panel-body">
+      <p class="mv-float-panel-lead">あらすじ</p>
+      <p class="mv-float-panel-synopsis">${escapeHtml(synopsis)}</p>
+    </div>`;
+        }
+
+        function mvFloatPanelAsideHTML(m, asideClass, synopsisFallback, uniqueKey) {
+          const titleShown = formatDisplayTitle(m.title);
+          const inner = mvFloatPanelInnerHTML(m, synopsisFallback, uniqueKey);
+          const tid =
+            uniqueKey != null && String(uniqueKey).trim() !== ""
+              ? `mv-float-title-${escapeHtml(m.id)}-${escapeHtml(uniqueKey)}`
+              : `mv-float-title-${escapeHtml(m.id)}`;
+          return `<aside class="${asideClass}" aria-labelledby="${tid}" aria-label="${escapeHtml(titleShown)}の詳細">${inner}</aside>`;
+        }
+
+        function screeningCarouselSlidesInnerHTML(orderedMovies) {
+          return orderedMovies
+            .map((m, j) => {
+              const thumb = thumbSrc(m.thumbPath);
+              const active = j === 0 ? " is-active" : "";
+              const loading = j === 0 ? "eager" : "lazy";
+              const fp = j === 0 ? ' fetchpriority="high"' : "";
+              const media = thumb
+                ? `<img src="${escapeHtml(thumb)}" alt="" width="960" height="540" decoding="async" loading="${loading}"${fp} />`
+                : `<div class="screening-slide-fallback" aria-hidden="true"></div>`;
+              const panel = mvFloatPanelAsideHTML(
+                m,
+                "mv-float-panel screening-carousel-float",
+                undefined,
+                `sc-${j}`,
+              );
+              return `<figure class="screening-slide${active}">${media}${panel}</figure>`;
+            })
+            .join("");
+        }
+
+        /** style 用に URL をエスケープ（div の background-image に直書きし、::before + var() より確実に描画） */
+        function cssUrlForAttr(u) {
+          return String(u || "")
+            .trim()
+            .replace(/\\/g, "/")
+            .replace(/'/g, "%27")
+            .replace(/</g, "%3C");
         }
 
         function movieCardHTML(m) {
@@ -606,9 +813,119 @@
           const bodyInner = thumb
             ? `<div class="mv-item-overlay">${titleEl}${metaEl}</div>`
             : `${titleEl}${metaEl}`;
-          return `<article class="${cardClass}" tabindex="0" role="button" data-movie-id="${escapeHtml(m.id)}" aria-label="${escapeHtml(aria)}の詳細を開く"${mvCardBackgroundAttr(thumb)}>
-            ${bodyInner}
+          const bgDiv = thumb
+            ? `<div class="mv-card-bg" style="background-image:url('${cssUrlForAttr(thumb)}')" aria-hidden="true"></div>`
+            : "";
+          return `<article class="${cardClass}" tabindex="0" role="button" data-movie-id="${escapeHtml(m.id)}" aria-label="${escapeHtml(aria)}の詳細を開く">
+            ${bgDiv}${bodyInner}
           </article>`;
+        }
+
+        /** 縦型サイネージ（上映）：カードはテキストのみ（画像はページ上部スライド） */
+        function movieCardSignageHeroHTML(m) {
+          const titleShown = formatDisplayTitle(m.title);
+          const meta = metaLine(m, true);
+          const synopsis = String(m.synopsis || "").trim();
+          const bodyText = synopsis || SYNOPSIS_PLACEHOLDER;
+          const metaBlock = meta
+            ? `<p class="mv-signage-hero-meta">${escapeHtml(meta)}</p>`
+            : "";
+          return `<article class="mv-card mv-card--signage-hero" data-movie-id="${escapeHtml(m.id)}">
+            <div class="mv-signage-hero-body">
+              <p class="mv-signage-hero-title">${escapeHtml(titleShown)}</p>
+              ${metaBlock}
+              <div class="mv-signage-hero-desc"><p>${escapeHtml(bodyText)}</p></div>
+            </div>
+          </article>`;
+        }
+
+        /** 上映サイネージ：ヒーロー直下に表示する見出し（index の program-head / プログラム名と同等） */
+        function signageScreeningChromeHTML() {
+          return `<div class="signage-screening-chrome">
+            <header class="program-head signage-screening-chrome-head">
+              <div class="program-head-main">
+                <p class="program-kicker">- P01 - Screening</p>
+                <h3 class="program-title">上映</h3>
+              </div>
+              <span class="program-venue">元町映画館</span>
+            </header>
+            <h4 class="screening-program-name signage-screening-chrome-program-name">特別上映プログラム「南女シネマ」</h4>
+          </div>`;
+        }
+
+        /** ページ先頭ヒーロー：7/18列→7/19列の順で全作品ビジュアルをスライド表示 */
+        function signagePageHeroHTML(orderedMovies) {
+          if (!orderedMovies.length) return "";
+          const slidesHtml = orderedMovies
+            .map((m, j) => {
+              const titleShown = formatDisplayTitle(m.title);
+              const thumb = thumbSrc(m.thumbPath);
+              const active = j === 0 ? " is-active" : "";
+              const loading = j === 0 ? "eager" : "lazy";
+              const fp = j === 0 ? ' fetchpriority="high"' : "";
+              const media = thumb
+                ? `<img src="${escapeHtml(thumb)}" alt="${escapeHtml(titleShown)}のキービジュアル" width="1080" height="608" decoding="async" loading="${loading}"${fp} />`
+                : `<div class="signage-mv-page-slide-placeholder" aria-hidden="true"></div>`;
+              const infoFloat = mvFloatPanelAsideHTML(
+                m,
+                "signage-mv-page-synopsis-float mv-float-panel",
+                undefined,
+                `sg-${j}`,
+              );
+              return `<figure class="signage-mv-page-slide${active}">${media}${infoFloat}</figure>`;
+            })
+            .join("");
+          return `<div class="signage-mv-page-hero">
+            <div class="signage-mv-page-slideshow" role="region" aria-roledescription="カルーセル" aria-label="上映作品ビジュアル">
+              <div class="signage-mv-page-slides-inner">${slidesHtml}</div>
+              <div class="signage-mv-page-dots" aria-hidden="false"></div>
+            </div>
+          </div>`;
+        }
+
+        function wireSignagePageHeroSlideshow(host) {
+          const SIGNAGE_SCREENING_HERO_INTERVAL_MS = 15000;
+          const root = host.querySelector(".signage-mv-page-slideshow");
+          if (!root) return;
+          const slides = Array.from(root.querySelectorAll(".signage-mv-page-slide"));
+          const dotsHost = root.querySelector(".signage-mv-page-dots");
+          if (!slides.length || !dotsHost) return;
+
+          const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+          let index = 0;
+          let timer = null;
+
+          const setActive = (nextIndex) => {
+            const i = (nextIndex + slides.length) % slides.length;
+            index = i;
+            slides.forEach((s, j) => s.classList.toggle("is-active", j === i));
+            dotsHost.querySelectorAll("button").forEach((d, j) => {
+              d.classList.toggle("is-active", j === i);
+            });
+          };
+
+          slides.forEach((slideEl, j) => {
+            const b = document.createElement("button");
+            b.type = "button";
+            b.className = "signage-mv-page-dot";
+            const panel = slideEl.querySelector(".mv-float-panel");
+            b.setAttribute(
+              "aria-label",
+              panel && panel.textContent.trim() ? panel.textContent.trim() : `スライド ${j + 1}`,
+            );
+            b.addEventListener("click", () => {
+              setActive(j);
+              if (timer) window.clearInterval(timer);
+              if (!reduced) {
+                timer = window.setInterval(() => setActive(index + 1), SIGNAGE_SCREENING_HERO_INTERVAL_MS);
+              }
+            });
+            dotsHost.appendChild(b);
+          });
+
+          setActive(0);
+          if (reduced) return;
+          timer = window.setInterval(() => setActive(index + 1), SIGNAGE_SCREENING_HERO_INTERVAL_MS);
         }
 
         const titleEl = dialog.querySelector("#movie-dialog-title");
@@ -666,6 +983,7 @@
         });
 
         async function load() {
+          const signageScreening = document.body.dataset.signage === "screening";
           try {
             const res = await fetch(MOVIES_CSV_URL, { cache: "no-store" });
             if (!res.ok) throw new Error(String(res.status));
@@ -713,25 +1031,55 @@
                 .sort((a, b) => a.sort - b.sort || a.title.localeCompare(b.title, "ja"));
             }
 
+            const cardRenderer = signageScreening ? movieCardSignageHeroHTML : movieCardHTML;
+
+            const signageHeroMovies =
+              signageScreening && movies.length
+                ? [...moviesForDay("sat"), ...moviesForDay("sun")]
+                : [];
+            const signagePageHero =
+              signageScreening && signageHeroMovies.length
+                ? signagePageHeroHTML(signageHeroMovies)
+                : "";
+
             let html = "";
             if (movies.length) {
               const cols = dayDefs
-                .map(
-                  ({ key, label, headingId }) => `<div class="mv-program-col">
+                .map(({ key, label, headingId }) => {
+                  const dayMovies = moviesForDay(key);
+                  const listInner = dayMovies.length
+                    ? dayMovies.map(cardRenderer).join("")
+                    : `<p class="mv-signage-col-empty" role="status">この日の上映に紐づく作品がありません。<code class="inline-code">上映日</code>列を確認してください。</p>`;
+                  return `<div class="mv-program-col">
               ${mvProgramColTitleHtml(label, headingId)}
-              <div class="mv-program-col-list" aria-labelledby="${escapeHtml(headingId)}">${moviesForDay(key).map(movieCardHTML).join("")}</div>
-            </div>`,
-                )
+              <div class="mv-program-col-list" aria-labelledby="${escapeHtml(headingId)}">${listInner}</div>
+            </div>`;
+                })
                 .join("");
               html = `<div class="mv-program-cols" role="region" aria-label="南女シネマ 日別上映">${cols}</div>`;
             }
 
-            listHost.innerHTML =
+            const bodyHtml =
               html ||
               '<p class="mv-load-error" role="alert">上映作品データがありません。<code class="inline-code">data/movies.csv</code> を確認してください。</p>';
-            bindCards();
+            const signageChrome = signageScreening ? signageScreeningChromeHTML() : "";
+            listHost.innerHTML = (signagePageHero || "") + signageChrome + bodyHtml;
+            if (signageScreening) wireSignagePageHeroSlideshow(listHost);
+            if (!signageScreening) {
+              const heroCarouselMovies = [...moviesForDay("sat"), ...moviesForDay("sun")];
+              const slideshowRoot = document.getElementById("screeningSlideshow");
+              const innerEl = slideshowRoot?.querySelector(".screening-slideshow-inner");
+              if (slideshowRoot && innerEl && heroCarouselMovies.length) {
+                innerEl.innerHTML = screeningCarouselSlidesInnerHTML(heroCarouselMovies);
+                initScreeningHeroSlideshow(slideshowRoot);
+              }
+              bindCards();
+            }
           } catch {
+            const signageChrome =
+              document.body.dataset.signage === "screening" ? signageScreeningChromeHTML() : "";
             listHost.innerHTML =
+              signageChrome +
               '<p class="mv-load-error" role="alert">上映作品一覧を読み込めませんでした。<code class="inline-code">data/movies.csv</code> を配置するか、しばらくしてから再度お試しください。</p>';
           }
           if (sectionRoot) sectionRoot.setAttribute("aria-busy", "false");
@@ -745,6 +1093,10 @@
         const listHost = document.getElementById("ev-list");
         const sectionRoot = document.querySelector("#event .ev-section");
         if (!permanentHost || !listHost) return;
+        if (document.body.dataset.signage === "screening") {
+          if (sectionRoot) sectionRoot.setAttribute("aria-busy", "false");
+          return;
+        }
 
         const CSV_URL = SITE_CONFIG.eventsCsvUrl;
         const DETAIL_PLACEHOLDER =
@@ -899,7 +1251,7 @@
         function timeColumnHtml(ev) {
           const { start, end } = splitTimeDisplay(ev);
           if (ev.cat === "permanent" || start === "常設") {
-            return `<div class="ev-time-inner ev-time-inner--single"><span class="ev-time-part">${escapeHtml(start)}</span></div>`;
+            return `<div class="ev-time-inner ev-time-inner--empty" aria-hidden="true"></div>`;
           }
           const hasDistinctRange = Boolean(end && end !== start);
           if (hasDistinctRange) {
@@ -1064,6 +1416,7 @@
       })();
 
       (function () {
+        if (document.body.dataset.signage) return;
         const MAP_KEY = SITE_CONFIG.googleMapsApiKey;
         const VENUES = [
           {

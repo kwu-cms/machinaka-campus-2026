@@ -5,6 +5,9 @@ Thumbs.db
 # Lighthouse レポート（scripts/perf-lighthouse.sh）
 .lighthouse/
 
+# GitHub Actions が Pages 用に組み立てるローカル検証用（任意）
+_site/
+
 # Editor / local
 .cursor/
 *.swp
