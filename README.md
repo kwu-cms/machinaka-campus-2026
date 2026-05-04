@@ -13,10 +13,11 @@
 
 ## 運用・公開（担当者向け）
 
-GitHub で本リポジトリを公開する場合の例です。
+GitHub で本リポジトリを公開する場合の例です。**必ず次の順で**行ってください。
 
-1. リポジトリの **Settings → Pages** で、ソースを **GitHub Actions** に設定する  
-2. `main` ブランチへ反映すると、[`.github/workflows/pages.yml`](.github/workflows/pages.yml) によりサイトがデプロイされます（公開されるのはサイト用ファイルのみです）
+1. **先に**リポジトリの **Settings → Pages** を開き、**Build and deployment** の **Source** を **GitHub Actions** に変更して保存する（「Deploy from a branch」のままだと、デプロイ用ワークフローが失敗します）。  
+2. **Actions** タブで **Deploy GitHub Pages** を選び、失敗している場合は **Re-run all jobs**（または右上の **Run workflow** で手動実行）します。  
+3. 以降は `main` へサイト用ファイル（`index.html` や `css/` など）を push すると、[`.github/workflows/pages.yml`](.github/workflows/pages.yml) が走り、公開用ファイルだけがデプロイされます。
 
 ## ローカルでの表示確認
 
