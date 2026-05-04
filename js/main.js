@@ -1,7 +1,9 @@
       /** fetch 先・外部 API。公開リポジトリでは Maps キーのリファラー制限を別途確認してください。 */
       const SITE_CONFIG = Object.freeze({
         newsJsonUrl: "./data/news.json",
-        moviesCsvUrl: "./data/movies.csv",
+        /** Google スプレッドシート「上映」シート（CSV エクスポート）。共有設定で「リンクを知っている全員が閲覧可」にしてください。 */
+        moviesCsvUrl:
+          "https://docs.google.com/spreadsheets/d/1hXldiXUl2klbJe6v7BraKEFCXL8cxd5WAjc0RRNzlPo/export?format=csv&gid=1499163471",
         eventsCsvUrl:
           "https://docs.google.com/spreadsheets/d/1hXldiXUl2klbJe6v7BraKEFCXL8cxd5WAjc0RRNzlPo/export?format=csv&gid=651546877",
         googleMapsApiKey: "AIzaSyDSfeNa_ftv6Orh--hQQOvZOVyRCuUvBqg",
@@ -670,6 +672,92 @@
           return null;
         }
 
+        /** 「上映」シートの「24分」形式と従来の数値のみの両方 */
+        function parseMovieDurationInput(raw) {
+          const s = String(raw || "").trim();
+          const m = s.match(/(\d+)\s*分/);
+          if (m) return m[1];
+          if (/^\d+$/.test(s)) return s;
+          const digits = s.replace(/[^\d]/g, "");
+          return digits || "";
+        }
+
+        /** シートの「画像」列（例: screening_1.png）→ サイト内パス */
+        function resolveMovieThumbPath(raw) {
+          const p = String(raw || "").trim();
+          if (!p) return "";
+          if (/^https?:\/\//i.test(p)) return p;
+          if (p.startsWith("./") || p.startsWith("../") || p.startsWith("images/")) return p;
+          return `images/screening-slides/${p.replace(/^\.?\//, "")}`;
+        }
+
+        /** 「上映日」列が空のとき、ID（scr-1…3→土、scr-4…6→日、m01…と同様）で土日を推定 */
+        function inferMovieDayFromId(id) {
+          const s = String(id || "").trim();
+          let m = /^scr-(\d+)$/i.exec(s);
+          if (m) {
+            const n = parseInt(m[1], 10);
+            if (n >= 1 && n <= 3) return "sat";
+            if (n >= 4 && n <= 6) return "sun";
+            return null;
+          }
+          m = /^m(\d+)$/i.exec(s);
+          if (m) {
+            const n = parseInt(m[1], 10);
+            if (n >= 1 && n <= 3) return "sat";
+            if (n >= 4 && n <= 6) return "sun";
+            return null;
+          }
+          return null;
+        }
+
+        function inferSortFromMovieId(id) {
+          const m = /^scr-(\d+)$/i.exec(String(id || "").trim());
+          if (m) return parseInt(m[1], 10);
+          const m2 = /^m(\d+)$/i.exec(String(id || "").trim());
+          if (m2) return parseInt(m2[1], 10);
+          return 999;
+        }
+
+        /**
+         * 従来 movies.csv（上映日・尺・概要…）と「上映」シート（上映時間・制作年度・作品説明・画像…）の両方
+         * @param {string[]} headers
+         * @param {Record<string, string>} r
+         */
+        function movieRecordToUnified(headers, r) {
+          const hdr = new Set(headers);
+          const id = (r["ID"] || "").trim();
+          if (hdr.has("作品説明")) {
+            const dayFromDate = movieDayKey(r["上映日"] || "");
+            const day = dayFromDate || inferMovieDayFromId(id);
+            const sortNum = Number((r["表示順"] || "").trim());
+            return {
+              id,
+              dateLabel: String(r["上映日"] || "").trim(),
+              title: (r["タイトル"] || "").trim(),
+              director: (r["監督"] || "").trim(),
+              durationMin: parseMovieDurationInput(r["上映時間"] || r["尺（分）"] || ""),
+              metaExtra: normalizeMovieMetaExtra((r["制作年度"] || r["メタ（卒制等）"] || "").trim()),
+              synopsis: (r["作品説明"] || r["概要"] || "").trim(),
+              thumbPath: resolveMovieThumbPath(r["画像"] || r["サムネイルパス"] || ""),
+              sort: Number.isFinite(sortNum) && sortNum > 0 ? sortNum : inferSortFromMovieId(id),
+              day,
+            };
+          }
+          return {
+            id,
+            dateLabel: r["上映日"] || "",
+            title: (r["タイトル"] || "").trim(),
+            director: (r["監督"] || "").trim(),
+            durationMin: (r["尺（分）"] || "").trim(),
+            metaExtra: normalizeMovieMetaExtra(r["メタ（卒制等）"] || ""),
+            synopsis: (r["概要"] || "").trim(),
+            thumbPath: (r["サムネイルパス"] || "").trim(),
+            sort: Number((r["表示順"] || "999").trim()) || 999,
+            day: movieDayKey(r["上映日"] || "") || inferMovieDayFromId(id),
+          };
+        }
+
         function thumbSrc(raw) {
           const p = String(raw || "").trim();
           if (!p) return "";
@@ -993,20 +1081,7 @@
             const headers = matrix[0].map((h) => h.trim());
             const records = matrix.slice(1).map((cells) => rowToObj(headers, cells));
 
-            const movies = records
-              .map((r) => ({
-                id: (r["ID"] || "").trim(),
-                dateLabel: r["上映日"] || "",
-                title: (r["タイトル"] || "").trim(),
-                director: (r["監督"] || "").trim(),
-                durationMin: (r["尺（分）"] || "").trim(),
-                metaExtra: normalizeMovieMetaExtra(r["メタ（卒制等）"] || ""),
-                synopsis: (r["概要"] || "").trim(),
-                thumbPath: (r["サムネイルパス"] || "").trim(),
-                sort: Number((r["表示順"] || "999").trim()) || 999,
-                day: movieDayKey(r["上映日"] || ""),
-              }))
-              .filter((m) => m.id && m.title);
+            const movies = records.map((r) => movieRecordToUnified(headers, r)).filter((m) => m.id && m.title);
 
             byId = {};
             for (const m of movies) byId[m.id] = m;
@@ -1061,7 +1136,7 @@
 
             const bodyHtml =
               html ||
-              '<p class="mv-load-error" role="alert">上映作品データがありません。<code class="inline-code">data/movies.csv</code> を確認してください。</p>';
+              '<p class="mv-load-error" role="alert">上映作品データがありません。スプレッドシートの「上映」シート（列名・公開設定）を確認してください。</p>';
             const signageChrome = signageScreening ? signageScreeningChromeHTML() : "";
             listHost.innerHTML = (signagePageHero || "") + signageChrome + bodyHtml;
             if (signageScreening) wireSignagePageHeroSlideshow(listHost);
@@ -1080,7 +1155,7 @@
               document.body.dataset.signage === "screening" ? signageScreeningChromeHTML() : "";
             listHost.innerHTML =
               signageChrome +
-              '<p class="mv-load-error" role="alert">上映作品一覧を読み込めませんでした。<code class="inline-code">data/movies.csv</code> を配置するか、しばらくしてから再度お試しください。</p>';
+              '<p class="mv-load-error" role="alert">上映作品一覧を読み込めませんでした。スプレッドシートの共有（リンクを知っている全員が閲覧可）とネットワークを確認し、しばらくしてから再度お試しください。</p>';
           }
           if (sectionRoot) sectionRoot.setAttribute("aria-busy", "false");
         }
