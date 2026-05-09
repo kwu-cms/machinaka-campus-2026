@@ -1,0 +1,641 @@
+/* --- Nav (ヒーロー上で読めるダークバー) --- */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(15, 17, 21, 0.88);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+}
+
+.nav-inner {
+  min-height: 68px;
+  padding-block: 0.35rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.brand {
+  font-family: "DM Mono", monospace;
+  font-size: clamp(0.68rem, 1.5vw, 0.78rem);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.72);
+  line-height: 1.35;
+}
+
+.brand small {
+  display: block;
+  color: rgba(255, 255, 255, 0.92);
+  font-weight: 400;
+  font-size: clamp(0.62rem, 1.35vw, 0.72rem);
+  letter-spacing: 0.1em;
+  margin-top: 3px;
+}
+
+.nav-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  row-gap: 0.35rem;
+  column-gap: clamp(0.85rem, 2.5vw, 1.35rem);
+  font-family: "Noto Sans JP", system-ui, sans-serif;
+  font-size: clamp(0.78rem, 1.65vw, 0.88rem);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: none;
+}
+
+.nav-links a {
+  color: rgba(255, 255, 255, 0.72);
+  padding: 0.35rem 0.15rem;
+  border-radius: 6px;
+  transition: color var(--int-fast) var(--int-ease), background-color var(--int-fast) var(--int-ease);
+}
+
+.nav-links a:hover {
+  color: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.nav-toggle {
+  display: none;
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.nav-toggle span {
+  width: 16px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.9);
+  display: block;
+}
+
+.mobile-nav {
+  display: none;
+}
+
+/* --- Hero: 全幅 cover 画像+5秒クロスフェード --- */
+.hero {
+  position: relative;
+  min-height: min(100svh, 920px);
+  margin-top: calc(-1 * var(--nav-h));
+  padding-top: var(--nav-h);
+  background: var(--bg-main);
+  color: var(--text-light);
+  overflow: hidden;
+  /* タップ時のシアン系ハイライトを抑え、下の .hero-scrim の常時トーンに任せる */
+  -webkit-tap-highlight-color: transparent;
+}
+
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.hero-bg-slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 2.4s ease-in-out;
+  pointer-events: none;
+  will-change: opacity;
+}
+
+.hero-bg-slide.is-active {
+  opacity: 1;
+}
+
+.hero-bg-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+.hero-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  /* フライヤー青のソフトトーン */
+  background: radial-gradient(ellipse 100% 85% at 14% 12%, rgba(var(--brand-blue-rgb), 0.14), transparent 55%),
+    radial-gradient(ellipse 75% 60% at 92% 78%, rgba(var(--brand-blue-rgb), 0.07), transparent 50%),
+    linear-gradient(to top, rgba(15, 17, 21, 0.88) 0%, rgba(15, 17, 21, 0.35) 42%, transparent 62%),
+    linear-gradient(to right, rgba(15, 17, 21, 0.75) 0%, rgba(15, 17, 21, 0.2) 38%, transparent 58%),
+    radial-gradient(ellipse 90% 55% at 75% -5%, rgba(255, 255, 255, 0.1), transparent 52%);
+}
+
+.hero-scrim::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  box-shadow: inset 0 0 0 1px rgba(var(--brand-blue-rgb), 0.22);
+}
+
+.hero-field-words {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 2;
+  overflow: hidden;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: stretch;
+  gap: 0;
+  padding-left: 0;
+  padding-right: 0;
+  padding-top: var(--hero-field-pad-v, 0px);
+  padding-bottom: var(--hero-field-pad-v, 0px);
+  transform: rotate(-6deg) scale(1.18);
+  transform-origin: center center;
+}
+
+/* ヒーロー見出し .hero-title の約 70% 相当 */
+.hero-field-words-line {
+  margin: 0;
+  padding: 0 calc(var(--shell-pad) * 0.2);
+  font-family: "M PLUS 1 Code", monospace;
+  font-size: clamp(1.75rem, 5.95vw, 4.55rem);
+  font-weight: 300;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  color: rgba(255, 255, 255, 0.11);
+  white-space: nowrap;
+  width: max-content;
+  min-width: 100%;
+}
+
+.hero-field-words-line:nth-child(odd) {
+  margin-left: -8%;
+}
+
+.hero-field-words-line:nth-child(even) {
+  margin-left: -18%;
+}
+
+.hero-grain {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  opacity: 0.11;
+  mix-blend-mode: soft-light;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.4) 0.5px, transparent 0.5px),
+    radial-gradient(rgba(0, 0, 0, 0.45) 0.5px, transparent 0.5px);
+  background-size: 3px 3px, 4px 4px;
+  background-position: 0 0, 1px 1px;
+}
+
+.hero-inner {
+  position: relative;
+  z-index: 5;
+  min-height: calc(min(100svh, 920px) - var(--nav-h));
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-start;
+  width: 100%;
+  padding-left: var(--shell-pad);
+  padding-right: var(--shell-pad);
+  padding-bottom: clamp(5.25rem, 9vw, 7rem);
+  max-width: min(42rem, calc(100% - (var(--shell-pad) * 2)));
+}
+
+/* 上映プログラムへのフローティング導線（右下・ニュース帯の上）
+   2カラム：左スライド／右テキスト。カラム行に padding なし。上辺 2px 角丸／下直角、左のみ紫線 */
+.hero-screening-spotlight {
+  position: absolute;
+  right: var(--shell-pad);
+  bottom: clamp(4.25rem, 11vw, 5.75rem);
+  z-index: 7;
+
+  display: block;
+  max-width: min(24rem, calc(100vw - var(--shell-pad) * 2 - 1rem));
+  padding: 0;
+
+  box-sizing: border-box;
+  border-radius: 2px 2px 0 0;
+  /* border: 1px solid rgba(var(--brand-black-rgb), 0.09); */
+  border-left: 4px solid rgba(var(--brand-purple-rgb), 0.88);
+
+  background: var(--brand-surface);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 24px rgba(var(--brand-black-rgb), 0.06);
+
+  text-decoration: none;
+  color: rgba(var(--brand-black-rgb), 0.92);
+  cursor: pointer;
+
+  transition:
+    transform var(--int-fast) var(--int-ease),
+    border-left-color var(--int-fast) var(--int-ease),
+    box-shadow var(--int-fast) var(--int-ease),
+    background-color var(--int-fast) var(--int-ease);
+}
+
+.hero-screening-spotlight:hover {
+  transform: translateY(-2px);
+  border-left-color: rgba(var(--brand-purple-rgb), 1);
+  background: var(--bg-light);
+  box-shadow: 0 12px 32px rgba(var(--brand-black-rgb), 0.09);
+}
+
+.hero-screening-spotlight:focus-visible {
+  outline: 2px solid rgba(var(--brand-purple-rgb), 0.65);
+  outline-offset: 3px;
+}
+
+.hero-screening-spotlight__cols {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  column-gap: 0.42rem;
+  row-gap: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+
+.hero-screening-spotlight__media {
+  position: relative;
+  flex: 0 0 clamp(5rem, 28vw, 7rem);
+  width: clamp(5rem, 28vw, 7rem);
+  align-self: stretch;
+  border-radius: 0;
+  overflow: hidden;
+  box-shadow: none;
+  background: rgba(var(--brand-black-rgb), 0.06);
+}
+
+.hero-screening-spotlight__slide {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  opacity: 0;
+  transition: opacity 1.35s cubic-bezier(0.42, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+.hero-screening-spotlight__slide.is-active {
+  opacity: 1;
+  z-index: 1;
+}
+
+.hero-screening-spotlight__text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.28rem;
+  padding-block: 5px;
+  margin: 0;
+}
+
+.hero-screening-spotlight__lead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.5rem;
+}
+
+.hero-screening-spotlight__program-name {
+  font-family: "Shippori Mincho B1", serif;
+  font-weight: 700;
+  font-size: clamp(0.76rem, 1.95vw, 0.9rem);
+  line-height: 1.35;
+  letter-spacing: 0.04em;
+  color: rgba(var(--brand-black-rgb), 0.84);
+}
+
+.hero-screening-spotlight__label {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.1rem 0.4rem;
+  border: 1px solid rgba(var(--brand-purple-rgb), 0.45);
+  border-radius: 2px;
+  font-family: "DM Mono", monospace;
+  font-size: 0.58rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+  white-space: nowrap;
+  color: rgba(var(--brand-purple-rgb), 0.98);
+  background: rgba(var(--brand-purple-rgb), 0.07);
+  margin-right: 20px;
+}
+
+.hero-screening-spotlight__title-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 0.55rem;
+  row-gap: 0.2rem;
+}
+
+.hero-screening-spotlight__cinema-name {
+  flex: 0 1 auto;
+  font-family: "Shippori Mincho B1", serif;
+  font-weight: 800;
+  font-size: clamp(0.9rem, 2.35vw, 1.05rem);
+  line-height: 1.3;
+  letter-spacing: 0.02em;
+  color: rgba(var(--brand-black-rgb), 0.94);
+}
+
+.hero-screening-spotlight__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+  font-family: "Noto Sans JP", sans-serif;
+  font-weight: 500;
+  font-size: clamp(0.55rem, 1.45vw, 0.68rem);
+  line-height: 1.35;
+  letter-spacing: 0.02em;
+  color: rgba(var(--brand-black-rgb), 0.52);
+}
+
+.hero-screening-spotlight__datetime {
+  display: block;
+  line-height: 1.3;
+}
+
+.hero-screening-spotlight__venue-inline {
+  font-weight: 600;
+  color: rgba(var(--brand-black-rgb), 0.62);
+}
+
+.hero-screening-spotlight:hover .hero-screening-spotlight__label {
+  border-color: rgba(var(--brand-purple-rgb), 0.65);
+  background: rgba(var(--brand-purple-rgb), 0.1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-screening-spotlight__slide {
+    transition: none;
+  }
+
+  .hero-screening-spotlight:hover {
+    transform: none;
+  }
+}
+
+@media (max-width: 520px) {
+  .hero-screening-spotlight {
+    left: var(--shell-pad);
+    right: var(--shell-pad);
+    max-width: none;
+    bottom: clamp(3.75rem, 18vw, 4.75rem);
+  }
+}
+
+.hero-news-marquee {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 6;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(8, 9, 15, 0.62);
+  backdrop-filter: blur(8px);
+  overflow: hidden;
+}
+
+.hero-news-track {
+  display: inline-flex;
+  align-items: center;
+  gap: 2.25rem;
+  min-width: max-content;
+  padding: 0.82rem 0;
+  white-space: nowrap;
+  animation: heroMarquee 48s linear infinite;
+  will-change: transform;
+}
+
+.hero-news-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.68rem;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.hero-news-date {
+  font-family: "DM Mono", monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.58);
+}
+
+.hero-news-label {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.22rem 0.52rem;
+  border: 1px solid rgba(255, 255, 255, 0.38);
+  border-radius: 999px;
+  margin-right: 0.1rem;
+  font-family: "DM Mono", monospace;
+  font-size: 0.64rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.84);
+}
+
+.hero-news-item {
+  transition: opacity var(--int-fast) var(--int-ease);
+}
+
+.hero-news-item:hover {
+  opacity: 0.95;
+}
+
+@keyframes heroMarquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.hero-kicker {
+  font-family: "DM Mono", monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.42);
+  margin-bottom: 0.85rem;
+}
+
+.hero-title {
+  font-family: "DM Mono", monospace;
+  font-weight: 500;
+  font-size: clamp(2.5rem, 8.5vw, 6.5rem);
+  line-height: 0.92;
+  letter-spacing: -0.02em;
+  margin: 0 0 0.5rem;
+}
+
+.hero-title .x {
+  color: var(--accent);
+  font-style: italic;
+}
+
+.hero-series {
+  font-family: "Shippori Mincho B1", serif;
+  font-size: clamp(1.12rem, 2.6vw, 1.55rem);
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0 0 0.55rem;
+}
+
+.hero-sub {
+  font-family: "Shippori Mincho B1", serif;
+  font-size: clamp(0.88rem, 1.75vw, 1.08rem);
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.52);
+  letter-spacing: 0.12em;
+  margin: 0 0 0.65rem;
+}
+
+.hero-date {
+  font-family: "Shippori Mincho B1", serif;
+  font-weight: 500;
+  font-size: clamp(1.02rem, 2.3vw, 1.45rem);
+  color: rgba(255, 255, 255, 0.82);
+  letter-spacing: 0.08em;
+  margin: 0 0 1.75rem;
+}
+
+.hero-lead {
+  max-width: 36rem;
+  font-size: 0.98rem;
+  font-weight: 500;
+  line-height: 1.85;
+  color: rgba(255, 255, 255, 0.78);
+  margin: 0 0 1.5rem;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: "DM Mono", monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 0.65rem 1rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  color: rgba(255, 255, 255, 0.88);
+  transition: background var(--int-base) var(--int-ease), border-color var(--int-base) var(--int-ease),
+    color var(--int-base) var(--int-ease), box-shadow var(--int-base) var(--int-ease);
+}
+
+.btn-icon {
+  width: 0.85rem;
+  height: 0.85rem;
+  flex-shrink: 0;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+  opacity: 0.9;
+  transition: filter var(--int-base) var(--int-ease), opacity var(--int-base) var(--int-ease);
+}
+
+.btn:hover {
+  background: #fff;
+  color: var(--bg-main);
+  border-color: #fff;
+  box-shadow: 0 8px 22px rgba(255, 255, 255, 0.18);
+}
+
+.btn:hover .btn-icon {
+  filter: none;
+  opacity: 1;
+}
+
+/* --- コンテンツ共通 --- */
+section {
+  padding: clamp(3rem, 8vw, 4.5rem) 0;
+}
+
+.section-label {
+  font-family: "DM Mono", monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(17, 17, 17, 0.38);
+  margin-bottom: 0.5rem;
+}
+
+.section-title {
+  font-family: "Shippori Mincho B1", serif;
+  font-weight: 800;
+  font-size: clamp(1.6rem, 3.5vw, 2.35rem);
+  letter-spacing: 0.02em;
+  margin: 0 0 0.75rem;
+  line-height: 1.2;
+}
+
+.section-note {
+  margin: 0 0 1.5rem;
+  max-width: 40rem;
+  color: var(--dim);
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.section-note a {
+  color: var(--text-dark);
+  text-decoration: underline;
+  text-decoration-color: rgba(17, 17, 17, 0.25);
+  text-underline-offset: 0.2em;
+  transition: color var(--int-fast) var(--int-ease), text-decoration-color var(--int-fast) var(--int-ease);
+}
+
+.section-note a:hover {
+  color: var(--accent);
+  text-decoration-color: var(--accent-link-underline);
+}
+
+.inline-code {
+  font-family: "DM Mono", monospace;
+  font-size: 0.82em;
+  letter-spacing: 0.04em;
+  padding: 0.12em 0.38em;
+  border-radius: 4px;
+  background: rgba(17, 17, 17, 0.06);
+  color: rgba(17, 17, 17, 0.82);
+}
+

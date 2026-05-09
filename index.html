@@ -7,7 +7,7 @@
     <meta name="robots" content="noindex, nofollow">
     <meta
       name="description"
-      content="甲南女子大学 文学部 メディア表現学科が街へひらく2日間。上映・展示・イベントを通して、問いと表現が交差する。"
+      content="甲南女子大学 文学部 メディア表現学科が街へひらく2日間。展示・イベント・上映を通して、問いと表現が交差する。"
     />
     <meta property="og:title" content="MEDIA x MOTOMACHI まちなかキャンパス 2026" />
     <meta
@@ -37,7 +37,12 @@
       href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Shippori+Mincho+B1:wght@400;800&family=M+PLUS+1+Code:wght@100..700&family=Noto+Sans+JP:wght@400;500;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="./css/styles.css" />
+    <link rel="stylesheet" href="./css/tokens.css" />
+    <link rel="stylesheet" href="./css/base.css" />
+    <link rel="stylesheet" href="./css/nav-hero.css" />
+    <link rel="stylesheet" href="./css/sections.css" />
+    <link rel="stylesheet" href="./css/access-footer.css" />
+    <link rel="stylesheet" href="./css/overrides.css" />
   </head>
   <body>
     <header class="nav">
@@ -50,21 +55,21 @@
           <span></span><span></span><span></span>
         </button>
         <nav class="nav-links" aria-label="ページ内リンク">
-          <a href="#news">News</a>
-          <a href="#screening">Screening</a>
-          <a href="#exhibition">Exhibition</a>
-          <a href="#event">Event</a>
-          <a href="#about">About</a>
-          <a href="#access">Access</a>
+          <a href="#news">お知らせ</a>
+          <a href="#about">開催概要</a>
+          <a href="#exhibition">展示</a>
+          <a href="#event">イベント</a>
+          <a href="#screening">上映</a>
+          <a href="#access">アクセス</a>
         </nav>
       </div>
       <nav id="mobile-nav" class="mobile-nav" aria-label="モバイルメニュー">
-        <a href="#news">News</a>
-        <a href="#screening">Screening</a>
-        <a href="#exhibition">Exhibition</a>
-        <a href="#event">Event</a>
-        <a href="#about">About</a>
-        <a href="#access">Access</a>
+        <a href="#news">お知らせ</a>
+        <a href="#about">開催概要</a>
+        <a href="#exhibition">展示</a>
+        <a href="#event">イベント</a>
+        <a href="#screening">上映</a>
+        <a href="#access">アクセス</a>
       </nav>
     </header>
 
@@ -100,13 +105,89 @@
           <p class="hero-sub reveal">問いを、街へひらく。</p>
           <p class="hero-date reveal">2026年7月18日（土）- 19日（日）/ 入場無料</p>
           <p class="hero-lead reveal">
-            上映・展示・イベントの3プログラムで、観る・つくる・話すの往復を体験する2日間。神戸・元町の会場で、甲南女子大学文学部メディア表現学科で行う「今」と「これから」の学びを公開します。
+            展示・イベント・上映の3プログラムで、観る・つくる・話すの往復を体験する2日間。神戸・元町の会場で、甲南女子大学文学部メディア表現学科で行う「今」と「これから」の学びを公開します。
           </p>
           <div class="hero-actions reveal">
-            <a class="btn" href="#program"><img class="btn-icon" src="./images/icon-calendar-days.svg" alt="" width="14" height="14" decoding="async" /> Program</a>
-            <a class="btn" href="#access"><img class="btn-icon" src="./images/icon-location-dot.svg" alt="" width="14" height="14" decoding="async" /> Access</a>
+            <a class="btn" href="#program"><img class="btn-icon" src="./images/icon-calendar-days.svg" alt="" width="14" height="14" decoding="async" />プログラム</a>
+            <a class="btn" href="#access"><img class="btn-icon" src="./images/fa-location-pin.svg" alt="" width="14" height="14" decoding="async" /> アクセス</a>
           </div>
         </div>
+        <a
+          class="hero-screening-spotlight reveal"
+          href="#screening"
+          aria-label="上映プログラム「南女シネマ」7月18日・19日、元町映画館へ"
+        >
+          <span class="hero-screening-spotlight__cols">
+            <span class="hero-screening-spotlight__media" aria-hidden="true">
+              <img
+                class="hero-screening-spotlight__slide is-active"
+                src="./images/screening-slides/screening_1.png"
+                alt=""
+                width="120"
+                height="68"
+                decoding="async"
+              />
+              <img
+                class="hero-screening-spotlight__slide"
+                src="./images/screening-slides/screening_2.png"
+                alt=""
+                width="120"
+                height="68"
+                decoding="async"
+                loading="lazy"
+              />
+              <img
+                class="hero-screening-spotlight__slide"
+                src="./images/screening-slides/screening_3.png"
+                alt=""
+                width="120"
+                height="68"
+                decoding="async"
+                loading="lazy"
+              />
+              <img
+                class="hero-screening-spotlight__slide"
+                src="./images/screening-slides/screening_4.png"
+                alt=""
+                width="120"
+                height="68"
+                decoding="async"
+                loading="lazy"
+              />
+              <img
+                class="hero-screening-spotlight__slide"
+                src="./images/screening-slides/screening_5.png"
+                alt=""
+                width="120"
+                height="68"
+                decoding="async"
+                loading="lazy"
+              />
+              <img
+                class="hero-screening-spotlight__slide"
+                src="./images/screening-slides/screening_6.png"
+                alt=""
+                width="120"
+                height="68"
+                decoding="async"
+                loading="lazy"
+              />
+            </span>
+            <span class="hero-screening-spotlight__text">
+              <span class="hero-screening-spotlight__lead">
+                <span class="hero-screening-spotlight__program-name">卒業制作選抜展</span>
+                <span class="hero-screening-spotlight__label">上映プログラム</span>
+              </span>
+              <span class="hero-screening-spotlight__title-row">
+                <span class="hero-screening-spotlight__cinema-name">「南女シネマ」</span>
+                <span class="hero-screening-spotlight__meta">
+                  <span class="hero-screening-spotlight__datetime">7/18・19</span>
+                  <span class="hero-screening-spotlight__venue-inline">元町映画館</span>
+                </span>
+              </span>
+            </span>
+          </span>
+        </a>
         <div class="hero-news-marquee" aria-label="最新のお知らせ">
           <div class="hero-news-track"></div>
         </div>
@@ -125,81 +206,67 @@
         </div>
       </section>
 
+      <section id="about" aria-labelledby="about-heading">
+        <div class="container">
+          <p class="section-label reveal">- About</p>
+          <h2 id="about-heading" class="section-title reveal">開催概要</h2>
+          <div class="about-grid">
+            <p class="about-copy reveal">
+              「まちなかキャンパス 2026」は、学科が街に出ることで生まれる、新しい接点をつくる試みです。展示・イベント・上映といった多様な形式で、メディア表現学科の制作と思考のプロセスをそのまま公開します。
+              <br /><br />
+              2027年度からのカリキュラム刷新では、ヴィジュアルカルチャー・クリエイション／AI・ソーシャルデザインの3分野を、デザイン思考を軸に横断しながら、社会の問いとメディア表現をつなぐ学びを具体化します。
+              <br /><br />
+              作品を「観る」だけでなく、ワークショップやトークを通して「参加する」体験も用意しています。作りながら考え、そこで生まれた問いを街へひらく——学科の今とこれからを、元町の2会場でぜひ体験してください。
+            </p>
+            <dl class="facts reveal">
+              <dt>会期</dt>
+              <dd>
+                2026年7月18日（土）・19日（日）<br />
+                10:00–18:00　こうべまちづくり会館（2F ホール、3F多目的室）<br />
+                17:10–19:00　元町映画館
+              </dd>
+              <dt>会場</dt>
+              <dd>
+                こうべまちづくり会館　2F ホール、3F多目的室<br />
+                元町映画館
+              </dd>
+              <dt>入場</dt>
+              <dd>無料</dd>
+              <dt>主催</dt>
+              <dd>甲南女子大学 文学部 メディア表現学科</dd>
+            </dl>
+          </div>
+          <div
+            class="about-schedule"
+            role="region"
+            aria-labelledby="about-timeline-heading"
+          >
+            <h3 id="about-timeline-heading" class="about-timeline-heading reveal">スケジュール</h3>
+            <p class="about-schedule-lede reveal">
+            </p>
+            <div
+              id="about-timeline-root"
+              class="program-timeline reveal about-timeline"
+              aria-labelledby="about-timeline-heading"
+              hidden
+            ></div>
+          </div>
+        </div>
+      </section>
+
       <section id="program" aria-labelledby="program-heading">
         <div class="container">
           <p class="section-label reveal">- Program</p>
           <h2 id="program-heading" class="section-title reveal">プログラム</h2>
 
           <div class="program-list">
-            <article class="program-item reveal program-item--screening" id="screening">
-              <header class="program-head">
-                <div class="program-head-main">
-                  <p class="program-kicker">- P01 - Screening</p>
-                  <h3 class="program-title">上映</h3>
-                </div>
-                <span class="program-venue">元町映画館</span>
-              </header>
-              <div class="program-body">
-                <div class="screening-body">
-                  <div class="screening-program-lede">
-                    <h4 class="screening-program-name">特別上映プログラム「南女シネマ」</h4>
-                    <p class="screening-program-tagline">映画つくった　宝物みつけた</p>
-                  </div>
-                  <p class="program-copy screening-intro">
-                    元町映画館で、映像表現研究ゼミの学生・卒業生の映像作品をプログラム上映します。上映後は監督とゼミ担当教員によるトークの他、元町映画館2階ロビーでゼミ生と高校生の交流会を実施します。上映は入場無料です。プログラムの詳細は<a href="https://www.motoei.com/" target="_blank" rel="noopener noreferrer">元町映画館のWebページ</a>をご確認ください。
-                  </p>
-                  <div class="screening-hero">
-                    <div class="screening-visual screening-visual--hero">
-                      <div
-                        class="screening-slideshow"
-                        id="screeningSlideshow"
-                        role="region"
-                        aria-roledescription="カルーセル"
-                        aria-label="上映作品のイメージスライド（16:9）"
-                      >
-                        <div class="screening-slideshow-inner">
-                          <figure class="screening-slide is-active">
-                            <img src="./images/screening-slides/slide-01.png" alt="" width="1920" height="1080" decoding="async" />
-                            <figcaption>「父、木になる」 7/18</figcaption>
-                          </figure>
-                          <figure class="screening-slide">
-                            <img src="./images/screening-slides/slide-02.png" alt="" width="1920" height="1080" loading="lazy" decoding="async" />
-                            <figcaption>「夢現 ーユメウツツー」 7/18</figcaption>
-                          </figure>
-                          <figure class="screening-slide">
-                            <img src="./images/screening-slides/slide-03.png" alt="" width="1920" height="1080" loading="lazy" decoding="async" />
-                            <figcaption>「コットンダイアリー」 7/18</figcaption>
-                          </figure>
-                          <figure class="screening-slide">
-                            <img src="./images/screening-slides/slide-04.png" alt="" width="1920" height="1080" loading="lazy" decoding="async" />
-                            <figcaption>「雲の上はいつも晴れ」 7/19</figcaption>
-                          </figure>
-                          <figure class="screening-slide">
-                            <img src="./images/screening-slides/slide-05.png" alt="" width="1920" height="1080" loading="lazy" decoding="async" />
-                            <figcaption>「脳内干渉314」 7/19</figcaption>
-                          </figure>
-                          <figure class="screening-slide">
-                            <img src="./images/screening-slides/slide-06.png" alt="" width="1920" height="1080" loading="lazy" decoding="async" />
-                            <figcaption>「チア！ まちの映画館」 7/19</figcaption>
-                          </figure>
-                        </div>
-                        <div class="screening-slideshow-dots" aria-hidden="false"></div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="mv-section" aria-busy="true">
-                    <div id="mv-list" class="mv-schedule-main"></div>
-                  </div>
-                </div>
-              </div>
-            </article>
             <article class="program-item reveal" id="exhibition">
               <header class="program-head">
                 <div class="program-head-main">
-                  <p class="program-kicker">- P02 - Exhibition</p>
+                  <p class="program-kicker">- P01 - Exhibition</p>
                   <h3 class="program-title">展示</h3>
                 </div>
-                <span class="program-venue">まちづくり会館 2Fホール</span>
+                <span class="program-venue">こうべまちづくり会館 2F ホール</span>
               </header>
               <div class="program-body">
                 <p class="program-copy">
@@ -332,10 +399,10 @@
             <article class="program-item reveal" id="event">
               <header class="program-head">
                 <div class="program-head-main">
-                  <p class="program-kicker">- P03 - Event</p>
+                  <p class="program-kicker">- P02 - Event</p>
                   <h3 class="program-title">イベント</h3>
                 </div>
-                <span class="program-venue">まちづくり会館 3F多目的室</span>
+                <span class="program-venue">こうべまちづくり会館 3F多目的室</span>
               </header>
               <div class="program-body">
                 <p class="program-copy">
@@ -345,37 +412,97 @@
                 <div class="ev-section" aria-busy="true">
                   <div id="ev-list" class="ev-schedule-main"></div>
                   <div id="ev-permanent-list" class="ev-schedule-main ev-permanent-region" hidden></div>
-                  <p class="ev-footer">
-                    ＊プログラムは変更となる場合があります。最新情報はInstagram（@mediastudies_kwu）でご確認ください。<br>
-                    ＊ワークショップへの参加には事前申込が必要です。
-                  </p>
                 </div>
               </div>
             </article>
-          </div>
-        </div>
-      </section>
-
-      <section id="about" aria-labelledby="about-heading">
-        <div class="container">
-          <p class="section-label reveal">- About</p>
-          <h2 id="about-heading" class="section-title reveal">開催概要</h2>
-          <div class="about-grid">
-            <p class="about-copy reveal">
-              「まちなかキャンパス 2026」は、学科が街に出ることで生まれる、新しい接点をつくる試みです。上映・展示・イベントといった異なる発表方法で、メディア表現学科の制作と思考のプロセスをそのまま公開します。
-              <br /><br />
-              2027年度からのカリキュラム刷新では、デザイン思考を軸に、ヴィジュアルカルチャー・クリエイション／AI・ソーシャルデザインの3分野を横断しながら、社会の問いとメディア表現をつなぐ学びをより具体的に展開していきます。作品を「観る」だけでなく、ワークショップやトークを通して「参加する」——作りながら考え、その問いを街へひらく学科の今とこれからを、元町の2会場で体験してください。
-            </p>
-            <dl class="facts reveal">
-              <dt>会期</dt>
-              <dd>2026年7月18日（土）・19日（日）</dd>
-              <dt>会場</dt>
-              <dd>こうべまちづくり会館 2F・3F / 元町映画館</dd>
-              <dt>入場</dt>
-              <dd>無料</dd>
-              <dt>主催</dt>
-              <dd>甲南女子大学 文学部 メディア表現学科</dd>
-            </dl>
+            <article class="program-item reveal program-item--screening" id="screening">
+              <header class="program-head">
+                <div class="program-head-main">
+                  <p class="program-kicker">- P03 - Screening</p>
+                  <h3 class="program-title">上映</h3>
+                </div>
+                <span class="program-venue">元町映画館</span>
+              </header>
+              <div class="screening-program-lede-stack">
+                <div class="screening-program-lede">
+                  <div class="screening-program-lede-head">
+                    <h4 class="screening-program-name">卒業制作選抜展「南女シネマ」</h4>
+                    <p class="screening-program-tagline">映画つくった　宝物みつけた</p>
+                  </div>
+                </div>
+                <p class="program-copy screening-intro">
+                  神戸市中央区にある元町映画館で映像表現研究ゼミ卒業生の優秀作品を上映します。上映時間は両日（7/18,19）とも17時10分～19時。上映後は監督とゼミ担当教員によるトークの他、元町映画館2階ロビーでゼミ生と高校生の交流会を実施します。上映作品の内容は日にちごとの欄をご覧ください。入場無料です。
+                </p>
+              </div>
+              <div class="program-body">
+                <div class="screening-body">
+                  <div class="screening-hero-split">
+                    <div class="screening-hero-split__media">
+                      <div class="screening-visual screening-visual--hero">
+                        <div
+                          class="screening-slideshow"
+                          id="screeningSlideshow"
+                          role="region"
+                          aria-roledescription="カルーセル"
+                          aria-label="上映作品のイメージスライド（16:9）"
+                        >
+                          <div class="screening-slideshow-inner">
+                            <figure class="screening-slide is-active">
+                              <img src="./images/screening-slides/slide-01.png" alt="" width="1920" height="1080" decoding="async" />
+                              <figcaption>「父、木になる」 7/18</figcaption>
+                            </figure>
+                            <figure class="screening-slide">
+                              <img src="./images/screening-slides/slide-02.png" alt="" width="1920" height="1080" loading="lazy" decoding="async" />
+                              <figcaption>「夢現 ーユメウツツー」 7/18</figcaption>
+                            </figure>
+                            <figure class="screening-slide">
+                              <img src="./images/screening-slides/slide-03.png" alt="" width="1920" height="1080" loading="lazy" decoding="async" />
+                              <figcaption>「コットンダイアリー」 7/18</figcaption>
+                            </figure>
+                            <figure class="screening-slide">
+                              <img src="./images/screening-slides/slide-04.png" alt="" width="1920" height="1080" loading="lazy" decoding="async" />
+                              <figcaption>「雲の上はいつも晴れ」 7/19</figcaption>
+                            </figure>
+                            <figure class="screening-slide">
+                              <img src="./images/screening-slides/slide-05.png" alt="" width="1920" height="1080" loading="lazy" decoding="async" />
+                              <figcaption>「脳内干渉314」 7/19</figcaption>
+                            </figure>
+                            <figure class="screening-slide">
+                              <img src="./images/screening-slides/slide-06.png" alt="" width="1920" height="1080" loading="lazy" decoding="async" />
+                              <figcaption>「チア！ まちの映画館」 7/19</figcaption>
+                            </figure>
+                          </div>
+                          <div class="screening-slideshow-dots" aria-hidden="false"></div>
+                        </div>
+                      </div>
+                    </div>
+                    <aside
+                      class="screening-hero-split__aside"
+                      aria-labelledby="screening-faculty-catch"
+                    >
+                      <!-- 池谷先生の顔写真を載せる場合: attribution の直前に .faculty-message__photo を挿入 -->
+                      <div class="faculty-message faculty-message--hero-aside">
+                        <p class="faculty-message__catch" id="screening-faculty-catch">
+                          カメラを持った<br />見えてきたのは自分だった
+                        </p>
+                        <div class="faculty-message__body">
+                          <p>
+                            学生の映画づくりは究極の自分探し。毎年多くのゼミ生が自分にしか撮れないセルフドキュメンタリーにチャレンジしています。家族への想い、青春をかけた推し活、身近でみつけた幸せ、就活のドラマ…　こうした作品の最大の特徴は作者自身の成長が刻み込まれていくこと。さぁ、あなたもカメラを持って冒険の旅に出ませんか？
+                          </p>
+                        </div>
+                        <div class="faculty-message__attribution">
+                          <p class="faculty-message__title">映画監督・甲南女子大学教授</p>
+                          <p class="faculty-message__name">池谷　薫</p>
+                        </div>
+                      </div>
+                    </aside>
+                  </div>
+                  <div class="mv-section" aria-busy="true">
+                    <div id="mv-list" class="mv-schedule-main"></div>
+                  </div>
+                </div>
+              </div>
+            </article>
           </div>
         </div>
       </section>
@@ -394,7 +521,7 @@
                 rel="noopener noreferrer"
               >
                 <h3><span class="venue-pin venue-pin--a" aria-hidden="true"></span>こうべまちづくり会館</h3>
-                <p>〒650-0022 神戸市中央区元町通4-2-14<br />展示・イベント会場</p>
+                <p>〒650-0022 神戸市中央区元町通4-2-14<br />展示・イベント会場（2F ホール、3F多目的室）</p>
               </a>
               <a
                 class="venue-card"
@@ -430,6 +557,12 @@
 
             <div class="map-block reveal">
               <div class="map-frame">
+                <!--
+                  会場地図: data-map-id に Cloud「マップ管理」の Map ID を入れる。
+                  グレースケールは JS/CSS の filter ではなく、その Map に紐づくマップ スタイルで設定（Saturation -100 等）。
+                  手順: Cloud Console → マップ管理 → マップスタイル作成 → Map ID を作成してスタイルと紐付け → 下の data-map-id に貼付。
+                  空のままだと DEMO_MAP_ID となりカラー地図。ピン色は tokens.css の --venue-pin-a / --venue-pin-b（地図は main.js が同変数を参照）。
+                -->
                 <div
                   id="gmap"
                   class="gmap-canvas"
@@ -524,6 +657,7 @@
         <div class="movie-dialog-body"></div>
       </div>
     </dialog>
+    <script src="./js/random-text.umd.js" defer></script>
     <script type="module" src="./js/main.js"></script>
   </body>
 </html>

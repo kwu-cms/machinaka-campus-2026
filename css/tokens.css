@@ -1,0 +1,43 @@
+:root {
+  --bg-main: #0f1115;
+  /* パネル下地：クリーム（白カードとほどよく区別） */
+  --bg-light: #f7f0e6;
+  --bg-light-rgb: 247, 240, 230;
+  --brand-surface: #f7f0e6;
+  --text-dark: #0d0d0d;
+  --text-light: #fff;
+  --brand-black: #0d0d0d;
+  --brand-blue: #1261a6;
+  --brand-magenta: #d94e81;
+  --brand-purple: #4c4784;
+  --brand-black-rgb: 13, 13, 13;
+  --brand-blue-rgb: 18, 97, 166;
+  --brand-magenta-rgb: 217, 78, 129;
+  --brand-purple-rgb: 76, 71, 132;
+  --accent: var(--brand-magenta);
+  --accent-2: var(--brand-blue);
+  --accent-3: var(--brand-purple);
+  --accent-hover: #c23d6e;
+  --accent-link-underline: rgba(217, 78, 129, 0.55);
+  --rule: rgba(13, 13, 13, 0.12);
+  --dim: rgba(13, 13, 13, 0.45);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --shell-max: 1100px;
+  --shell-pad: clamp(1.25rem, 4vw, 2.5rem);
+  --nav-h: 76px;
+  --int-fast: 180ms;
+  --int-base: 240ms;
+  --int-slow: 320ms;
+  --int-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --focus-ring: 0 0 0 2px rgba(var(--brand-blue-rgb), 0.38);
+  --hover-surface: rgba(13, 13, 13, 0.035);
+  --hover-border: rgba(13, 13, 13, 0.3);
+  --hover-shadow: 0 8px 24px rgba(13, 13, 13, 0.08);
+  /* アクセス：会館A=ピンク（イベント系と区別しやすく）・映画館B=紫（上映と同系） */
+  --venue-pin-a: var(--brand-magenta);
+  --venue-pin-b: var(--brand-purple);
+  /* プログラム記事内の縦リズム（上映ほかと共有しやすい一段階） */
+  --program-stack-sm: clamp(0.65rem, 1.8vw, 0.95rem);
+  --program-stack-md: clamp(1.15rem, 3vw, 1.65rem);
+  --program-stack-lg: clamp(1.5rem, 4vw, 2.25rem);
+}
