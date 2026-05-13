@@ -1,3 +1,16 @@
+/*
+ * =============================================================================
+ * overrides.css — レイアウト用メディアクエリ・特例（sections-* の後に読み込む）
+ *
+ * ・~900px / 901px+ … ヒーロー・グリッド・#news 表示切替
+ * ・~1024px … 開催概要スケジュール（#about .about-schedule）の 1 列化
+ * ・~640px … モバイルナビ等
+ * ・body[data-signage] … 縦型サイネージ（ファイル後半）
+ *
+ * ブレークポイント一覧: docs/CSS.md
+ * =============================================================================
+ */
+
 @media (max-width: 900px) {
   .hero-news-marquee {
     display: none;
@@ -96,9 +109,11 @@
     min-height: 0 !important;
   }
 
-  /* 単一カラム化時は 7/18 イベント行の空き列オフセットを解除 */
+  /* 単一カラム化時は 7/18 イベント行の空き列・多列グリッドを解除（詳細度で sections の土曜ワイド用ルールに勝つ） */
   #about .about-schedule .program-timeline-day-block[data-timeline-day="sat"] .program-timeline-sheet--ev .program-timeline-bars {
     padding-left: 0;
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
   }
 
   #about .about-schedule .program-timeline-sheet--ev .program-timeline-bars {
@@ -157,11 +172,6 @@
     text-transform: none;
     color: rgba(255, 255, 255, 0.9);
     padding: 0.35rem 0;
-  }
-
-  .news-item {
-    grid-template-columns: 1fr;
-    gap: 0.35rem;
   }
 
   .event-list.event-list--cards li {

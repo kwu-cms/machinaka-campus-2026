@@ -1,0 +1,807 @@
+/*
+ * =============================================================================
+ * sections-program-core.css （旧 sections.css の断片 2/4）
+ * セクション共通パネル、#program の article、開催概要内タイムライン（#about .about-schedule）、
+ * 汎用 .program-timeline*、上映レイアウト（ヒーロー分割〜スライドショー枠まで）
+ * =============================================================================
+ */
+
+/* ========== PROGRAM / ABOUT / ACCESS / NEWS 共通パネル ========== */
+#program,
+#about,
+#access,
+#news {
+  padding-block: clamp(1.5rem, 4vw, 2.75rem);
+}
+
+#program > .container,
+#about > .container,
+#access > .container,
+#news > .container {
+  background: var(--bg-light);
+  padding-top: clamp(0.35rem, 1.2vw, 0.85rem);
+  padding-bottom: clamp(1.15rem, 2.8vw, 1.85rem);
+  border-radius: 3px;
+  box-shadow: 0 0 0 1px rgba(17, 17, 17, 0.08);
+}
+
+/* ========== PROGRAM · article 一覧 ========== */
+
+/* --- PROGRAM (パネル感・シンプルな article 構造) --- */
+/* 見出し〜3記事までは同じ面：各 article を二重に塗らない */
+
+.program-list {
+  border-top: 1px solid var(--rule);
+}
+
+.program-item {
+  position: relative;
+  border-bottom: 1px solid var(--rule);
+  background: transparent;
+  overflow: hidden;
+  transition: background var(--int-base) var(--int-ease), border-color var(--int-base) var(--int-ease),
+    box-shadow var(--int-base) var(--int-ease);
+}
+
+#program .program-item:last-child {
+  border-bottom: none;
+}
+
+/* 展示（黒）/ イベント（青）/ 上映（紫） */
+.program-item:nth-child(1):hover {
+  background: rgba(var(--brand-black-rgb), 0.04);
+  box-shadow: inset 0 0 0 1px rgba(var(--brand-black-rgb), 0.14);
+}
+
+.program-item:nth-child(2):hover {
+  background: rgba(var(--brand-blue-rgb), 0.045);
+  box-shadow: inset 0 0 0 1px rgba(var(--brand-blue-rgb), 0.18);
+}
+
+.program-item:nth-child(3):hover {
+  background: rgba(var(--brand-purple-rgb), 0.05);
+  box-shadow: inset 0 0 0 1px rgba(var(--brand-purple-rgb), 0.22);
+}
+
+/* ========== #about · 開催概要スケジュール（タイムラインバー・#about スコープ） ========== */
+
+/* ── 開催概要内スケジュール（イベントカード `.ev-card` にトーンを合わせる） ── */
+#about .about-timeline.program-timeline,
+#about .program-timeline.about-timeline {
+  margin-block: 0 0;
+  padding-block: 0 0;
+  border-bottom: none;
+  min-width: 0;
+  max-width: 100%;
+}
+
+#about .program-timeline[hidden] {
+  display: none !important;
+}
+
+#about .program-timeline-inner {
+  margin-bottom: clamp(0.72rem, 2vw, 1.1rem);
+  min-width: 0;
+}
+
+.about-timeline-heading {
+  margin: clamp(1.65rem, 4vw, 2.4rem) 0 clamp(0.6rem, 1.6vw, 0.95rem);
+  padding: 0;
+
+  font-family: "Shippori Mincho B1", serif;
+  font-weight: 800;
+  font-size: clamp(1.08rem, 2.35vw, 1.38rem);
+  letter-spacing: 0.02em;
+  line-height: 1.28;
+  color: rgba(17, 17, 17, 0.94);
+}
+
+/* 開催概要スケジュール：外枠だけ（白の中間レイヤーを挟まずクリーム地上に載せる） */
+#about .about-schedule {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  margin-top: clamp(0.85rem, 2.4vw, 1.35rem);
+  padding: clamp(0.72rem, 2vw, 1rem) clamp(0.85rem, 2.2vw, 1.05rem)
+    clamp(0.95rem, 2.4vw, 1.25rem);
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+}
+
+#about .about-schedule .about-timeline-heading {
+  margin: 0 0 0.4rem;
+  font-size: clamp(0.98rem, 2.1vw, 1.16rem);
+}
+
+#about .about-schedule .about-schedule-lede {
+  margin: 0 0 clamp(0.55rem, 1.5vw, 0.75rem);
+  font-size: 0.78rem;
+  line-height: 1.55;
+  color: rgba(17, 17, 17, 0.52);
+}
+
+#about .about-schedule .program-timeline-inner {
+  margin-bottom: 0;
+}
+
+#about .about-schedule .program-timeline-compact {
+  --pt-bar-pad-block: 0.26rem;
+  --pt-bar-pad-inline-start: 0.42rem;
+  --pt-bar-pad-inline-end: 0.48rem;
+  --pt-bar-track-top: 0.2rem;
+  padding-inline: 0;
+}
+
+#about .about-schedule .program-timeline-day-block {
+  margin-bottom: clamp(0.38rem, 1.2vw, 0.58rem);
+}
+
+#about .about-schedule .program-timeline-day-heading {
+  margin: 0 0 0.2rem;
+  font-size: 0.72rem;
+}
+
+#about .about-schedule .program-timeline-day-tracks {
+  gap: 0.2rem;
+}
+
+#about .about-schedule .program-timeline-sheet {
+  border-radius: 2px;
+}
+
+/* スケジュール：ヒーロー float と同系（固定幅チップ／実時間幅は使わない） */
+#about .about-schedule .program-timeline-sheet--ev {
+  min-height: 0 !important;
+  padding-bottom: 0.08rem;
+  background: transparent;
+}
+
+#about .about-schedule .program-timeline-sheet--exh {
+  background: transparent;
+  padding: 0;
+}
+
+#about .about-schedule .program-timeline-sheet--exh .program-timeline-bars {
+  display: block;
+  position: relative;
+  min-height: 0 !important;
+}
+
+/* イベント＋上映：4 or 3 カラムグリッド（実時間幅は使わない） */
+#about .about-schedule .program-timeline-sheet--ev .program-timeline-bars {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.42rem;
+  align-items: stretch;
+  position: relative;
+  min-height: 0 !important;
+}
+
+/* タブレット幅以下は日付問わず1列（7/19 と同じ縦積み） */
+@media (max-width: 1180px) {
+  #about .about-schedule .program-timeline-sheet--ev .program-timeline-bars {
+    grid-template-columns: 1fr;
+  }
+}
+
+/*
+ * 7/18（土）：ワイド時のみ。午前イベントなし前提でイベント／上映行の左1列ぶんを空ける（展示はフル幅 4/4）。
+ * 1180px 以下では上の 1 列レイアウトに任せ、詳細度で 1fr を潰さないようにする。
+ */
+@media (min-width: 1181px) {
+  #about .about-schedule .program-timeline-day-block[data-timeline-day="sat"] .program-timeline-sheet--ev .program-timeline-bars {
+    --sat-sked-gap: 0.42rem;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--sat-sked-gap);
+    padding-left: calc((100% - 3 * var(--sat-sked-gap)) / 4 + var(--sat-sked-gap));
+    box-sizing: border-box;
+  }
+}
+
+#about .about-schedule .program-timeline-sheet--exh .program-timeline-bar {
+  position: relative;
+  left: auto !important;
+  top: auto !important;
+  width: 100% !important;
+  max-width: 100%;
+}
+
+#about .about-schedule .program-timeline-sheet--ev .program-timeline-bar {
+  position: relative;
+  left: auto !important;
+  top: auto !important;
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+}
+
+#about .about-schedule .program-timeline-bar {
+  border-radius: 2px 2px 0 0;
+  border: 1px solid rgba(var(--brand-black-rgb), 0.08);
+  border-left-width: 4px;
+  border-left-style: solid;
+  background: #fff;
+  box-shadow: 0 6px 20px rgba(var(--brand-black-rgb), 0.055);
+
+  transition:
+    border-color var(--int-fast) var(--int-ease),
+    border-left-color var(--int-fast) var(--int-ease),
+    box-shadow var(--int-fast) var(--int-ease),
+    transform var(--int-fast) var(--int-ease),
+    background-color var(--int-fast) var(--int-ease);
+}
+
+#about .about-schedule .program-timeline-bar--lecture {
+  border-left-color: rgba(var(--brand-blue-rgb), 0.92);
+}
+
+#about .about-schedule .program-timeline-bar--workshop {
+  border-left-color: rgba(var(--brand-magenta-rgb), 0.92);
+}
+
+#about .about-schedule .program-timeline-bar--exhibition {
+  border-left-color: rgba(var(--brand-black-rgb), 0.92);
+}
+
+#about .about-schedule .program-timeline-bar--screening {
+  border-left-color: rgba(var(--brand-purple-rgb), 0.92);
+}
+
+#about .about-schedule .program-timeline-bar:hover {
+  transform: translateY(-1px);
+  background: #fff;
+  box-shadow: 0 10px 28px rgba(var(--brand-black-rgb), 0.09);
+  border-top-color: rgba(var(--brand-black-rgb), 0.12);
+  border-right-color: rgba(var(--brand-black-rgb), 0.12);
+  border-bottom-color: rgba(var(--brand-black-rgb), 0.12);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #about .about-schedule .program-timeline-bar:hover {
+    transform: none;
+  }
+}
+
+#about .about-schedule .program-timeline-bar-label {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.28rem;
+  padding-block: 5px;
+  min-height: 0;
+}
+
+#about .about-schedule .program-timeline-bar-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.32rem 0.45rem;
+  min-width: 0;
+}
+
+#about .about-schedule .program-timeline-bar-time {
+  flex-shrink: 0;
+  font-size: clamp(0.55rem, 1.42vw, 0.62rem);
+  letter-spacing: 0.06em;
+  color: rgba(var(--brand-black-rgb), 0.48);
+}
+
+#about .about-schedule .program-timeline-bar-tag {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.1rem 0.38rem;
+  border: 1px solid rgba(var(--brand-purple-rgb), 0.45);
+  border-radius: 2px;
+  font-family: "DM Mono", monospace;
+  font-size: 0.52rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+  white-space: nowrap;
+  color: rgba(var(--brand-purple-rgb), 0.98);
+  background: rgba(var(--brand-purple-rgb), 0.07);
+}
+
+#about .about-schedule .program-timeline-bar--lecture .program-timeline-bar-tag {
+  border-color: rgba(var(--brand-blue-rgb), 0.45);
+  color: rgba(var(--brand-blue-rgb), 0.98);
+  background: rgba(var(--brand-blue-rgb), 0.07);
+}
+
+#about .about-schedule .program-timeline-bar--workshop .program-timeline-bar-tag {
+  border-color: rgba(var(--brand-magenta-rgb), 0.45);
+  color: rgba(var(--brand-magenta-rgb), 0.92);
+  background: rgba(var(--brand-magenta-rgb), 0.07);
+}
+
+#about .about-schedule .program-timeline-bar--exhibition .program-timeline-bar-tag {
+  border-color: rgba(var(--brand-black-rgb), 0.22);
+  color: rgba(var(--brand-black-rgb), 0.78);
+  background: rgba(var(--brand-black-rgb), 0.05);
+}
+
+#about .about-schedule .program-timeline-bar--screening .program-timeline-bar-tag {
+  border-color: rgba(var(--brand-purple-rgb), 0.45);
+  color: rgba(var(--brand-purple-rgb), 0.98);
+  background: rgba(var(--brand-purple-rgb), 0.07);
+}
+
+#about .about-schedule .program-timeline-bar--screening .program-timeline-bar-name {
+  white-space: pre-line;
+}
+
+#about .about-schedule .program-timeline-bar-name {
+  font-family: "Shippori Mincho B1", serif;
+  font-size: clamp(0.74rem, 1.82vw, 0.88rem);
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: 0.02em;
+  color: rgba(var(--brand-black-rgb), 0.94);
+}
+
+/* ========== 共通 · program-timeline（開催概要＋再利用） ========== */
+
+.program-timeline-scroll-host {
+  overflow-x: clip;
+  margin-inline: clamp(-0.15rem, -0.8vw, 0);
+  min-width: 0;
+}
+
+.program-timeline-compact {
+  --pt-bar-pad-block: 0.38rem;
+  --pt-bar-pad-inline-start: 0.55rem;
+  --pt-bar-pad-inline-end: 0.65rem;
+  --pt-bar-track-top: 0.3rem;
+  --pt-bar-border: 1px solid rgba(17, 17, 17, 0.085);
+  --pt-bar-border-hover: rgba(17, 17, 17, 0.18);
+  --pt-bar-shadow: 0 3px 12px rgba(15, 17, 21, 0.042);
+  --pt-bar-shadow-hover: 0 6px 18px rgba(15, 17, 21, 0.065);
+
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  padding-inline: 2px;
+}
+
+.program-timeline-day-block {
+  margin-bottom: clamp(0.52rem, 1.6vw, 0.78rem);
+}
+
+.program-timeline-day-block:last-of-type {
+  margin-bottom: clamp(0.28rem, 0.9vw, 0.48rem);
+}
+
+.program-timeline-day-heading {
+  margin: 0 0 0.26rem;
+  width: 100%;
+
+  font-family: "DM Mono", monospace;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: rgba(17, 17, 17, 0.72);
+}
+
+.program-timeline-day-tracks {
+  display: flex;
+  flex-direction: column;
+  gap: 0.26rem;
+  width: 100%;
+  min-width: 0;
+}
+
+.program-timeline-sheet {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  border-radius: 2px;
+  border: none;
+  background: rgba(var(--bg-light-rgb), 0.42);
+}
+
+.program-timeline-sheet--exh {
+  padding: 0.32rem 0.34rem 0.3rem;
+}
+
+.program-timeline-sheet--exh .program-timeline-bars {
+  min-height: calc(
+    var(--pt-bar-track-top) + var(--pt-bar-pad-block) * 2 + 2.12rem + 0.38rem
+  );
+}
+
+.program-timeline-sheet--ev {
+  --pt-ev-track-min: clamp(5.15rem, 17vw, 7.85rem);
+  min-height: var(--pt-ev-track-min);
+  overflow: visible;
+  padding-bottom: 0.28rem;
+}
+
+.program-timeline-bars {
+  position: relative;
+  isolation: isolate;
+  box-sizing: border-box;
+  min-height: inherit;
+}
+
+/* バー本体は `#event .ev-card` と同系（白地・左アクセント・軽いシャドウ） */
+.program-timeline-bar {
+  position: absolute;
+
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+
+  left: 0;
+  top: var(--pt-bar-track-top);
+  margin: 0;
+
+  translate: none;
+
+  padding: var(--pt-bar-pad-block) var(--pt-bar-pad-inline-end) var(--pt-bar-pad-block)
+    var(--pt-bar-pad-inline-start);
+
+  box-sizing: border-box;
+  border-radius: 2px;
+
+  overflow: visible;
+  border: var(--pt-bar-border);
+  border-left-width: 4px;
+
+  background: #fff;
+  box-shadow: var(--pt-bar-shadow);
+
+  text-decoration: none;
+  color: rgba(17, 17, 17, 0.92);
+
+  text-align: left;
+  appearance: none;
+  font: inherit;
+  cursor: pointer;
+
+  transition:
+    border-top-color var(--int-fast) var(--int-ease),
+    border-right-color var(--int-fast) var(--int-ease),
+    border-bottom-color var(--int-fast) var(--int-ease),
+    border-left-color var(--int-fast) var(--int-ease),
+    box-shadow var(--int-fast) var(--int-ease),
+    background-color var(--int-fast) var(--int-ease);
+}
+
+/* hover で四辺とも border-color を変えると左アクセントまでグレーになるため、上・右・下のみ */
+.program-timeline-bar:hover {
+  z-index: 40;
+  border-top-color: var(--pt-bar-border-hover);
+  border-right-color: var(--pt-bar-border-hover);
+  border-bottom-color: var(--pt-bar-border-hover);
+  box-shadow: var(--pt-bar-shadow-hover);
+}
+
+.program-timeline-bar--lecture:hover {
+  background-color: rgba(var(--brand-blue-rgb), 0.07);
+  border-left-color: rgba(var(--brand-blue-rgb), 1);
+}
+
+.program-timeline-bar--workshop:hover {
+  background-color: rgba(var(--brand-magenta-rgb), 0.08);
+  border-left-color: rgba(var(--brand-magenta-rgb), 1);
+}
+
+.program-timeline-bar--exhibition:hover {
+  background-color: rgba(var(--brand-black-rgb), 0.045);
+  border-left-color: rgba(var(--brand-black-rgb), 0.88);
+}
+
+.program-timeline-bar--screening:hover {
+  background-color: rgba(var(--brand-purple-rgb), 0.08);
+  border-left-color: rgba(var(--brand-purple-rgb), 1);
+}
+
+.program-timeline-bar:focus-visible {
+  outline: 2px solid rgba(var(--brand-blue-rgb), 0.55);
+  outline-offset: 2px;
+}
+
+/* 展示バー：`fillProgramTimeline` の left/width（例: 10:00–18:00）。下だけひと息余白 */
+.program-timeline-sheet--exh .program-timeline-bar {
+  height: auto;
+  max-height: none;
+  padding-bottom: calc(var(--pt-bar-pad-block) + 0.12rem);
+}
+
+/* イベントは横位置のみ絶対、縦は内容で伸長（シート min-height で帯を確保） */
+.program-timeline-sheet--ev .program-timeline-bar {
+  bottom: auto;
+
+  height: auto;
+  min-height: 2.55rem;
+  max-height: none;
+
+  overflow: visible;
+}
+
+.program-timeline-bar-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.28rem;
+
+  justify-content: flex-start;
+
+  flex: none;
+
+  width: 100%;
+
+  min-width: 0;
+}
+
+/* 時刻：メタ情報トーン（タイトルより一段小さく・やや淡く） */
+.program-timeline-bar-time {
+  display: block;
+
+  flex-shrink: 0;
+
+  font-family: "DM Mono", monospace;
+  font-weight: 600;
+  font-size: 0.68rem;
+  line-height: 1.35;
+  letter-spacing: 0.05em;
+
+  white-space: nowrap;
+
+  color: rgba(17, 17, 17, 0.48);
+
+  font-variant-numeric: tabular-nums;
+}
+
+/* タイトル（タイムライン内はややコンパクトにして折り返しを抑える） */
+.program-timeline-bar-name {
+  display: block;
+
+  font-family: "Noto Sans JP", system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  line-height: 1.2;
+  letter-spacing: 0;
+
+  color: rgba(17, 17, 17, 0.96);
+
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+.program-timeline-sheet--exh .program-timeline-bar-label {
+  justify-content: flex-start;
+}
+
+.program-timeline-bar--lecture {
+  border-left-color: rgba(var(--brand-blue-rgb), 0.92);
+}
+
+.program-timeline-bar--workshop {
+  border-left-color: rgba(var(--brand-magenta-rgb), 0.92);
+}
+
+.program-timeline-bar--exhibition {
+  border-left-color: rgba(var(--brand-black-rgb), 0.92);
+}
+
+.program-timeline-bar--screening {
+  border-left-color: rgba(var(--brand-purple-rgb), 0.92);
+}
+
+.program-head {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 12rem);
+  column-gap: clamp(1rem, 3vw, 1.8rem);
+  align-items: center;
+  min-height: 92px;
+  padding-block: 0.25rem;
+}
+
+.program-head-main {
+  min-width: 0;
+}
+
+.program-kicker {
+  margin: 0 0 0.28rem;
+  font-family: "DM Mono", monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(17, 17, 17, 0.48);
+}
+
+.program-title {
+  font-family: "Shippori Mincho B1", serif;
+  font-weight: 800;
+  font-size: clamp(1.55rem, 3.5vw, 2.35rem);
+  letter-spacing: 0.02em;
+  line-height: 1.05;
+  margin: 0;
+  justify-self: start;
+  transition: color var(--int-base) var(--int-ease), letter-spacing var(--int-base) var(--int-ease);
+}
+
+.program-item:hover .program-title {
+  color: rgba(17, 17, 17, 0.94);
+  letter-spacing: 0.028em;
+}
+
+.program-venue {
+  font-family: "DM Mono", monospace;
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: rgba(17, 17, 17, 0.48);
+  text-align: right;
+  justify-self: end;
+}
+
+.program-body {
+  position: relative;
+  z-index: 1;
+  padding: 0 0 2.25rem;
+  max-width: 52rem;
+}
+
+#screening .program-body,
+#exhibition .program-body,
+#event .program-body {
+  max-width: none;
+}
+
+/* 展示カルーセルが 100vw ブレイクアウトするため、親の overflow で左右ボタンが切れないようにする */
+#exhibition.program-item {
+  overflow: visible;
+}
+
+#screening .program-body {
+  padding-top: var(--program-stack-sm);
+  padding-bottom: clamp(2rem, 5vw, 2.75rem);
+}
+
+/* ========== SCREENING · レイアウト・スライドショー枠 ========== */
+
+.program-item--screening .program-head {
+  padding-block: clamp(0.5rem, 1.5vw, 0.85rem);
+}
+
+.screening-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--program-stack-lg);
+  min-width: 0;
+}
+
+.screening-hero {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  min-width: 0;
+}
+
+/* 上映ヒーロー二段グリッド：作品ビジュアル 2fr ＋ 教員メッセージ 1fr（ワイド時） */
+.screening-hero-split {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(14.5rem, 1fr);
+  align-items: start;
+  gap: clamp(1rem, 2.8vw, 1.85rem);
+  width: 100%;
+  max-width: min(64rem, 100%);
+  margin-inline: auto;
+  min-width: 0;
+}
+
+.screening-hero-split__media {
+  min-width: 0;
+}
+
+.screening-hero-split__aside {
+  min-width: 0;
+}
+
+@media (max-width: 52rem) {
+  .screening-hero-split {
+    grid-template-columns: 1fr;
+    max-width: min(56rem, 100%);
+  }
+}
+
+.screening-visual--hero {
+  width: 100%;
+  max-width: min(56rem, 100%);
+  margin-inline: auto;
+}
+
+.screening-hero-split .screening-visual--hero {
+  max-width: none;
+  margin-inline: 0;
+}
+
+.screening-visual--hero .screening-slideshow {
+  width: 100%;
+}
+
+#screening .screening-intro {
+  max-width: none;
+  width: 100%;
+}
+
+#screening .screening-program-lede-head {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+#screening .screening-intro a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: rgba(17, 17, 17, 0.28);
+  text-underline-offset: 0.18em;
+}
+
+#screening .screening-intro a:hover {
+  color: var(--accent);
+  text-decoration-color: var(--accent-link-underline);
+}
+
+/*
+ * 上映：縦線はプログラム名・キャッチのみ。本文 `.screening-intro` は同级别で左線なし。
+ */
+.screening-program-lede-stack {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.48rem, 1.25vw, 0.62rem);
+  margin: 0 0 var(--program-stack-lg);
+  width: 100%;
+  max-width: min(44rem, 100%);
+  box-sizing: border-box;
+}
+
+.screening-program-lede {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin: 0;
+  max-width: 100%;
+  padding: 0.15rem 0 0.15rem 0.85rem;
+  border-left: 3px solid var(--brand-purple);
+  box-sizing: border-box;
+}
+
+/* スタック全体をコンテナ幅いっぱいに */
+#screening .screening-program-lede-stack {
+  max-width: none;
+}
+
+.screening-program-name {
+  margin: 0;
+  font-family: "Shippori Mincho B1", serif;
+  font-size: clamp(1.05rem, 2.4vw, 1.22rem);
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  line-height: 1.35;
+  color: rgba(17, 17, 17, 0.93);
+}
+
+/* 見出しと同じ明朝で階層だけ落とし、字間は詰めて全角スペースの開きが過剰にならないようにする */
+.screening-program-tagline {
+  margin: 0;
+  padding: 0;
+  border: none;
+  font-family: "Shippori Mincho B1", serif;
+  font-size: clamp(0.92rem, 2.1vw, 1.05rem);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 1.65;
+  color: rgba(17, 17, 17, 0.52);
+}
+

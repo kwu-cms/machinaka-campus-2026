@@ -8,6 +8,8 @@ html {
   scroll-behavior: smooth;
   /* ページ内リンク（#news など）で sticky ナビに見出しが隠れないようにする */
   scroll-padding-top: var(--nav-h);
+  /* 100vw 系の全幅ブレイクアウトが縦スクロールバー幅ぶんだけ横にはみ出すのを抑止 */
+  overflow-x: clip;
 }
 
 body {

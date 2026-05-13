@@ -1,0 +1,94 @@
+/*
+ * =============================================================================
+ * sections-news.css （旧 sections.css の断片 1/4）
+ * 読み込み順: sections-news → program-core → movies-events-dialogs → about-access
+ * 構成・ブレークポイント: docs/CSS.md
+ * =============================================================================
+ */
+
+/* ========== NEWS ========== */
+.news-list {
+  border-top: 1px solid var(--rule);
+}
+
+.news-item {
+  display: grid;
+  grid-template-columns: 7.5rem 1fr;
+  gap: 1.25rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--rule);
+  transition: background var(--int-fast) var(--int-ease), border-color var(--int-fast) var(--int-ease);
+}
+
+.news-item:hover {
+  background: var(--hover-surface);
+  border-color: rgba(17, 17, 17, 0.22);
+}
+
+#news .news-item:last-child {
+  border-bottom: none;
+}
+
+.news-date {
+  font-family: "DM Mono", monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  color: rgba(17, 17, 17, 0.45);
+}
+
+.news-text {
+  margin: 0;
+  font-size: 0.96rem;
+  font-weight: 500;
+  color: rgba(17, 17, 17, 0.88);
+}
+
+/* タブレット以下で #news が見えるとき、本文トーンを program-copy に寄せる */
+@media (max-width: 900px) {
+  #news > .container {
+    min-width: 0;
+  }
+
+  #news .section-note {
+    margin-bottom: clamp(1rem, 2.8vw, 1.35rem);
+    font-size: 0.93rem;
+    line-height: 1.78;
+    color: rgba(17, 17, 17, 0.52);
+    max-width: none;
+  }
+
+  #news .news-list {
+    min-width: 0;
+  }
+
+  #news .news-item {
+    grid-template-columns: minmax(5.25rem, 26vw) 1fr;
+    gap: clamp(0.65rem, 2.2vw, 1.05rem);
+    padding-block: clamp(0.92rem, 2.2vw, 1.08rem);
+  }
+
+  #news .news-text {
+    font-size: 0.95rem;
+    line-height: 1.82;
+    color: rgba(17, 17, 17, 0.88);
+  }
+}
+
+@media (max-width: 640px) {
+  #news .news-item {
+    grid-template-columns: 1fr;
+    gap: 0.32rem;
+    padding-block: clamp(0.88rem, 2.6vw, 1.05rem);
+  }
+
+  #news .news-date {
+    font-size: 0.7rem;
+    letter-spacing: 0.07em;
+    color: rgba(17, 17, 17, 0.48);
+  }
+
+  #news .news-text {
+    font-size: 0.92rem;
+    line-height: 1.82;
+  }
+}

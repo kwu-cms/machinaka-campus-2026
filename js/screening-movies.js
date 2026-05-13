@@ -161,7 +161,7 @@ export function initScreeningMovies() {
     }
 
     /** 詳細モーダル: 一覧の各日列と同じプログラム枠・会場 */
-    const MV_DIALOG_SLOT_RANGE = "17:10～19:00";
+    const MV_DIALOG_SLOT_RANGE = "17:00～19:10";
     const MV_DIALOG_VENUE = "元町映画館";
     const MV_DIALOG_PIN_SRC = "./images/fa-location-pin.svg";
 

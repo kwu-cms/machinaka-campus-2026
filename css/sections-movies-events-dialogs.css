@@ -1,0 +1,2253 @@
+/*
+ * =============================================================================
+ * sections-movies-events-dialogs.css （旧 sections.css の断片 3/4）
+ * 上映リスト・モーダル、イベント一覧／モーダル、展示カルーセル、テストページ notice 等
+ * =============================================================================
+ */
+
+/* ========== SCREENING · movies.csv · 映画モーダル ========== */
+
+/* ── 南女シネマ（movies.csv）カード・作品モーダル ── */
+#screening .mv-section {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+#screening .mv-schedule-main {
+  --mv-accent: rgba(var(--brand-purple-rgb), 0.9);
+  --mv-focus: rgba(var(--brand-purple-rgb), 0.65);
+}
+
+/* 左: 7/18（土） / 右: 7/19（日）。各列は上映順（表示順）で縦並び */
+#screening .mv-schedule-main .mv-program-cols {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem 1.75rem;
+  align-items: start;
+}
+
+#screening .mv-schedule-main .mv-program-col {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+#screening .mv-schedule-main .mv-program-col-title {
+  margin: 0;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid rgba(17, 17, 17, 0.18);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.35rem 1rem;
+}
+
+#screening .mv-schedule-main .mv-program-col-date {
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.45;
+  letter-spacing: -0.01em;
+  color: rgba(17, 17, 17, 0.96);
+}
+
+#screening .mv-schedule-main .mv-program-col-meta {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.45rem;
+  font-family: "DM Mono", monospace;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: rgba(17, 17, 17, 0.52);
+}
+
+#screening .mv-schedule-main .mv-program-col-venue {
+  font-family: "Noto Sans JP", sans-serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.03em;
+}
+
+#screening .mv-schedule-main .mv-program-col-pin {
+  width: 0.82rem;
+  height: 0.82rem;
+  flex-shrink: 0;
+  display: block;
+  opacity: 0.55;
+}
+
+#screening .mv-schedule-main .mv-program-col-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  min-width: 0;
+}
+
+#screening .mv-schedule-main .mv-card {
+  box-sizing: border-box;
+  min-width: 0;
+  margin: 0;
+  padding: 1rem 1.1rem 1.05rem;
+  background: #fff;
+  border: 1px solid rgba(17, 17, 17, 0.12);
+  border-radius: 2px;
+  border-left: 4px solid var(--mv-accent);
+  box-shadow: 0 6px 22px rgba(15, 17, 21, 0.06);
+  cursor: pointer;
+  transition: border-color var(--int-fast) var(--int-ease), box-shadow var(--int-fast) var(--int-ease);
+  text-align: left;
+}
+
+/* サムネあり: .mv-card の background 短縮形（白）を打ち消し、下層に写真 div を置く */
+#screening .mv-schedule-main .mv-card--thumb {
+  position: relative;
+  overflow: hidden;
+  background-color: rgba(248, 246, 242, 0.65);
+  background-image: none;
+  min-height: 7.5rem;
+}
+
+#screening .mv-schedule-main .mv-card-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  transform: scale(1);
+  transform-origin: center center;
+  filter: blur(3px);
+  transition:
+    transform 0.55s var(--int-ease),
+    filter 0.5s var(--int-ease);
+  pointer-events: none;
+}
+
+#screening .mv-schedule-main .mv-card--thumb:hover .mv-card-bg {
+  transform: scale(1.08);
+  filter: blur(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #screening .mv-schedule-main .mv-card-bg {
+    transition: none;
+    filter: blur(0);
+  }
+
+  #screening .mv-schedule-main .mv-card--thumb:hover .mv-card-bg {
+    transform: scale(1);
+  }
+}
+
+#screening .mv-schedule-main .mv-card:hover {
+  border-color: rgba(17, 17, 17, 0.22);
+  box-shadow: 0 10px 28px rgba(15, 17, 21, 0.09);
+}
+
+#screening .mv-schedule-main .mv-card:focus-visible {
+  outline: 2px solid var(--mv-focus);
+  outline-offset: 2px;
+}
+
+#screening .mv-schedule-main .mv-item-title {
+  font-family: "Shippori Mincho B1", serif;
+  font-size: clamp(1.02rem, 2.2vw, 1.14rem);
+  font-weight: 800;
+  line-height: 1.4;
+  letter-spacing: 0.02em;
+  color: rgba(17, 17, 17, 0.94);
+  margin: 0 0 0.4rem;
+}
+
+#screening .mv-schedule-main .mv-item-meta {
+  margin: 0;
+  font-size: 0.84rem;
+  font-weight: 500;
+  line-height: 1.55;
+  color: rgba(17, 17, 17, 0.62);
+}
+
+/* 画像あり: タイトル＋メタを1つの白ブロックに連結（背景レイヤーより手前） */
+#screening .mv-schedule-main .mv-card--thumb .mv-item-overlay {
+  position: relative;
+  z-index: 1;
+  display: inline-block;
+  max-width: 100%;
+  vertical-align: top;
+  box-sizing: border-box;
+  padding: 0.4rem 0.52rem;
+  background: rgba(255, 255, 255, 0.94);
+  border-radius: 3px;
+}
+
+#screening .mv-schedule-main .mv-card--thumb .mv-item-overlay .mv-item-title {
+  margin: 0 0 0.28rem;
+}
+
+#screening .mv-schedule-main .mv-card--thumb .mv-item-overlay .mv-item-meta {
+  margin: 0;
+}
+
+@media (max-width: 900px) {
+  #screening .mv-schedule-main .mv-program-cols {
+    grid-template-columns: 1fr;
+    gap: 1.35rem;
+  }
+}
+
+#screening .mv-load-error {
+  margin: 0.5rem 0 0;
+  font-size: 0.88rem;
+  color: rgba(140, 36, 74, 0.92);
+  line-height: 1.65;
+}
+
+/* ========== MOVIE DIALOG ========== */
+/* 作品カードから開く詳細 */
+.movie-dialog {
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  max-width: calc(100vw - 2rem);
+  width: min(34rem, 100%);
+  background: #fff;
+  box-shadow: 0 24px 60px rgba(15, 17, 21, 0.22);
+}
+
+.movie-dialog::backdrop {
+  background: rgba(15, 17, 21, 0.45);
+}
+
+.movie-dialog-panel {
+  position: relative;
+  padding: clamp(1.15rem, 3vw, 1.5rem) clamp(1.1rem, 3vw, 1.45rem) clamp(1.25rem, 3vw, 1.55rem);
+}
+
+.movie-dialog-close {
+  position: absolute;
+  top: 0.55rem;
+  right: 0.55rem;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: none;
+  border-radius: 4px;
+  background: rgba(17, 17, 17, 0.06);
+  color: rgba(17, 17, 17, 0.65);
+  font-size: 1.35rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--int-fast) var(--int-ease), color var(--int-fast) var(--int-ease);
+}
+
+.movie-dialog-close:hover {
+  background: rgba(17, 17, 17, 0.1);
+  color: rgba(17, 17, 17, 0.88);
+}
+
+.movie-dialog-media {
+  margin: 0 0 1rem;
+  border-radius: 3px;
+  overflow: hidden;
+  border: 1px solid var(--rule);
+  background: rgba(17, 17, 17, 0.04);
+}
+
+.movie-dialog-media[hidden] {
+  display: none !important;
+}
+
+.movie-dialog-thumb {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
+.movie-dialog-title {
+  margin: 0 2.25rem 0.35rem 0;
+  font-family: "Shippori Mincho B1", serif;
+  font-size: clamp(1.08rem, 2.6vw, 1.28rem);
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  line-height: 1.35;
+  color: rgba(17, 17, 17, 0.94);
+}
+
+.movie-dialog-meta {
+  margin: 0 0 0.75rem;
+  font-size: 0.84rem;
+  font-weight: 500;
+  line-height: 1.55;
+  color: rgba(17, 17, 17, 0.62);
+}
+
+/* 上映日時・会場: 右寄せ・インラインブロック（カード枠なしで軽く） */
+.movie-dialog-showtime {
+  margin: 0 0 0.75rem;
+  text-align: right;
+  line-height: 1.35;
+}
+
+.movie-dialog-showtime-inner {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.08rem;
+  text-align: right;
+  max-width: 100%;
+}
+
+.movie-dialog-showtime-date {
+  font-size: 0.81rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: rgba(17, 17, 17, 0.78);
+}
+
+.movie-dialog-showtime-slot {
+  font-family: "DM Mono", monospace;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  color: rgba(17, 17, 17, 0.48);
+}
+
+.movie-dialog-showtime-venue-row {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.28rem;
+  margin-top: 0.12rem;
+}
+
+.movie-dialog-showtime-pin-wrap {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.movie-dialog-showtime-pin {
+  display: block;
+  width: 0.75rem;
+  height: 0.75rem;
+  opacity: 0.5;
+}
+
+.movie-dialog-showtime-venue {
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: rgba(17, 17, 17, 0.62);
+}
+
+.movie-dialog-showtime-unknown {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: rgba(140, 36, 74, 0.92);
+  text-align: left;
+}
+
+.movie-dialog-body {
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--rule);
+}
+
+.movie-dialog-desc {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.82;
+  color: rgba(17, 17, 17, 0.78);
+  white-space: pre-line;
+}
+
+/* ========== EVENT DIALOG ========== */
+/* イベントカード・注目から開く詳細（映画ダイアログと同系統） */
+.event-dialog {
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  max-width: calc(100vw - 2rem);
+  width: min(46rem, 100%);
+  background: #fff;
+  box-shadow: 0 26px 72px rgba(15, 17, 21, 0.28);
+}
+
+.event-dialog::backdrop {
+  background: rgba(15, 17, 21, 0.56);
+  backdrop-filter: blur(1.5px);
+}
+
+.event-dialog-panel {
+  position: relative;
+  padding: clamp(1rem, 2.6vw, 1.25rem) clamp(1rem, 2.6vw, 1.3rem) clamp(1.05rem, 2.6vw, 1.35rem);
+  max-height: min(86vh, 56rem);
+  overflow: auto;
+}
+
+.event-dialog-close {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: none;
+  border-radius: 999px;
+  background: rgba(17, 17, 17, 0.09);
+  color: rgba(17, 17, 17, 0.72);
+  font-size: 1.35rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--int-fast) var(--int-ease), color var(--int-fast) var(--int-ease);
+}
+
+.event-dialog-close:hover {
+  background: rgba(17, 17, 17, 0.16);
+  color: rgba(17, 17, 17, 0.92);
+}
+
+.event-dialog-media {
+  margin: 0 0 0.85rem;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid rgba(17, 17, 17, 0.1);
+  background: rgba(17, 17, 17, 0.04);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.event-dialog-media[hidden] {
+  display: none !important;
+}
+
+.event-dialog-thumb {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
+.event-dialog-title {
+  margin: 0 2.3rem 0.35rem 0;
+  font-family: "Shippori Mincho B1", serif;
+  font-size: clamp(1.18rem, 2.9vw, 1.45rem);
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  line-height: 1.42;
+  color: rgba(17, 17, 17, 0.94);
+}
+
+/* タイムテーブルカード（#event）と同じトーン・コンポーネントクラスを流用（本文よりコンパクトに） */
+.event-dialog-meta {
+  margin: 0 0 0.55rem;
+  padding: 0.48rem 0.62rem 0.52rem;
+  border-radius: 2px;
+  background: #fff;
+  border: 1px solid rgba(17, 17, 17, 0.12);
+  box-shadow: 0 4px 16px rgba(15, 17, 21, 0.05);
+  font-size: 0.78rem;
+  font-weight: 500;
+  line-height: 1.38;
+  color: rgba(17, 17, 17, 0.7);
+}
+
+.event-dialog-meta--lecture {
+  border-left: 4px solid rgba(var(--brand-blue-rgb), 0.9);
+}
+
+.event-dialog-meta--workshop {
+  border-left: 4px solid rgba(var(--brand-magenta-rgb), 0.9);
+}
+
+.event-dialog-meta--permanent {
+  border-left: 4px solid rgba(var(--brand-black-rgb), 0.35);
+}
+
+.event-dialog-meta-stack {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.event-dialog-meta .ev-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.28rem 0.38rem;
+  margin-bottom: 0.12rem;
+}
+
+.event-dialog-meta .ev-cat {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  padding: 0.1rem 0.42rem 0.11rem;
+  border-radius: 2px;
+}
+
+.event-dialog-meta .ev-cat-lecture {
+  background: rgba(var(--brand-blue-rgb), 0.14);
+  color: rgba(12, 72, 124, 0.98);
+}
+
+.event-dialog-meta .ev-cat-workshop {
+  background: rgba(var(--brand-magenta-rgb), 0.12);
+  color: rgba(140, 36, 74, 0.98);
+}
+
+.event-dialog-meta .ev-cat-permanent {
+  background: rgba(var(--brand-black-rgb), 0.1);
+  color: rgba(var(--brand-black-rgb), 0.88);
+}
+
+.event-dialog-meta .ev-domain {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  line-height: 1.2;
+  color: rgba(17, 17, 17, 0.62);
+  background: rgba(17, 17, 17, 0.055);
+  border: 1px solid rgba(17, 17, 17, 0.11);
+  padding: 0.08rem 0.38rem 0.09rem;
+  border-radius: 2px;
+}
+
+.event-dialog-meta .ev-apply-inline {
+  font-size: 0.66rem;
+  color: rgba(var(--brand-magenta-rgb), 0.95);
+  font-weight: 600;
+}
+
+.event-dialog-meta .ev-speakers {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 0.28rem 0.42rem;
+  margin: 0.12rem 0 0;
+  font-size: 0.76rem;
+  font-weight: 500;
+  line-height: 1.42;
+  color: rgba(17, 17, 17, 0.7);
+}
+
+.event-dialog-meta .ev-speakers-icon {
+  flex-shrink: 0;
+  display: block;
+  width: 0.82rem;
+  height: 0.82rem;
+  margin-top: 0.18em;
+  object-fit: contain;
+  opacity: 0.5;
+}
+
+.event-dialog-meta .ev-speakers-body {
+  min-width: 0;
+  white-space: pre-line;
+}
+
+/* 日付・時刻は1行にまとめて縦幅を抑える */
+.event-dialog-datetime {
+  margin: 0;
+  font-family: "DM Mono", monospace;
+  font-size: 0.74rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  line-height: 1.35;
+  color: rgba(17, 17, 17, 0.62);
+}
+
+.event-dialog-venue {
+  margin: 0;
+  font-size: 0.74rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: rgba(17, 17, 17, 0.65);
+}
+
+.event-dialog-body {
+  padding-top: 0.58rem;
+  border-top: 1px solid var(--rule);
+}
+
+.event-dialog-body .ev-desc {
+  margin: 0;
+  font-size: 0.86rem;
+  line-height: 1.82;
+  color: rgba(17, 17, 17, 0.78);
+  white-space: pre-line;
+}
+
+.event-dialog-body .ev-desc--placeholder {
+  color: rgba(17, 17, 17, 0.52);
+  font-style: italic;
+}
+
+.event-dialog-body .ev-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.65rem;
+  margin-bottom: 0;
+}
+
+.event-dialog-body .ev-tag {
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 0.22rem 0.62rem;
+  border: none;
+  border-radius: 999px;
+  color: #fff;
+  letter-spacing: 0.02em;
+  line-height: 1.35;
+}
+
+.event-dialog-body .ev-tags--lecture .ev-tag {
+  background: var(--brand-blue);
+}
+
+.event-dialog-body .ev-tags--workshop .ev-tag {
+  background: var(--brand-magenta);
+}
+
+.event-dialog-body .ev-tags--permanent .ev-tag {
+  background: rgba(var(--brand-black-rgb), 0.55);
+}
+
+.event-dialog-body .ev-apply-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.65rem;
+  font-size: 0.86rem;
+  font-weight: 700;
+  padding: 0.45rem 1rem;
+  background: var(--brand-magenta);
+  color: #fff;
+  border-radius: 6px;
+  border: 1px solid rgba(var(--brand-magenta-rgb), 0.92);
+  font-family: "Noto Sans JP", sans-serif;
+  text-decoration: none;
+}
+
+.event-dialog-body .ev-apply-btn:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+.event-dialog-body .ev-apply-btn::after {
+  content: none;
+}
+
+.event-guest-mock {
+  margin-top: 0.95rem;
+  padding-top: 0.75rem;
+  border-top: 1px dashed rgba(17, 17, 17, 0.14);
+}
+
+.event-guest-mock-heading {
+  margin: 0 0 0.45rem;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: rgba(17, 17, 17, 0.55);
+}
+
+.event-guest-mock-card {
+  display: grid;
+  grid-template-columns: 7rem 1fr;
+  gap: 0.62rem;
+  align-items: start;
+  padding: 0.65rem 0.75rem;
+  border-radius: 2px;
+  background: #fff;
+  border: 1px solid rgba(17, 17, 17, 0.12);
+  box-shadow: 0 6px 22px rgba(15, 17, 21, 0.06);
+}
+
+.event-guest-mock--lecture .event-guest-mock-card {
+  border-left: 4px solid rgba(var(--brand-blue-rgb), 0.9);
+}
+
+.event-guest-mock--workshop .event-guest-mock-card {
+  border-left: 4px solid rgba(var(--brand-magenta-rgb), 0.9);
+}
+
+.event-guest-mock--permanent .event-guest-mock-card {
+  border-left: 4px solid rgba(var(--brand-black-rgb), 0.35);
+}
+
+.event-guest-mock-thumb {
+  width: 7rem;
+  height: 7rem;
+  border-radius: 999px;
+  border: 1px solid rgba(17, 17, 17, 0.12);
+  display: block;
+  object-fit: cover;
+  object-position: center;
+}
+
+.event-guest-mock-name {
+  margin: 0 0 0.28rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: rgba(17, 17, 17, 0.86);
+}
+
+.event-guest-mock-bio {
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.6;
+  color: rgba(17, 17, 17, 0.68);
+}
+
+@media (max-width: 640px) {
+  .event-dialog {
+    width: calc(100vw - 1rem);
+    max-width: calc(100vw - 1rem);
+  }
+
+  .event-dialog-panel {
+    max-height: 84vh;
+    padding: 0.8rem 0.8rem 0.95rem;
+  }
+
+  .event-dialog-title {
+    font-size: clamp(1.05rem, 5vw, 1.24rem);
+  }
+
+  .event-dialog-body .ev-desc {
+    font-size: 0.84rem;
+    line-height: 1.72;
+  }
+
+  .event-guest-mock-card {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* test-page-notice: 本番では TEST_PAGE_NOTICE.ENABLED を false にするか、このブロックと index の dialog を削除 */
+.test-page-notice-dialog {
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  max-width: calc(100vw - 2rem);
+  width: min(32rem, 100%);
+  background: #fff;
+  box-shadow: 0 24px 60px rgba(15, 17, 21, 0.22);
+}
+
+.test-page-notice-dialog::backdrop {
+  background: rgba(15, 17, 21, 0.5);
+}
+
+.test-page-notice-panel {
+  padding: clamp(1.25rem, 3.2vw, 1.65rem) clamp(1.1rem, 3vw, 1.45rem) clamp(1.2rem, 3vw, 1.5rem);
+}
+
+.test-page-notice-title {
+  margin: 0 0 0.85rem;
+  font-family: "Shippori Mincho B1", serif;
+  font-size: clamp(1.05rem, 2.5vw, 1.22rem);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  line-height: 1.45;
+  color: rgba(17, 17, 17, 0.94);
+}
+
+.test-page-notice-body {
+  margin: 0 0 1.15rem;
+  font-size: 0.88rem;
+  line-height: 1.85;
+  color: rgba(17, 17, 17, 0.78);
+}
+
+.test-page-notice-body p {
+  margin: 0 0 0.75rem;
+}
+
+.test-page-notice-body p:last-child {
+  margin-bottom: 0;
+}
+
+.test-page-notice-note {
+  font-size: 0.8rem;
+  line-height: 1.75;
+  color: rgba(17, 17, 17, 0.55);
+}
+
+.test-page-notice-btn {
+  width: 100%;
+  justify-content: center;
+  font-family: "Noto Sans JP", sans-serif;
+  font-size: 0.86rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  padding: 0.75rem 1rem;
+}
+
+.screening-visual {
+  position: static;
+  display: flex;
+  flex-direction: column;
+  gap: 0.42rem;
+  min-width: 0;
+}
+
+.screening-visual-label {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(17, 17, 17, 0.45);
+}
+
+.screening-slideshow {
+  position: relative;
+  border: none;
+  border-radius: 12px;
+  background: #0f1115;
+  overflow: hidden;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 12px 40px rgba(15, 17, 21, 0.12);
+}
+
+.screening-slideshow-inner {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  flex: 0 0 auto;
+  background: rgba(17, 17, 17, 0.06);
+}
+
+.screening-slide {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  transition: opacity 1.1s ease-in-out;
+  pointer-events: none;
+}
+
+.screening-slide.is-active {
+  opacity: 1;
+  z-index: 1;
+}
+
+.screening-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border: none;
+}
+
+.screening-slide figcaption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 0.55rem 0.65rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.92);
+  background: linear-gradient(to top, rgba(15, 17, 21, 0.72), transparent);
+}
+
+.screening-slideshow-dots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  justify-content: center;
+  padding: 0.55rem 0.65rem 0.65rem;
+  border-top: 1px solid rgba(17, 17, 17, 0.08);
+  background: #fff;
+}
+
+.screening-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  border: 1px solid rgba(17, 17, 17, 0.22);
+  background: rgba(17, 17, 17, 0.08);
+  padding: 0;
+  cursor: pointer;
+}
+
+.screening-dot.is-active {
+  background: rgba(17, 17, 17, 0.55);
+  border-color: rgba(17, 17, 17, 0.55);
+}
+
+.screening-slide-fallback {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    145deg,
+    rgba(var(--brand-purple-rgb), 0.28) 0%,
+    rgba(45, 42, 52, 0.85) 42%,
+    rgba(15, 17, 21, 1) 100%
+  );
+}
+
+.screening-slide:has(.mv-float-panel)::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(to top, rgba(15, 17, 21, 0.52) 0%, rgba(15, 17, 21, 0.06) 42%, transparent 68%);
+}
+
+.screening-slide.is-active {
+  pointer-events: auto;
+}
+
+.screening-slide.is-active img {
+  pointer-events: none;
+}
+
+/* CSV 差し替え後の上映ヒーロー：サムネ上フロート（サイネージと同マークアップ） */
+.screening-slide .mv-float-panel.screening-carousel-float {
+  position: absolute;
+  right: clamp(8px, 1.6vw, 14px);
+  bottom: clamp(8px, 1.6vw, 14px);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  /* 従来比 1.2 倍の横幅（折り返し行数を減らして縦に収める） */
+  width: min(91.2%, 22.2rem);
+  max-width: calc(100% - 18px);
+  max-height: min(58%, 20rem);
+  margin: 0;
+  padding: 0.52rem 0.68rem 0.58rem;
+  box-sizing: border-box;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(15, 17, 21, 0.56);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+.screening-slide .mv-float-panel.screening-carousel-float .mv-float-panel-head {
+  flex-shrink: 0;
+}
+
+/* 上映ヒーローでは「あらすじ」ラベルを省き、本文の余白を詰める */
+.screening-slide .mv-float-panel.screening-carousel-float .mv-float-panel-lead {
+  display: none;
+}
+
+.screening-slide .mv-float-panel.screening-carousel-float .mv-float-panel-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding-top: 0.3rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.screening-slide .mv-float-panel.screening-carousel-float .mv-float-panel-synopsis {
+  line-height: 1.44;
+}
+
+.mv-float-panel .mv-float-panel-head {
+  margin: 0 0 0.28rem;
+}
+
+.mv-float-panel .mv-float-panel-date {
+  margin: 0 0 0.26rem;
+}
+
+.mv-float-panel .mv-float-panel-date-badge {
+  display: inline-block;
+  padding: 0.13rem 0.416rem 0.156rem;
+  border-radius: 3px;
+  font-family: "Shippori Mincho B1", serif;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  color: rgba(255, 255, 255, 0.98);
+  background: rgba(var(--brand-purple-rgb), 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.mv-float-panel .mv-float-panel-title {
+  margin: 0 0 0.28rem;
+  font-family: "Shippori Mincho B1", serif;
+  font-size: clamp(0.78rem, 2vw, 0.92rem);
+  font-weight: 800;
+  line-height: 1.28;
+  letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.98);
+}
+
+.mv-float-panel .mv-float-panel-meta-line {
+  margin: 0;
+  font-family: "Noto Sans JP", sans-serif;
+  font-size: clamp(0.62rem, 1.55vw, 0.72rem);
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.86);
+}
+
+.mv-float-panel .mv-float-panel-body {
+  margin: 0;
+  padding-top: 0.416rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.mv-float-panel .mv-float-panel-lead {
+  margin: 0 0 0.14rem;
+  font-family: "DM Mono", monospace;
+  font-size: 0.52rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.42);
+}
+
+.mv-float-panel .mv-float-panel-synopsis {
+  margin: 0;
+  font-family: "Noto Sans JP", sans-serif;
+  font-size: clamp(0.62rem, 1.55vw, 0.74rem);
+  font-weight: 500;
+  line-height: 1.48;
+  letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.85);
+  white-space: pre-line;
+}
+
+.program-body .program-copy {
+  margin: 0 0 1.1rem;
+  font-size: 0.98rem;
+  font-weight: 500;
+  line-height: 1.85;
+  color: rgba(17, 17, 17, 0.88);
+}
+
+/* 上映：展示・イベントの program-copy と同等のタイプ設定（左線の外の本文） */
+#screening .screening-program-lede-stack > .program-copy.screening-intro {
+  margin: 0;
+  font-size: 0.98rem;
+  font-weight: 500;
+  line-height: 1.85;
+  color: rgba(17, 17, 17, 0.88);
+}
+
+.program-subhd {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(17, 17, 17, 0.48);
+  margin: 1.35rem 0 0.65rem;
+}
+
+.tt-table {
+  width: 100%;
+  max-width: 36rem;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+  font-weight: 500;
+  margin: 0 0 1.25rem;
+  color: rgba(17, 17, 17, 0.9);
+}
+
+.tt-table tbody tr {
+  transition: background var(--int-fast) var(--int-ease);
+}
+
+.tt-table tbody tr:hover {
+  background: rgba(17, 17, 17, 0.04);
+}
+
+.tt-table th,
+.tt-table td {
+  border: 1px solid var(--rule);
+  padding: 0.7rem 0.9rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+.tt-table th {
+  background: rgba(17, 17, 17, 0.045);
+  font-weight: 700;
+  width: 36%;
+  white-space: nowrap;
+}
+
+.tt-table td .tt-note {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 0.82rem;
+  font-weight: 400;
+  color: rgba(17, 17, 17, 0.62);
+}
+
+.event-table {
+  max-width: none;
+}
+
+.event-table thead th {
+  width: auto;
+  white-space: nowrap;
+}
+
+.event-groups {
+  margin-bottom: 0.2rem;
+}
+
+/* ========== EVENT LIST / PICKUP（CSV） ========== */
+
+/* ── イベントスケジュール（CSV生成・詳細常時表示） ── */
+/* .container 内で親幅いっぱい（見出し・本文と同じカラム幅） */
+#event .ev-section {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0 0 0.25rem;
+  box-sizing: border-box;
+}
+
+#event .day-sep {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: var(--program-stack-md) 0 0.25rem;
+}
+
+#event .day-sep:first-of-type {
+  margin-top: 0;
+}
+
+#event .day-sep-line {
+  flex: 1;
+  height: 1px;
+  background: rgba(17, 17, 17, 0.35);
+}
+
+#event .day-sep-text {
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.45;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  color: rgba(17, 17, 17, 0.96);
+}
+
+#event .ev-permanent-region {
+  margin-top: var(--program-stack-lg);
+  padding-top: var(--program-stack-md);
+  border-top: 1px solid var(--rule);
+}
+
+#event .ev-pickup {
+  margin-bottom: var(--program-stack-lg);
+}
+
+#event .ev-pickup-heading {
+  margin: 0 0 var(--program-stack-sm);
+  font-family: "Shippori Mincho B1", serif;
+  font-size: clamp(1.02rem, 2.2vw, 1.15rem);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  line-height: 1.35;
+  color: rgba(17, 17, 17, 0.93);
+}
+
+#event .ev-pickup-hero {
+  position: relative;
+  border-radius: 2px;
+  border: 1px solid rgba(17, 17, 17, 0.12);
+  background: #fff;
+  box-shadow: 0 10px 36px rgba(15, 17, 21, 0.08);
+  overflow: hidden;
+}
+
+#event .ev-pickup-carousel-live {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* 上映 .screening-slide と同様: 同一セルに重ね opacity でふわっと切り替え */
+#event .ev-pickup-slides-track {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
+}
+
+#event .ev-pickup-slide-inner {
+  display: grid;
+  grid-template-columns: minmax(0, 44%) minmax(0, 1fr);
+  gap: 0;
+  align-items: stretch;
+}
+
+#event .ev-pickup-media {
+  margin: 0;
+  aspect-ratio: 16 / 9;
+  align-self: stretch;
+  background: rgba(17, 17, 17, 0.06);
+  min-height: 10.5rem;
+}
+
+#event .ev-pickup-media-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+#event .ev-pickup-panel {
+  padding: clamp(0.95rem, 3vw, 1.35rem);
+  padding-left: clamp(1rem, 3.2vw, 1.5rem);
+  min-width: 0;
+  border-left: 4px solid rgba(var(--brand-blue-rgb), 0.82);
+}
+
+#event .ev-pickup-slide--workshop .ev-pickup-panel {
+  border-left-color: rgba(var(--brand-magenta-rgb), 0.88);
+}
+
+#event .ev-pickup-meta {
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+#event .ev-pickup-title {
+  font-family: "Shippori Mincho B1", serif;
+  margin: 0 0 0.55rem;
+  font-size: clamp(1.12rem, 2.85vw, 1.42rem);
+  font-weight: 800;
+  line-height: 1.38;
+  letter-spacing: 0.03em;
+  color: rgba(var(--brand-black-rgb), 0.94);
+}
+
+#event .ev-pickup-date-line {
+  margin: 0 0 0.2rem;
+  font-family: "DM Mono", monospace;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 1.45;
+  color: rgba(17, 17, 17, 0.72);
+}
+
+#event .ev-pickup-time-line {
+  margin: 0 0 0.55rem;
+  font-family: "DM Mono", monospace;
+  font-size: 0.82rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  line-height: 1.45;
+  color: rgba(17, 17, 17, 0.58);
+}
+
+#event .ev-pickup-speakers {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 0.35rem 0.5rem;
+  margin: 0;
+  font-size: 0.84rem;
+  font-weight: 500;
+  line-height: 1.55;
+  color: rgba(17, 17, 17, 0.72);
+}
+
+#event .ev-pickup-speakers-body {
+  min-width: 0;
+  white-space: pre-line;
+}
+
+#event .ev-pickup-slide {
+  grid-row: 1;
+  grid-column: 1;
+  margin: 0;
+  min-width: 0;
+  opacity: 0;
+  z-index: 0;
+  pointer-events: none;
+  cursor: pointer;
+  transition: opacity 1.1s ease-in-out;
+}
+
+#event .ev-pickup-slide.is-active {
+  opacity: 1;
+  z-index: 1;
+  pointer-events: auto;
+}
+
+#event .ev-pickup-slide:focus-visible {
+  outline: 2px solid rgba(var(--brand-blue-rgb), 0.65);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #event .ev-pickup-slide {
+    transition: none;
+  }
+
+  #event .ev-schedule-main .ev-time--visual::before {
+    transition: none;
+    filter: blur(0);
+    transform: scale(1);
+  }
+
+  #event .ev-schedule-main .ev-card:hover .ev-time--visual::before,
+  #event .ev-schedule-main .ev-card:focus-visible .ev-time--visual::before {
+    transform: scale(1);
+  }
+}
+
+#event .ev-schedule-main .ev-card[data-event-id] {
+  cursor: pointer;
+}
+
+#event .ev-schedule-main .ev-card[data-event-id]:focus-visible {
+  outline: 2px solid rgba(var(--brand-blue-rgb), 0.55);
+  outline-offset: 2px;
+}
+
+#event .ev-pickup-carousel-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.55rem 0.75rem 0.65rem;
+  border-top: 1px solid var(--rule);
+  background: rgba(var(--bg-light-rgb), 0.35);
+}
+
+#event .ev-pickup-dots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  justify-content: center;
+  align-items: center;
+  min-height: 2rem;
+}
+
+#event .ev-pickup-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  border: 1px solid rgba(17, 17, 17, 0.22);
+  background: rgba(17, 17, 17, 0.08);
+  padding: 0;
+  cursor: pointer;
+}
+
+#event .ev-pickup-dot.is-active {
+  background: rgba(var(--brand-blue-rgb), 0.65);
+  border-color: rgba(var(--brand-blue-rgb), 0.55);
+}
+
+@media (max-width: 760px) {
+  #event .ev-pickup-slide-inner {
+    grid-template-columns: 1fr;
+  }
+
+  #event .ev-pickup-panel {
+    border-left: none;
+    border-top: 4px solid rgba(var(--brand-blue-rgb), 0.82);
+    padding-left: clamp(0.95rem, 3vw, 1.35rem);
+  }
+
+  #event .ev-pickup-slide--workshop .ev-pickup-panel {
+    border-left: none;
+    border-top-color: rgba(var(--brand-magenta-rgb), 0.88);
+  }
+}
+
+#event .ev-pickup-day {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.14rem 0.45rem 0.16rem;
+  border-radius: 2px;
+  font-family: "DM Mono", monospace;
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: rgba(17, 17, 17, 0.72);
+  background: rgba(var(--bg-light-rgb), 0.85);
+  border: 1px solid rgba(17, 17, 17, 0.1);
+}
+
+#event .ev-pickup-badge {
+  flex-shrink: 0;
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: none;
+  padding: 0.12rem 0.42rem;
+  border-radius: 2px;
+  border: 1px solid rgba(var(--brand-purple-rgb), 0.45);
+  color: rgba(var(--brand-purple-rgb), 0.98);
+  background: rgba(var(--brand-purple-rgb), 0.08);
+}
+
+#event .ev-schedule-main .ev-card {
+  display: grid;
+  grid-template-columns: minmax(7.25rem, 10rem) 1fr;
+  gap: 0;
+  background: #fff;
+  border: 1px solid rgba(17, 17, 17, 0.12);
+  margin-bottom: 0.5rem;
+  border-radius: 2px;
+  box-shadow: 0 6px 22px rgba(15, 17, 21, 0.06);
+  transition: border-color var(--int-fast) var(--int-ease), box-shadow var(--int-fast) var(--int-ease);
+}
+
+#event .ev-schedule-main .ev-card--lecture {
+  border-left: 4px solid rgba(var(--brand-blue-rgb), 0.9);
+}
+
+#event .ev-schedule-main .ev-card--workshop {
+  border-left: 4px solid rgba(var(--brand-magenta-rgb), 0.9);
+}
+
+#event .ev-schedule-main .ev-card--permanent {
+  border-left: 4px solid rgba(var(--brand-black-rgb), 0.35);
+}
+
+#event .ev-schedule-main .ev-card:hover {
+  border-color: rgba(17, 17, 17, 0.22);
+  box-shadow: 0 10px 28px rgba(15, 17, 21, 0.09);
+}
+
+#event .ev-schedule-main .ev-time {
+  padding: 1.05rem 0.65rem 1.05rem 0.85rem;
+  border-right: 1px solid var(--rule);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(var(--bg-light-rgb), 0.55);
+}
+
+#event .ev-schedule-main .ev-time-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 0.15rem 0.3rem;
+  max-width: 100%;
+  text-align: right;
+}
+
+#event .ev-schedule-main .ev-time--visual {
+  position: relative;
+  overflow: hidden;
+  align-items: stretch;
+  justify-content: stretch;
+  padding: 0.55rem;
+  border-right-color: rgba(17, 17, 17, 0.16);
+  background-color: rgba(248, 246, 242, 0.65);
+  background-image: none;
+}
+
+#event .ev-schedule-main .ev-time--visual::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: var(--ev-time-bg);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  transform: scale(1);
+  transform-origin: center center;
+  filter: blur(3px);
+  transition:
+    transform 0.55s var(--int-ease),
+    filter 0.5s var(--int-ease);
+  pointer-events: none;
+}
+
+#event .ev-schedule-main .ev-card:hover .ev-time--visual::before,
+#event .ev-schedule-main .ev-card:focus-visible .ev-time--visual::before {
+  transform: scale(1.08);
+  filter: blur(0);
+}
+
+#event .ev-schedule-main .ev-time--visual .ev-time-inner {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+}
+
+#event .ev-schedule-main .ev-time--visual .ev-time-inner--empty {
+  min-height: 100%;
+  border-radius: 2px;
+}
+
+#event .ev-schedule-main .ev-time--visual .ev-time-inner:not(.ev-time-inner--empty) {
+  align-self: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0.45rem 0.55rem;
+  border-radius: 2px;
+  border: 1px solid rgba(17, 17, 17, 0.18);
+  background: rgba(255, 255, 255, 0.9);
+}
+
+#event .ev-schedule-main .ev-time-inner--single .ev-time-part {
+  text-align: right;
+}
+
+#event .ev-schedule-main .ev-time-part {
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: rgba(17, 17, 17, 0.96);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+#event .ev-schedule-main .ev-time-sep {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: rgba(17, 17, 17, 0.42);
+  line-height: 1.2;
+  padding: 0 0.02rem;
+}
+
+#event .ev-schedule-main .ev-card .ev-body {
+  padding: 1rem 1.1rem 1.1rem;
+  min-width: 0;
+}
+
+#event .ev-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.45rem;
+  margin-bottom: 0.35rem;
+}
+
+#event .ev-cat {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  padding: 0.14rem 0.5rem;
+  border-radius: 2px;
+}
+
+#event .ev-cat-lecture {
+  background: rgba(var(--brand-blue-rgb), 0.14);
+  color: rgba(12, 72, 124, 0.98);
+}
+
+#event .ev-cat-workshop {
+  background: rgba(var(--brand-magenta-rgb), 0.12);
+  color: rgba(140, 36, 74, 0.98);
+}
+
+#event .ev-cat-permanent {
+  background: rgba(var(--brand-black-rgb), 0.1);
+  color: rgba(var(--brand-black-rgb), 0.88);
+}
+
+#event .ev-domain {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  line-height: 1.25;
+  color: rgba(17, 17, 17, 0.62);
+  background: rgba(17, 17, 17, 0.055);
+  border: 1px solid rgba(17, 17, 17, 0.11);
+  padding: 0.12rem 0.48rem 0.14rem;
+  border-radius: 2px;
+}
+
+#event .ev-schedule-main .ev-title {
+  font-family: "Shippori Mincho B1", serif;
+  font-size: clamp(1.02rem, 2.15vw, 1.12rem);
+  font-weight: 800;
+  line-height: 1.4;
+  letter-spacing: 0.03em;
+  color: rgba(var(--brand-black-rgb), 0.94);
+  margin-bottom: 0.25rem;
+}
+
+#event .ev-schedule-main .ev-speakers {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 0.35rem 0.5rem;
+  margin: 0 0 0.5rem;
+  font-size: 0.84rem;
+  font-weight: 500;
+  line-height: 1.55;
+  color: rgba(17, 17, 17, 0.72);
+}
+
+#event .ev-speakers-icon {
+  flex-shrink: 0;
+  display: block;
+  width: 0.95rem;
+  height: 0.95rem;
+  margin-top: 0.2em;
+  object-fit: contain;
+  opacity: 0.5;
+}
+
+#event .ev-speakers-body {
+  min-width: 0;
+  white-space: pre-line;
+}
+
+#event .ev-apply-inline {
+  font-size: 0.72rem;
+  color: rgba(var(--brand-magenta-rgb), 0.95);
+  font-weight: 600;
+}
+
+#event .ev-detail {
+  margin-top: 0.65rem;
+  padding-top: 0.65rem;
+  border-top: 1px solid var(--rule);
+}
+
+#event .ev-detail:empty {
+  display: none;
+}
+
+#event .ev-schedule-main .ev-desc {
+  margin: 0;
+  font-size: 0.86rem;
+  line-height: 1.82;
+  color: rgba(17, 17, 17, 0.78);
+  white-space: pre-line;
+}
+
+#event .ev-schedule-main .ev-desc--placeholder {
+  color: rgba(17, 17, 17, 0.52);
+  font-style: italic;
+}
+
+#event .ev-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.65rem;
+}
+
+#event .ev-tag {
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 0.22rem 0.62rem;
+  border: none;
+  border-radius: 999px;
+  color: #fff;
+  letter-spacing: 0.02em;
+  line-height: 1.35;
+}
+
+/* カード左ボーダーと同系色の単色背景（Lecture / Workshop / 常設） */
+#event .ev-tags--lecture .ev-tag {
+  background: var(--brand-blue);
+}
+
+#event .ev-tags--workshop .ev-tag {
+  background: var(--brand-magenta);
+}
+
+#event .ev-tags--permanent .ev-tag {
+  background: rgba(var(--brand-black-rgb), 0.55);
+}
+
+#event .ev-apply-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.65rem;
+  font-size: 0.86rem;
+  font-weight: 700;
+  padding: 0.45rem 1rem;
+  background: var(--brand-magenta);
+  color: #fff;
+  border-radius: 6px;
+  border: 1px solid rgba(var(--brand-magenta-rgb), 0.92);
+  font-family: "Noto Sans JP", sans-serif;
+}
+
+#event .ev-apply-btn:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+#event .ev-apply-btn::after {
+  content: none;
+}
+
+#event .ev-load-error,
+#event .ev-empty {
+  margin: 0.5rem 0 0;
+  font-size: 0.88rem;
+  color: rgba(17, 17, 17, 0.62);
+}
+
+#event .ev-load-error {
+  color: rgba(140, 36, 74, 0.92);
+}
+
+@media (max-width: 520px) {
+  #event .ev-schedule-main .ev-card {
+    grid-template-columns: 1fr;
+  }
+
+  #event .ev-schedule-main .ev-time {
+    align-items: flex-start;
+    border-right: none;
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 0.75rem;
+  }
+
+  #event .ev-schedule-main .ev-time-inner {
+    justify-content: flex-start;
+    text-align: left;
+  }
+}
+
+/* ul は常に .event-list と併記すること(.event-list li より詳細度を上げる) */
+.event-list.event-list--cards {
+  margin-bottom: 1.15rem;
+}
+
+.event-list.event-list--cards li {
+  display: grid;
+  grid-template-columns: 13.25rem 92px 1fr auto;
+  gap: 0.8rem;
+  align-items: start;
+  padding: 0.55rem clamp(1.1rem, 3.2vw, 1.85rem) 0.55rem 1rem;
+  border-left-width: 3px;
+  cursor: pointer;
+}
+
+.program-subhd--lecture {
+  color: rgba(var(--brand-blue-rgb), 0.95);
+}
+
+.program-subhd--workshop {
+  color: rgba(var(--brand-magenta-rgb), 0.92);
+}
+
+.program-subhd--permanent {
+  color: rgba(var(--brand-black-rgb), 0.72);
+}
+
+.event-list.event-list--lecture li {
+  border-left-color: rgba(var(--brand-blue-rgb), 0.78);
+  background: rgba(var(--brand-blue-rgb), 0.06);
+}
+
+.event-list.event-list--workshop li {
+  border-left-color: rgba(var(--brand-magenta-rgb), 0.82);
+  background: rgba(var(--brand-magenta-rgb), 0.05);
+}
+
+.event-list.event-list--permanent li {
+  border-left-color: rgba(var(--brand-black-rgb), 0.35);
+  background: rgba(var(--brand-black-rgb), 0.04);
+}
+
+.event-list.event-list--lecture li:hover {
+  border-left-color: rgba(var(--brand-blue-rgb), 0.95);
+}
+
+.event-list.event-list--workshop li:hover {
+  border-left-color: rgba(var(--brand-magenta-rgb), 0.95);
+}
+
+.event-list.event-list--permanent li:hover {
+  border-left-color: rgba(var(--brand-black-rgb), 0.55);
+}
+
+.ev-body {
+  min-width: 0;
+}
+
+.ev-thumb {
+  width: 92px;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border: 1px solid rgba(17, 17, 17, 0.14);
+  border-radius: 6px;
+  background: rgba(17, 17, 17, 0.05);
+}
+
+.ev-body strong {
+  display: block;
+  font-size: 0.94rem;
+  line-height: 1.45;
+}
+
+.ev-field-tag {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 0.25rem;
+  padding: 0.14rem 0.5rem;
+  border: 1px solid rgba(17, 17, 17, 0.2);
+  border-radius: 999px;
+  color: rgba(17, 17, 17, 0.72);
+  background: rgba(17, 17, 17, 0.02);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.ev-status {
+  justify-self: end;
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.35rem;
+  padding: 0.45rem 0.95rem 0.45rem 0.9rem;
+  margin-left: 0.35rem;
+  margin-inline-end: 0.15rem;
+  border-radius: 999px;
+  font-family: "DM Mono", monospace;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1.25;
+  white-space: nowrap;
+}
+
+.ev-status--apply {
+  border-radius: 8px;
+  color: #fff;
+  border: 1px solid rgba(var(--brand-magenta-rgb), 0.92);
+  background: var(--brand-magenta);
+  box-shadow: 0 2px 0 rgba(17, 17, 17, 0.1), 0 4px 12px rgba(var(--brand-magenta-rgb), 0.22);
+  padding-inline: 1.05rem 1.1rem;
+  font-family: "Noto Sans JP", sans-serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: none;
+}
+
+.ev-status--apply:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+.meta-rows {
+  display: grid;
+  grid-template-columns: minmax(5.5rem, auto) 1fr;
+  gap: 0.5rem 1.25rem;
+  max-width: 36rem;
+  margin: 0;
+  padding: 0.75rem 0 0;
+  border-top: 1px solid var(--rule);
+  font-size: 0.94rem;
+  line-height: 1.55;
+}
+
+.meta-rows dt {
+  font-weight: 700;
+  color: rgba(17, 17, 17, 0.52);
+  margin: 0;
+}
+
+.meta-rows dd {
+  font-weight: 500;
+  color: rgba(17, 17, 17, 0.88);
+  margin: 0;
+}
+
+/* ========== EXHIBITION · 展示カルーセル ========== */
+
+.exh-carousel {
+  margin: 1.1rem 0 1.25rem;
+  width: 100%;
+  max-width: 100%;
+}
+
+/* ビューポート幅いっぱい（シェルパディングは維持）。100vw は縦スクロールバーがあるとレイアウトよりわずかに広くなりがち → dvw で上書き＋html で clip */
+.exh-carousel--full {
+  width: 100vw;
+  max-width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  padding-left: var(--shell-pad);
+  padding-right: var(--shell-pad);
+  box-sizing: border-box;
+}
+
+@supports (width: 100dvw) {
+  .exh-carousel--full {
+    width: 100dvw;
+    max-width: 100dvw;
+    margin-left: calc(50% - 50dvw);
+    margin-right: calc(50% - 50dvw);
+  }
+}
+
+.exh-carousel-inner {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  min-height: 12rem;
+}
+
+.exh-btn {
+  flex-shrink: 0;
+  width: 2.35rem;
+  height: 2.35rem;
+  border-radius: 50%;
+  border: 1px solid rgba(17, 17, 17, 0.18);
+  background: #fff;
+  color: rgba(17, 17, 17, 0.65);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--int-fast) var(--int-ease), border-color var(--int-fast) var(--int-ease),
+    color var(--int-fast) var(--int-ease), box-shadow var(--int-fast) var(--int-ease);
+}
+
+.exh-btn:hover {
+  background: rgba(17, 17, 17, 0.06);
+  border-color: rgba(17, 17, 17, 0.28);
+  color: var(--text-dark);
+  box-shadow: 0 4px 10px rgba(17, 17, 17, 0.1);
+}
+
+.exh-btn:focus-visible {
+  outline: 2px solid var(--accent-2);
+  outline-offset: 2px;
+}
+
+.exh-btn svg {
+  width: 10px;
+  height: 10px;
+}
+
+.exh-track {
+  display: flex;
+  gap: 0.85rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  padding: 0.35rem 0 0.65rem;
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.exh-track::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+.exh-card {
+  flex: 0 0 clamp(200px, 22vw, 320px);
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  margin: 0;
+  min-width: 0;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.exh-card img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid rgba(17, 17, 17, 0.12);
+  background: rgba(17, 17, 17, 0.06);
+  transition: transform var(--int-slow) var(--int-ease), filter var(--int-base) var(--int-ease);
+}
+
+.exh-card:hover img {
+  transform: scale(1.02);
+  filter: saturate(1.02);
+}
+
+.exh-card figcaption {
+  margin-top: 0.5rem;
+  font-size: 0.84rem;
+  font-weight: 600;
+  line-height: 1.45;
+  color: rgba(17, 17, 17, 0.78);
+}
+
+.exh-carousel-foot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.5rem;
+  padding-bottom: 0.15rem;
+}
+
+.exh-carousel-dots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  justify-content: center;
+  padding: 0.35rem 0 0;
+}
+
+.exh-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  border: 1px solid rgba(17, 17, 17, 0.22);
+  background: rgba(17, 17, 17, 0.08);
+  padding: 0;
+  cursor: pointer;
+  transition: background var(--int-fast) var(--int-ease), border-color var(--int-fast) var(--int-ease),
+    transform var(--int-fast) var(--int-ease);
+}
+
+.exh-dot:hover {
+  border-color: rgba(17, 17, 17, 0.35);
+  background: rgba(17, 17, 17, 0.14);
+}
+
+.exh-dot:focus-visible {
+  outline: 2px solid var(--accent-2);
+  outline-offset: 2px;
+}
+
+.exh-dot.is-active {
+  background: rgba(17, 17, 17, 0.55);
+  border-color: rgba(17, 17, 17, 0.55);
+  transform: scale(1.15);
+}
+
+.exh-carousel-counter {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  color: rgba(17, 17, 17, 0.52);
+}
+
+.exh-btn:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.exh-btn:disabled:hover {
+  background: #fff;
+  border-color: rgba(17, 17, 17, 0.18);
+  color: rgba(17, 17, 17, 0.65);
+}
+
+.event-overview {
+  margin-bottom: 1.25rem;
+  padding: 1.2rem 1.25rem 1.25rem;
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--brand-blue);
+  background: rgba(var(--brand-blue-rgb), 0.09);
+  text-align: left;
+}
+
+.event-overview .program-subhd {
+  margin-top: 0;
+  color: rgba(17, 17, 17, 0.55);
+}
+
+.event-overview-lead {
+  font-size: 0.98rem;
+  font-weight: 500;
+  line-height: 1.85;
+  color: rgba(17, 17, 17, 0.88);
+  margin: 0 0 0.85rem;
+}
+
+.event-overview-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 0.92rem;
+  font-weight: 500;
+  line-height: 1.65;
+  color: rgba(17, 17, 17, 0.82);
+}
+
+.event-overview-list li {
+  position: relative;
+  padding: 0.4rem 0 0.4rem 1.05rem;
+  border-bottom: 1px solid rgba(17, 17, 17, 0.06);
+}
+
+.event-overview-list li:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.event-overview-list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.85em;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--brand-blue);
+}
+
+.event-list {
+  list-style: none;
+  max-width: 40rem;
+  margin: 0 0 0.75rem;
+  padding: 0;
+}
+
+#event .event-list {
+  max-width: none;
+}
+
+.event-list li {
+  position: relative;
+  padding: 0.55rem 0 0.55rem 1rem;
+  margin-bottom: 0.25rem;
+  border-left: 3px solid rgba(17, 17, 17, 0.14);
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1.55;
+  color: rgba(17, 17, 17, 0.9);
+  transition: border-color var(--int-fast) var(--int-ease), background var(--int-fast) var(--int-ease),
+    box-shadow var(--int-fast) var(--int-ease);
+}
+
+.event-list li:hover {
+  border-left-color: rgba(17, 17, 17, 0.32);
+  background: rgba(17, 17, 17, 0.03);
+  box-shadow: var(--hover-shadow);
+}
+
+.event-list .ev-time {
+  display: grid;
+  gap: 0.18rem;
+  align-content: start;
+  justify-items: start;
+  font-family: "DM Mono", monospace;
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+  line-height: 1.25;
+  color: rgba(17, 17, 17, 0.94);
+  font-weight: 700;
+}
+
+.event-list .ev-time .ev-date {
+  font-weight: 700;
+  color: rgba(17, 17, 17, 0.94);
+}
+
+.event-list .ev-time .ev-time-range {
+  font-weight: 600;
+  color: rgba(17, 17, 17, 0.86);
+}
+
+.info-note {
+  font-size: 0.92rem;
+  font-weight: 400;
+  color: rgba(17, 17, 17, 0.72);
+  margin: 0 0 1rem;
+  max-width: 40rem;
+  line-height: 1.75;
+}
+
+#event .info-note {
+  max-width: none;
+}
+
+.event-overview + .program-copy {
+  margin-top: 0.35rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-news-track {
+    animation: none;
+  }
+
+  .exh-card:hover img {
+    transform: none;
+  }
+
+  .event-list li,
+  .event-list li:hover {
+    box-shadow: none;
+  }
+
+  .screening-slideshow-inner {
+    aspect-ratio: auto;
+    min-height: 0;
+  }
+
+  .screening-slide {
+    position: relative;
+    inset: auto;
+    opacity: 1;
+    pointer-events: auto;
+    transition: none;
+    margin: 0 0 0.65rem;
+  }
+
+  .screening-slide:last-child {
+    margin-bottom: 0;
+  }
+
+  .screening-slide img {
+    height: auto;
+    aspect-ratio: 16 / 9;
+  }
+
+  .screening-slideshow-dots {
+    display: none;
+  }
+}

@@ -15,6 +15,11 @@ function barBodyFromParts(timeHtml, nameHtml, mod) {
   return `<span class="program-timeline-bar-meta"><span class="program-timeline-bar-time">${timeHtml}</span><span class="program-timeline-bar-tag">${tag}</span></span><span class="program-timeline-bar-name">${nameHtml}</span>`;
 }
 
+/** カテゴリタグを付けない行（展示バー：時刻 + タイトルのみ） */
+function barBodyNoTag(timeHtml, nameHtml) {
+  return `<span class="program-timeline-bar-meta"><span class="program-timeline-bar-time">${timeHtml}</span></span><span class="program-timeline-bar-name">${nameHtml}</span>`;
+}
+
 /** `day === "both"` のイベントはタイムライン上のみ土日の両方に複製して表示する（一覧側は対象外のまま） */
 export function fillProgramTimeline(root, allEvents) {
   if (!root) return;
@@ -68,7 +73,7 @@ export function fillProgramTimeline(root, allEvents) {
       title: `${exh.label} ${exh.start}～${exh.end}／${exh.venue}`,
       ariaLabel: `${exh.label}、${exh.start}から${exh.end}まで。${exh.venue}`,
       href: "#exhibition",
-      inner: barBodyFromParts(timeLine, nameLine, "exhibition"),
+      inner: barBodyNoTag(timeLine, nameLine),
     });
   }
 

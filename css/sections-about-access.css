@@ -1,0 +1,268 @@
+/*
+ * =============================================================================
+ * sections-about-access.css （旧 sections.css の断片 4/4）
+ * #about の本文グリッド、#access 会場・地図周り
+ * =============================================================================
+ */
+
+/* ========== ABOUT （開催概要の静的ブロック／スケジュールDOMの下の本文） ========== */
+.about-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: clamp(1.5rem, 4vw, 2.5rem);
+  border-top: 1px solid var(--rule);
+  padding-top: 1.5rem;
+}
+
+.about-copy {
+  margin: 0;
+  font-size: 1.02rem;
+  font-weight: 500;
+  line-height: 1.9;
+  color: rgba(17, 17, 17, 0.88);
+}
+
+.facts {
+  margin: 0;
+  display: grid;
+  gap: 0;
+}
+
+.facts dt {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(17, 17, 17, 0.48);
+  padding-top: 0.85rem;
+}
+
+.facts dd {
+  margin: 0.35rem 0 0;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid var(--rule);
+  font-size: 0.94rem;
+  font-weight: 500;
+  color: rgba(17, 17, 17, 0.88);
+}
+
+.facts dd:last-of-type {
+  border-bottom: none;
+}
+
+/* ========== ACCESS ========== */
+
+/* --- ACCESS (1マップ・2地点=経路の A/B) --- */
+/* 区切りは .access-layout の border-top のみ（container 上罫は廃止し二重線を解消） */
+.access-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 340px) minmax(0, 1fr);
+  gap: clamp(1.25rem, 3vw, 2rem);
+  align-items: start;
+  border-top: 1px solid var(--rule);
+  padding-top: 1.5rem;
+}
+
+.venue-card {
+  display: block;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--rule);
+  margin-bottom: 0.65rem;
+  background: #fff;
+  transition: border-color var(--int-fast) var(--int-ease), background var(--int-fast) var(--int-ease),
+    box-shadow var(--int-fast) var(--int-ease);
+}
+
+.venue-card:hover {
+  border-color: var(--hover-border);
+  background: var(--hover-surface);
+  box-shadow: var(--hover-shadow);
+}
+
+.venue-card:last-of-type {
+  margin-bottom: 0;
+}
+
+.access-transport {
+  margin-top: 0.9rem;
+  padding: 0.95rem 1.05rem;
+  border: 1px solid var(--rule);
+  background: #fff;
+}
+
+.transport-label {
+  margin: 0 0 0.55rem;
+  font-family: "DM Mono", monospace;
+  font-size: 0.64rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(17, 17, 17, 0.5);
+}
+
+.transport-items {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.transport-item {
+  font-size: 0.88rem;
+  font-weight: 500;
+  line-height: 1.5;
+  color: rgba(17, 17, 17, 0.88);
+}
+
+.transport-line {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.4rem;
+  margin-right: 0.45rem;
+  padding: 0.08rem 0.42rem;
+  border-radius: 999px;
+  border: 1px solid rgba(17, 17, 17, 0.24);
+  font-family: "DM Mono", monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(17, 17, 17, 0.8);
+  background: rgba(17, 17, 17, 0.03);
+  vertical-align: baseline;
+}
+
+.transport-line.jr {
+  border-color: rgba(var(--brand-magenta-rgb), 0.42);
+}
+
+.transport-line.hanshin {
+  border-color: rgba(var(--brand-blue-rgb), 0.42);
+}
+
+.transport-line.subway {
+  border-color: rgba(var(--brand-purple-rgb), 0.45);
+}
+
+.transport-line.kobe-rapid {
+  border-color: rgba(147, 112, 219, 0.45);
+}
+
+/* カード全体が <a> のため、既定の外部リンクアイコンは末尾(住所の下)に付く。
+   会場名の右に出すため <a>::after は止め、h3::after で同等のアイコンを付与する */
+a.venue-card[target="_blank"]::after {
+  content: none;
+}
+
+.venue-card h3 {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0 0.15rem;
+  margin: 0 0 0.35rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.venue-card[target="_blank"] h3::after {
+  content: "";
+  display: inline-block;
+  width: 0.72em;
+  height: 0.72em;
+  margin-left: 0.28em;
+  vertical-align: 0.06em;
+  background-color: currentColor;
+  -webkit-mask: url("../images/fa-up-right-from-square.svg") center / contain no-repeat;
+  mask: url("../images/fa-up-right-from-square.svg") center / contain no-repeat;
+  opacity: 0.78;
+}
+
+.venue-card p {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--dim);
+  line-height: 1.55;
+}
+
+.venue-pin {
+  display: inline-block;
+  width: 0.92em;
+  height: 0.92em;
+  margin-right: 0.42rem;
+  flex-shrink: 0;
+  vertical-align: -0.14em;
+  -webkit-mask: url("../images/fa-location-pin.svg") center / contain no-repeat;
+  mask: url("../images/fa-location-pin.svg") center / contain no-repeat;
+}
+
+.venue-pin--a {
+  background-color: var(--venue-pin-a);
+}
+
+.venue-pin--b {
+  background-color: var(--venue-pin-b);
+}
+
+.venue-pin--legend {
+  width: 0.68rem;
+  height: 0.68rem;
+  margin-right: 0.38rem;
+  vertical-align: -0.06em;
+}
+
+.map-legend > span {
+  display: inline-flex;
+  align-items: center;
+}
+
+.map-legend-actions {
+  margin-left: auto;
+}
+
+.map-block {
+  border: 1px solid var(--rule);
+  background: #fff;
+  overflow: hidden;
+}
+
+.map-frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  min-height: min(320px, 50vh);
+  overflow: hidden;
+}
+
+.map-frame .gmap-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 280px;
+}
+
+/* 地図のグレースケールは Cloud のマップ スタイル（data-map-id 用）。CSS filter は使わない */
+
+.map-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 1.5rem;
+  padding: 0.75rem 1rem;
+  font-family: "DM Mono", monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-top: 1px solid var(--rule);
+  color: rgba(17, 17, 17, 0.55);
+}
+
+.map-open {
+  font-size: 0.58rem;
+  letter-spacing: 0.12em;
+  border-bottom: 1px solid rgba(17, 17, 17, 0.25);
+  padding-bottom: 1px;
+  transition: color var(--int-fast) var(--int-ease), border-color var(--int-fast) var(--int-ease);
+}
+
+.map-open:hover {
+  color: var(--accent);
+  border-color: rgba(var(--brand-magenta-rgb), 0.45);
+}
+

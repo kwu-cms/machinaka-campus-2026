@@ -40,7 +40,10 @@
     <link rel="stylesheet" href="./css/tokens.css" />
     <link rel="stylesheet" href="./css/base.css" />
     <link rel="stylesheet" href="./css/nav-hero.css" />
-    <link rel="stylesheet" href="./css/sections.css" />
+    <link rel="stylesheet" href="./css/sections-news.css" />
+    <link rel="stylesheet" href="./css/sections-program-core.css" />
+    <link rel="stylesheet" href="./css/sections-movies-events-dialogs.css" />
+    <link rel="stylesheet" href="./css/sections-about-access.css" />
     <link rel="stylesheet" href="./css/access-footer.css" />
     <link rel="stylesheet" href="./css/overrides.css" />
   </head>
@@ -108,7 +111,7 @@
             展示・イベント・上映の3プログラムで、観る・つくる・話すの往復を体験する2日間。神戸・元町の会場で、甲南女子大学文学部メディア表現学科で行う「今」と「これから」の学びを公開します。
           </p>
           <div class="hero-actions reveal">
-            <a class="btn" href="#program"><img class="btn-icon" src="./images/icon-calendar-days.svg" alt="" width="14" height="14" decoding="async" />プログラム</a>
+            <a class="btn" href="#schedule"><img class="btn-icon" src="./images/icon-calendar-days.svg" alt="" width="14" height="14" decoding="async" />スケジュール</a>
             <a class="btn" href="#access"><img class="btn-icon" src="./images/fa-location-pin.svg" alt="" width="14" height="14" decoding="async" /> アクセス</a>
           </div>
         </div>
@@ -188,24 +191,25 @@
             </span>
           </span>
         </a>
+        <!-- マーキー文言: data/news.json（詳細は docs/CONTENT.md） -->
         <div class="hero-news-marquee" aria-label="最新のお知らせ">
           <div class="hero-news-track"></div>
         </div>
       </section>
 
+      <!-- お知らせ本文: data/news.json（URL は js/config.js の newsJsonUrl） -->
       <section id="news" aria-labelledby="news-heading">
         <div class="container">
           <p class="section-label reveal">- News</p>
           <h2 id="news-heading" class="section-title reveal">お知らせ</h2>
           <p class="section-note reveal">
-            テキストのお知らせは <code class="inline-code">data/news.json</code> で管理しています。速報・ビジュアルは
-            <a href="https://www.instagram.com/mediastudies_kwu/" target="_blank" rel="noopener noreferrer">公式 Instagram（@mediastudies_kwu）</a>
-            からどうぞ。
+            <a href="https://www.instagram.com/mediastudies_kwu/" target="_blank" rel="noopener noreferrer">公式 Instagram（@mediastudies_kwu）</a>では、イベントの最新情報や制作風景、学生作品などを随時発信しています。
           </p>
           <div class="news-list"></div>
         </div>
       </section>
 
+      <!-- 開催概要の本文・会期: 静的 HTML。スケジュール帯の時刻は js/config.js の PROGRAM_TIMELINE（docs/CONTENT.md） -->
       <section id="about" aria-labelledby="about-heading">
         <div class="container">
           <p class="section-label reveal">- About</p>
@@ -223,7 +227,7 @@
               <dd>
                 2026年7月18日（土）・19日（日）<br />
                 10:00–18:00　こうべまちづくり会館（2F ホール、3F多目的室）<br />
-                17:10–19:00　元町映画館
+                17:00～19:10　元町映画館
               </dd>
               <dt>会場</dt>
               <dd>
@@ -236,7 +240,9 @@
               <dd>甲南女子大学 文学部 メディア表現学科</dd>
             </dl>
           </div>
+          <!-- スケジュール DOM: js/timeline-ui.js が #about-timeline-root を埋める -->
           <div
+            id="schedule"
             class="about-schedule"
             role="region"
             aria-labelledby="about-timeline-heading"
@@ -260,6 +266,7 @@
           <h2 id="program-heading" class="section-title reveal">プログラム</h2>
 
           <div class="program-list">
+            <!-- 展示: この article 内は静的 HTML＋画像。データ CSV なし -->
             <article class="program-item reveal" id="exhibition">
               <header class="program-head">
                 <div class="program-head-main">
@@ -396,6 +403,7 @@
                 </div>
               </div>
             </article>
+            <!-- イベント一覧: Google スプレッドシート（js/config.js eventsCsvUrl）→ js/events.js -->
             <article class="program-item reveal" id="event">
               <header class="program-head">
                 <div class="program-head-main">
@@ -410,11 +418,21 @@
                   ※ワークショップは事前申込制です。それ以外の催しは予約不要です。
                 </p>
                 <div class="ev-section" aria-busy="true">
-                  <div id="ev-list" class="ev-schedule-main"></div>
+                  <div class="ev-schedule-main">
+                    <div
+                      id="ev-pickup"
+                      class="ev-pickup"
+                      role="region"
+                      aria-labelledby="ev-pickup-heading"
+                      hidden
+                    ></div>
+                    <div id="ev-list"></div>
+                  </div>
                   <div id="ev-permanent-list" class="ev-schedule-main ev-permanent-region" hidden></div>
                 </div>
               </div>
             </article>
+            <!-- 上映: 作品はスプレッドシート（moviesCsvUrl）。スライド初期画像・導入文は静的。時刻帯は PROGRAM_TIMELINE 参照（docs/CONTENT.md） -->
             <article class="program-item reveal program-item--screening" id="screening">
               <header class="program-head">
                 <div class="program-head-main">
@@ -431,7 +449,7 @@
                   </div>
                 </div>
                 <p class="program-copy screening-intro">
-                  神戸市中央区にある元町映画館で映像表現研究ゼミ卒業生の優秀作品を上映します。上映時間は両日（7/18,19）とも17時10分～19時。上映後は監督とゼミ担当教員によるトークの他、元町映画館2階ロビーでゼミ生と高校生の交流会を実施します。上映作品の内容は日にちごとの欄をご覧ください。入場無料です。
+                  神戸市中央区にある元町映画館で映像表現研究ゼミ卒業生の優秀作品を上映します。上映時間は両日（7/18,19）とも17時～19時10分。上映後は監督とゼミ担当教員によるトークの他、元町映画館2階ロビーでゼミ生と高校生の交流会を実施します。上映作品の内容は日にちごとの欄をご覧ください。入場無料です。
                 </p>
               </div>
               <div class="program-body">
@@ -507,6 +525,7 @@
         </div>
       </section>
 
+      <!-- 会場テキスト・地図: 静的 HTML。API キーは js/config.js -->
       <section id="access" aria-labelledby="access-heading">
         <div class="container">
           <p class="section-label reveal">- Access</p>
@@ -655,6 +674,18 @@
           aria-label="上映日時と会場"
         ></div>
         <div class="movie-dialog-body"></div>
+      </div>
+    </dialog>
+    <!-- イベントカード・注目ヒーローから開く詳細 -->
+    <dialog id="event-detail-dialog" class="event-dialog" aria-labelledby="event-dialog-title">
+      <div class="event-dialog-panel">
+        <button type="button" class="event-dialog-close" aria-label="閉じる">&times;</button>
+        <div class="event-dialog-media" hidden>
+          <img class="event-dialog-thumb" alt="" width="640" height="360" decoding="async" />
+        </div>
+        <h3 id="event-dialog-title" class="event-dialog-title"></h3>
+        <div class="event-dialog-meta"></div>
+        <div id="event-dialog-body" class="event-dialog-body"></div>
       </div>
     </dialog>
     <script src="./js/random-text.umd.js" defer></script>
