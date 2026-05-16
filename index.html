@@ -629,7 +629,7 @@
             <nav class="footer-col-stack" aria-label="SNS">
               <a class="footer-link-with-icon" href="https://www.instagram.com/mediastudies_kwu/" target="_blank" rel="noopener noreferrer">
                 <span class="footer-fa footer-fa--instagram" aria-hidden="true"></span>
-                <span> @mediastudies_kwu</span>
+                <span>@mediastudies_kwu</span>
               </a>
             </nav>
           </div>
@@ -660,32 +660,83 @@
     </dialog>
     <!-- 上映作品カード（data/movies.csv）から開く詳細 -->
     <dialog id="movie-detail-dialog" class="movie-dialog" aria-labelledby="movie-dialog-title">
-      <div class="movie-dialog-panel">
+      <div class="movie-dialog-shell">
+        <span
+          class="dialog-program-label dialog-program-label--screening"
+          id="movie-dialog-program-label"
+        ></span>
         <button type="button" class="movie-dialog-close" aria-label="閉じる">&times;</button>
-        <div class="movie-dialog-media" hidden>
-          <img class="movie-dialog-thumb" alt="" width="640" height="360" decoding="async" />
+        <div class="movie-dialog-panel">
+          <div class="movie-dialog-media" hidden>
+            <button
+              type="button"
+              class="movie-dialog-nav movie-dialog-nav--prev"
+              aria-label="前の作品へ"
+              hidden
+              data-movie-dialog-prev
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M15 18l-6-6 6-6" />
+              </svg>
+            </button>
+            <button
+              type="button"
+              class="movie-dialog-nav movie-dialog-nav--next"
+              aria-label="次の作品へ"
+              hidden
+              data-movie-dialog-next
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M9 18l6-6-6-6" />
+              </svg>
+            </button>
+            <img class="movie-dialog-thumb" alt="" width="640" height="360" decoding="async" />
+            <aside class="movie-dialog-meta movie-dialog-float" aria-label="上映情報"></aside>
+          </div>
+          <h3 id="movie-dialog-title" class="movie-dialog-title"></h3>
+          <p class="movie-dialog-credits"></p>
+          <div class="movie-dialog-body"></div>
         </div>
-        <h3 id="movie-dialog-title" class="movie-dialog-title"></h3>
-        <p class="movie-dialog-meta"></p>
-        <div
-          id="movie-dialog-showtime"
-          class="movie-dialog-showtime"
-          role="group"
-          aria-label="上映日時と会場"
-        ></div>
-        <div class="movie-dialog-body"></div>
       </div>
     </dialog>
     <!-- イベントカード・注目ヒーローから開く詳細 -->
     <dialog id="event-detail-dialog" class="event-dialog" aria-labelledby="event-dialog-title">
-      <div class="event-dialog-panel">
+      <div class="event-dialog-shell">
+        <span
+          class="dialog-program-label dialog-program-label--lecture"
+          id="event-dialog-program-label"
+        ></span>
         <button type="button" class="event-dialog-close" aria-label="閉じる">&times;</button>
+        <div class="event-dialog-panel">
         <div class="event-dialog-media" hidden>
           <img class="event-dialog-thumb" alt="" width="640" height="360" decoding="async" />
+          <aside class="event-dialog-meta event-dialog-float" aria-label="開催概要"></aside>
         </div>
         <h3 id="event-dialog-title" class="event-dialog-title"></h3>
-        <div class="event-dialog-meta"></div>
         <div id="event-dialog-body" class="event-dialog-body"></div>
+        </div>
       </div>
     </dialog>
     <script src="./js/random-text.umd.js" defer></script>

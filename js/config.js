@@ -5,6 +5,33 @@ export const SITE_CONFIG = Object.freeze({
     "https://docs.google.com/spreadsheets/d/1hXldiXUl2klbJe6v7BraKEFCXL8cxd5WAjc0RRNzlPo/export?format=csv&gid=1499163471",
   eventsCsvUrl:
     "https://docs.google.com/spreadsheets/d/1hXldiXUl2klbJe6v7BraKEFCXL8cxd5WAjc0RRNzlPo/export?format=csv&gid=651546877",
+  /** 登壇者マスタ（同一スプレッドシートのシート gid） */
+  speakersCsvUrl:
+    "https://docs.google.com/spreadsheets/d/1hXldiXUl2klbJe6v7BraKEFCXL8cxd5WAjc0RRNzlPo/export?format=csv&gid=1429540203",
+  /**
+   * イベント ID → 登壇者 speaker_id の並び（上から順）。
+   * 未指定のイベントは events CSV の「登壇者」列の氏名から推測。
+   */
+  eventSpeakerIds: Object.freeze({
+    "evt-01": Object.freeze(["spk-001", "spk-002", "spk-003", "spk-004"]),
+    "evt-02": Object.freeze(["spk-005", "spk-006"]),
+    "evt-03": Object.freeze(["spk-008", "spk-009", "spk-007"]),
+    "evt-04": Object.freeze(["spk-010", "spk-011", "spk-012"]),
+    "evt-05": Object.freeze(["spk-007", "spk-006"]),
+  }),
+  /** 1カラムの大カード（外部ゲスト等）。複数可 */
+  eventFeaturedSpeakerIds: Object.freeze({
+    "evt-01": Object.freeze(["spk-001"]),
+    "evt-02": Object.freeze(["spk-005"]),
+    "evt-03": Object.freeze(["spk-008", "spk-009"]),
+    "evt-04": Object.freeze(["spk-010"]),
+    /** 大カードなし（コンパクトのみ） */
+    "evt-05": Object.freeze([]),
+  }),
+  /** 1カラムだがメインより控えめ（サブ扱い）。例: 学生 */
+  eventWideSubSpeakerIds: Object.freeze({
+    "evt-01": Object.freeze(["spk-004"]),
+  }),
   googleMapsApiKey: "AIzaSyDSfeNa_ftv6Orh--hQQOvZOVyRCuUvBqg",
 });
 
@@ -28,6 +55,28 @@ export const PROGRAM_TIMELINE = Object.freeze({
     venue: "こうべまちづくり会館 2F ホール、3F多目的室",
   },
 });
+
+/** 詳細モーダル左上の企画ラベル（上映は PROGRAM_TIMELINE.screening.label と同期） */
+export const DIALOG_PROGRAM_LABELS = Object.freeze({
+  screening: PROGRAM_TIMELINE.screening.label.replace(/\s*\n\s*/g, ""),
+  lecture: "トークイベント",
+  workshop: "ワークショップ",
+  permanent: "常設企画",
+});
+
+/** @param {string} cat lecture | workshop | permanent | screening */
+export function dialogProgramLabelMod(cat) {
+  if (cat === "workshop") return "workshop";
+  if (cat === "permanent") return "permanent";
+  if (cat === "screening") return "screening";
+  return "lecture";
+}
+
+/** @param {string} cat */
+export function dialogProgramLabelText(cat) {
+  const mod = dialogProgramLabelMod(cat);
+  return DIALOG_PROGRAM_LABELS[mod] ?? DIALOG_PROGRAM_LABELS.lecture;
+}
 
 export const SCREENING_SLIDESHOW_INTERVAL_MS = 12000;
 

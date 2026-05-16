@@ -4,12 +4,20 @@ import {
   FEATURED_IMAGE_BY_ID,
   FEATURED_IMAGE_FALLBACK,
   FEATURED_PICKUP_CAROUSEL_INTERVAL_MS,
+  dialogProgramLabelMod,
+  dialogProgramLabelText,
 } from "./config.js";
 import { parseCSV, rowToObj } from "./lib/csv.js";
 import { escapeHtml } from "./lib/html.js";
 import { getQueryParam, removeQueryParam, setQueryParam } from "./lib/url-params.js";
 import { timeSortKey, timeEndSortKey } from "./lib/event-time.js";
 import { fillProgramTimeline } from "./timeline-ui.js";
+import {
+  parseSpeakersCsvText,
+  resolveEventSpeakers,
+  renderEventSpeakersSectionHtml,
+  eventSpeakersInlineText,
+} from "./speaker-blocks.js";
 
 let mxmEvPickupCarouselTimer = null;
 
@@ -100,6 +108,7 @@ export function initEventsSection() {
   const sectionRoot = document.querySelector("#event .ev-section");
   const eventDialog = document.getElementById("event-detail-dialog");
   const eventDlgTitle = eventDialog?.querySelector("#event-dialog-title");
+  const eventDlgProgramLabel = eventDialog?.querySelector("#event-dialog-program-label");
   const eventDlgMeta = eventDialog?.querySelector(".event-dialog-meta");
   const eventDlgBody = eventDialog?.querySelector("#event-dialog-body");
   const eventDlgMedia = eventDialog?.querySelector(".event-dialog-media");
@@ -124,6 +133,8 @@ export function initEventsSection() {
   }
 
   const CSV_URL = SITE_CONFIG.eventsCsvUrl;
+  /** @type {Record<string, object>} */
+  let speakersById = {};
   const DETAIL_PLACEHOLDER =
     "詳細テキストは準備中です。開催にあわせて内容を更新します。最新情報はInstagram（@mediastudies_kwu）もご確認ください。";
   /** 詳細モーダルに表示する会場。CSV「会場」が空のときに使う（P02 イベントの既定） */
@@ -178,7 +189,7 @@ export function initEventsSection() {
       .filter(Boolean);
   }
 
-  function detailBlocks(ev) {
+  function detailBlocks(ev, opts = {}) {
     const tags = tagsFromCell(ev.tagsRaw);
     const parts = [];
     if (ev.desc) {
@@ -188,7 +199,7 @@ export function initEventsSection() {
         `<p class="ev-desc ev-desc--placeholder">${escapeHtml(DETAIL_PLACEHOLDER)}</p>`,
       );
     }
-    if (tags.length) {
+    if (!opts.skipTags && tags.length) {
       const tagTone = ["lecture", "workshop", "permanent"].includes(ev.cat) ? ev.cat : "lecture";
       parts.push(
         `<div class="ev-tags ev-tags--${tagTone}">${tags
@@ -249,7 +260,23 @@ export function initEventsSection() {
   </div>`;
   }
 
-  function eventDialogMetaHtml(ev) {
+  const EVENT_DIALOG_FLOAT_ICONS = {
+    schedule: "./images/icon-calendar-days.svg",
+    venue: "./images/fa-location-pin.svg",
+    speakers: "./images/fa-users.svg",
+  };
+
+  function eventDialogFloatLine(kind, bodyHtml) {
+    if (!bodyHtml) return "";
+    const iconSrc = EVENT_DIALOG_FLOAT_ICONS[kind];
+    return `<p class="event-dialog-float-line event-dialog-float-line--${kind}">
+  <img class="event-dialog-float-icon" src="${iconSrc}" alt="" width="14" height="14" decoding="async" aria-hidden="true" />
+  <span class="event-dialog-float-line-body">${bodyHtml}</span>
+</p>`;
+  }
+
+  function eventDialogScheduleBodyHtml(ev) {
+    const dateLine = String(ev.dateLine || "").trim();
     const { start, end } = splitTimeDisplay(ev);
     const timeStr =
       start === "常設"
@@ -257,44 +284,69 @@ export function initEventsSection() {
         : end && end !== start
           ? `${start} – ${end}`
           : start;
+    const parts = [];
+    if (dateLine) parts.push(`<span class="event-dialog-float-date">${escapeHtml(dateLine)}</span>`);
+    if (timeStr && timeStr !== "—") {
+      parts.push(`<span class="event-dialog-float-time">${escapeHtml(timeStr)}</span>`);
+    }
+    return parts.join("");
+  }
 
-    const domainHtml = ev.domain
-      ? `<span class="ev-domain">${escapeHtml(String(ev.domain).trim())}</span>`
-      : "";
-    const applyChip = ev.apply ? '<span class="ev-apply-inline">要申込</span>' : "";
-    const metaRow = `<div class="ev-meta">
-        <span class="ev-cat ev-cat-${escapeHtml(ev.cat)}">${escapeHtml(catLabel(ev.cat))}</span>
-        ${domainHtml}
-        ${applyChip}
-      </div>`;
-
-    const dateLine = String(ev.dateLine || "").trim();
-    const scheduleParts = [];
-    if (dateLine) scheduleParts.push(dateLine);
-    if (timeStr && timeStr !== "—") scheduleParts.push(timeStr);
-    const scheduleHtml = scheduleParts.length
-      ? `<p class="event-dialog-datetime">${scheduleParts.map((s) => escapeHtml(s)).join(" · ")}</p>`
-      : "";
-
+  function eventDialogMetaHtml(ev, speakersText) {
     const venue = String(ev.venue || "").trim() || DEFAULT_EVENT_MODAL_VENUE;
-    const venueHtml = `<p class="event-dialog-venue">${escapeHtml(venue)}</p>`;
+    const scheduleBody = eventDialogScheduleBodyHtml(ev);
+    const lines = [];
+    if (scheduleBody) lines.push(eventDialogFloatLine("schedule", scheduleBody));
+    if (speakersText) lines.push(eventDialogFloatLine("speakers", escapeHtml(speakersText)));
+    if (venue) lines.push(eventDialogFloatLine("venue", escapeHtml(venue)));
+    if (!lines.length) return "";
+    return `<div class="event-dialog-float-summary">${lines.join("")}</div>`;
+  }
 
-    const speakersHtml = ev.speakers
-      ? `<p class="ev-speakers" role="group" aria-label="登壇者"><img class="ev-speakers-icon" src="./images/fa-users.svg" alt="" width="15" height="15" decoding="async" /><span class="ev-speakers-body">${escapeHtml(ev.speakers)}</span></p>`
-      : "";
+  /** @param {boolean} onImage */
+  function placeEventDialogMeta(onImage) {
+    if (!eventDlgMeta || !eventDlgTitle) return;
+    if (onImage && eventDlgMedia) {
+      eventDlgMeta.classList.remove("event-dialog-meta--below");
+      if (!eventDlgMedia.contains(eventDlgMeta)) {
+        eventDlgMedia.appendChild(eventDlgMeta);
+      }
+    } else {
+      eventDlgMeta.classList.add("event-dialog-meta--below");
+      if (eventDlgTitle.nextElementSibling !== eventDlgMeta) {
+        eventDlgTitle.insertAdjacentElement("afterend", eventDlgMeta);
+      }
+    }
+  }
 
-    return `<div class="event-dialog-meta-stack">${metaRow}${scheduleHtml}${venueHtml}${speakersHtml}</div>`;
+  function applyEventDialogProgramLabel(ev) {
+    if (!eventDlgProgramLabel) return;
+    const cat = ["lecture", "workshop", "permanent"].includes(ev.cat) ? ev.cat : "lecture";
+    const mod = dialogProgramLabelMod(cat);
+    eventDlgProgramLabel.textContent = dialogProgramLabelText(cat);
+    eventDlgProgramLabel.className = `dialog-program-label dialog-program-label--${mod}`;
   }
 
   function fillEventDialog(ev) {
     if (!eventDialog || !eventDlgTitle || !eventDlgMeta || !eventDlgBody) return;
     eventDlgTitle.textContent = ev.name || "";
+    applyEventDialogProgramLabel(ev);
     const catCls = ["lecture", "workshop", "permanent"].includes(ev.cat) ? ev.cat : "lecture";
-    eventDlgMeta.className = `event-dialog-meta event-dialog-meta--${catCls}`;
-    eventDlgMeta.innerHTML = eventDialogMetaHtml(ev);
+    const speakerCfg = {
+      eventSpeakerIds: SITE_CONFIG.eventSpeakerIds,
+      eventFeaturedSpeakerIds: SITE_CONFIG.eventFeaturedSpeakerIds,
+      eventWideSubSpeakerIds: SITE_CONFIG.eventWideSubSpeakerIds,
+    };
+    const speakersText = eventSpeakersInlineText(ev, speakersById, speakerCfg);
+    eventDlgMeta.className = `event-dialog-meta event-dialog-float event-dialog-meta--${catCls}`;
+    eventDlgMeta.setAttribute("aria-label", `${ev.name || "イベント"}の開催概要`);
+    eventDlgMeta.removeAttribute("aria-labelledby");
+    eventDlgMeta.innerHTML = eventDialogMetaHtml(ev, speakersText);
+    let hasImage = false;
     if (eventDlgMedia && eventDlgThumb) {
       const src = pickupImageSrc(ev);
       if (src) {
+        hasImage = true;
         eventDlgThumb.src = src;
         eventDlgThumb.alt = `${ev.name}のイメージ`;
         eventDlgMedia.hidden = false;
@@ -304,37 +356,11 @@ export function initEventsSection() {
         eventDlgMedia.hidden = true;
       }
     }
-    eventDlgBody.innerHTML = detailBlocks(ev) + guestProfileMockHtml(ev);
-  }
-
-  function guestProfileMockHtml(ev) {
-    const profileById = {
-      "evt-01": {
-        name: "光川貴浩（編集者・路地研究家）",
-        role: "ゲストプロフィール（モック）",
-        img: "https://placehold.jp/240x240.png?text=%E5%85%89%E5%B7%9D%E8%B2%B4%E6%B5%A9",
-        bio: "プロフィール文です。プロフィール文です。プロフィール文です。プロフィール文です。プロフィール文です。プロフィール文です。プロフィール文です。プロフィール文です。プロフィール文です。プロフィール文です。プロフィール文です。プロフィール文です。プロフィール文です。プロフィール文です。プロフィール文です。プロフィール文です。プロフィール文です。プロフィール文です。",
-      },
-      "evt-04": {
-        name: "ゲストクリエイター（仮）",
-        role: "ゲストプロフィール（モック）",
-        img: "https://placehold.jp/240x240.png?text=GUEST+PHOTO",
-        bio: "プロフィール文です。プロフィール文です。プロフィール文です。プロフィール文です。プロフィール文です。プロフィール文です。プロフィール文です。プロフィール文です。プロフィール文です。プロフィール文です。プロフィール文です。プロフィール文です。プロフィール文です。プロフィール文です。プロフィール文です。プロフィール文です。プロフィール文です。プロフィール文です。",
-      },
-    };
-    const p = profileById[ev.id];
-    if (!p) return "";
-    const guestCat = ["lecture", "workshop", "permanent"].includes(ev.cat) ? ev.cat : "lecture";
-    return `<section class="event-guest-mock event-guest-mock--${guestCat}" aria-label="ゲストプロフィール">
-      <h4 class="event-guest-mock-heading">${escapeHtml(p.role)}</h4>
-      <div class="event-guest-mock-card">
-        <img class="event-guest-mock-thumb" src="${escapeHtml(p.img)}" alt="${escapeHtml(p.name)}" width="240" height="240" loading="lazy" decoding="async" />
-        <div class="event-guest-mock-body">
-          <p class="event-guest-mock-name">${escapeHtml(p.name)}</p>
-          <p class="event-guest-mock-bio">${escapeHtml(p.bio)}</p>
-        </div>
-      </div>
-    </section>`;
+    placeEventDialogMeta(hasImage);
+    const { featured, compact, wideSub } = resolveEventSpeakers(ev, speakersById, speakerCfg);
+    eventDlgBody.innerHTML =
+      detailBlocks(ev, { skipTags: true }) +
+      renderEventSpeakersSectionHtml(ev, featured, compact, wideSub);
   }
 
   function openEventDialog(id, opts = {}) {
@@ -344,6 +370,31 @@ export function initEventsSection() {
     fillEventDialog(ev);
     if (typeof eventDialog.showModal === "function") eventDialog.showModal();
     if (!fromUrl) setQueryParam("event_id", id);
+  }
+
+  /** 開催概要スケジュール → #event へスクロール後に詳細モーダルを開く */
+  function scrollToEventSectionThen(run) {
+    const target = document.getElementById("event");
+    if (!target) {
+      run();
+      return;
+    }
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    target.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
+    const delay = reduced ? 0 : 480;
+    window.setTimeout(run, delay);
+  }
+
+  function bindTimelineScheduleLinks() {
+    if (!timelineRoot) return;
+    timelineRoot.querySelectorAll("a.program-timeline-bar[data-event-id]").forEach((link) => {
+      const id = link.getAttribute("data-event-id");
+      if (!id || !byId[id]) return;
+      link.addEventListener("click", (e) => {
+        e.preventDefault();
+        scrollToEventSectionThen(() => openEventDialog(id));
+      });
+    });
   }
 
   function bindEventOpenTargets(scope) {
@@ -438,7 +489,9 @@ export function initEventsSection() {
     let records;
     let hasMainColumn = false;
     try {
-      const res = await fetch(CSV_URL, { cache: "no-store" });
+      const evPromise = fetch(CSV_URL, { cache: "no-store" });
+      const spPromise = fetch(SITE_CONFIG.speakersCsvUrl, { cache: "no-store" }).catch(() => null);
+      const res = await evPromise;
       if (!res.ok) throw new Error(String(res.status));
       const text = (await res.text()).replace(/^\uFEFF/, "");
       const matrix = parseCSV(text);
@@ -446,6 +499,27 @@ export function initEventsSection() {
       const headers = matrix[0].map((h) => h.trim());
       hasMainColumn = headers.includes("メイン");
       records = matrix.slice(1).map((cells) => rowToObj(headers, cells));
+
+      const spRes = await spPromise;
+      if (spRes?.ok) {
+        try {
+          speakersById = parseSpeakersCsvText(await spRes.text());
+        } catch {
+          speakersById = {};
+        }
+      } else {
+        speakersById = {};
+      }
+      if (!Object.keys(speakersById).length) {
+        const fb = await fetch("./data/speakers.csv", { cache: "no-store" }).catch(() => null);
+        if (fb?.ok) {
+          try {
+            speakersById = parseSpeakersCsvText(await fb.text());
+          } catch {
+            speakersById = {};
+          }
+        }
+      }
     } catch {
       listHost.innerHTML =
         '<p class="ev-load-error" role="alert">イベントデータを読み込めませんでした。しばらくしてから再度お試しください。</p>';
@@ -597,6 +671,7 @@ export function initEventsSection() {
     });
 
     fillProgramTimeline(timelineRoot, events);
+    bindTimelineScheduleLinks();
 
     listHost.innerHTML =
       html ||

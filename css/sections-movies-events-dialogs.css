@@ -207,37 +207,138 @@
   line-height: 1.65;
 }
 
+/* モーダル左上：企画ラベル（余白なし・角Rなし・テーマカラー） */
+.movie-dialog-shell > .dialog-program-label,
+.event-dialog-shell > .dialog-program-label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 11;
+  margin: 0;
+  padding: 0.44rem 0.78rem;
+  border: none;
+  border-radius: 0;
+  max-width: calc(100% - 3.25rem);
+  font-family: "Noto Sans JP", sans-serif;
+  font-size: clamp(0.66rem, 1.45vw, 0.76rem);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1.38;
+  color: #fff;
+  pointer-events: none;
+}
+
+.dialog-program-label--screening {
+  background: var(--brand-purple);
+}
+
+.dialog-program-label--lecture {
+  background: var(--brand-blue);
+}
+
+.dialog-program-label--workshop {
+  background: var(--brand-magenta);
+}
+
+.dialog-program-label--permanent {
+  background: rgba(var(--brand-black-rgb), 0.78);
+}
+
 /* ========== MOVIE DIALOG ========== */
-/* 作品カードから開く詳細 */
+/* 作品カードから開く詳細（イベント詳細モーダルと同系統） */
 .movie-dialog {
   padding: 0;
   border: none;
-  border-radius: 4px;
+  border-radius: 10px;
   max-width: calc(100vw - 2rem);
-  width: min(34rem, 100%);
+  width: min(48rem, 100%);
+  margin: auto;
   background: #fff;
-  box-shadow: 0 24px 60px rgba(15, 17, 21, 0.22);
+  box-shadow: 0 26px 72px rgba(15, 17, 21, 0.28);
 }
 
 .movie-dialog::backdrop {
-  background: rgba(15, 17, 21, 0.45);
+  background: rgba(15, 17, 21, 0.56);
+  backdrop-filter: blur(1.5px);
+}
+
+.movie-dialog-shell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  max-height: min(88vh, 58rem);
+  overflow: hidden;
 }
 
 .movie-dialog-panel {
-  position: relative;
-  padding: clamp(1.15rem, 3vw, 1.5rem) clamp(1.1rem, 3vw, 1.45rem) clamp(1.25rem, 3vw, 1.55rem);
+  flex: 1 1 auto;
+  min-height: 0;
+  --dlg-pad-x: clamp(1.15rem, 3vw, 1.65rem);
+  --dlg-pad-y-top: clamp(1.2rem, 3vw, 1.55rem);
+  --dlg-pad-y-bottom: clamp(1.25rem, 3vw, 1.6rem);
+  padding: var(--dlg-pad-y-top) var(--dlg-pad-x) var(--dlg-pad-y-bottom);
+  overflow: auto;
+  scrollbar-gutter: auto;
+}
+
+/* 上映詳細モーダル：画像上にだけ重ねる（レイアウトは従来のまま） */
+.movie-dialog-media > .movie-dialog-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 999px;
+  background: rgba(15, 17, 21, 0.42);
+  color: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 2px 14px rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+  transition:
+    background var(--int-fast) var(--int-ease),
+    color var(--int-fast) var(--int-ease),
+    opacity var(--int-fast) var(--int-ease);
+}
+
+.movie-dialog-media > .movie-dialog-nav--prev {
+  left: clamp(0.45rem, 1.8vw, 0.85rem);
+}
+
+.movie-dialog-media > .movie-dialog-nav--next {
+  right: clamp(0.45rem, 1.8vw, 0.85rem);
+}
+
+.movie-dialog-media > .movie-dialog-nav:hover {
+  background: rgba(15, 17, 21, 0.58);
+  color: #fff;
+}
+
+.movie-dialog-media > .movie-dialog-nav:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.65);
+  outline-offset: 2px;
+}
+
+.movie-dialog-media > .movie-dialog-nav[hidden] {
+  display: none !important;
 }
 
 .movie-dialog-close {
   position: absolute;
-  top: 0.55rem;
-  right: 0.55rem;
+  top: 0.65rem;
+  right: 0.65rem;
+  z-index: 10;
   width: 2.25rem;
   height: 2.25rem;
   border: none;
-  border-radius: 4px;
-  background: rgba(17, 17, 17, 0.06);
-  color: rgba(17, 17, 17, 0.65);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 2px 10px rgba(15, 17, 21, 0.12);
+  color: rgba(17, 17, 17, 0.72);
   font-size: 1.35rem;
   line-height: 1;
   cursor: pointer;
@@ -248,16 +349,22 @@
 }
 
 .movie-dialog-close:hover {
-  background: rgba(17, 17, 17, 0.1);
-  color: rgba(17, 17, 17, 0.88);
+  background: rgba(17, 17, 17, 0.08);
+  color: rgba(17, 17, 17, 0.92);
 }
 
 .movie-dialog-media {
-  margin: 0 0 1rem;
-  border-radius: 3px;
+  position: relative;
+  box-sizing: border-box;
+  width: calc(100% + 2 * var(--dlg-pad-x));
+  max-width: none;
+  margin: calc(-1 * var(--dlg-pad-y-top)) calc(-1 * var(--dlg-pad-x)) 1rem;
+  border-radius: 10px 10px 0 0;
   overflow: hidden;
-  border: 1px solid var(--rule);
-  background: rgba(17, 17, 17, 0.04);
+  border: none;
+  border-bottom: 1px solid rgba(17, 17, 17, 0.1);
+  background: rgba(17, 17, 17, 0.06);
+  box-shadow: none;
 }
 
 .movie-dialog-media[hidden] {
@@ -273,101 +380,183 @@
 }
 
 .movie-dialog-title {
-  margin: 0 2.25rem 0.35rem 0;
+  margin: 0 2.5rem 0.65rem 0;
   font-family: "Shippori Mincho B1", serif;
-  font-size: clamp(1.08rem, 2.6vw, 1.28rem);
+  font-size: clamp(1.18rem, 2.9vw, 1.48rem);
   font-weight: 800;
   letter-spacing: 0.03em;
-  line-height: 1.35;
+  line-height: 1.45;
   color: rgba(17, 17, 17, 0.94);
 }
 
-.movie-dialog-meta {
-  margin: 0 0 0.75rem;
+.movie-dialog-credits {
+  margin: 0 0 0.72rem;
   font-size: 0.84rem;
   font-weight: 500;
   line-height: 1.55;
   color: rgba(17, 17, 17, 0.62);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* 上映日時・会場: 右寄せ・インラインブロック（カード枠なしで軽く） */
-.movie-dialog-showtime {
-  margin: 0 0 0.75rem;
-  text-align: right;
-  line-height: 1.35;
-}
-
-.movie-dialog-showtime-inner {
-  display: inline-flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0.08rem;
-  text-align: right;
-  max-width: 100%;
-}
-
-.movie-dialog-showtime-date {
-  font-size: 0.81rem;
-  font-weight: 600;
-  letter-spacing: 0.03em;
-  color: rgba(17, 17, 17, 0.78);
-}
-
-.movie-dialog-showtime-slot {
-  font-family: "DM Mono", monospace;
-  font-size: 0.72rem;
-  font-weight: 500;
-  letter-spacing: 0.05em;
-  color: rgba(17, 17, 17, 0.48);
-}
-
-.movie-dialog-showtime-venue-row {
-  display: inline-flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 0.28rem;
-  margin-top: 0.12rem;
-}
-
-.movie-dialog-showtime-pin-wrap {
-  display: inline-flex;
-  align-items: center;
-  flex-shrink: 0;
-}
-
-.movie-dialog-showtime-pin {
-  display: block;
-  width: 0.75rem;
-  height: 0.75rem;
-  opacity: 0.5;
-}
-
-.movie-dialog-showtime-venue {
-  font-size: 0.78rem;
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  color: rgba(17, 17, 17, 0.62);
-}
-
-.movie-dialog-showtime-unknown {
-  margin: 0;
-  font-size: 0.82rem;
-  line-height: 1.55;
-  color: rgba(140, 36, 74, 0.92);
-  text-align: left;
+.movie-dialog-credits[hidden] {
+  display: none !important;
 }
 
 .movie-dialog-body {
-  padding-top: 0.75rem;
-  border-top: 1px solid var(--rule);
+  display: flex;
+  flex-direction: column;
+  gap: 0.72rem;
+  padding-top: 0;
+  border-top: none;
 }
 
 .movie-dialog-desc {
   margin: 0;
-  font-size: 0.88rem;
-  line-height: 1.82;
-  color: rgba(17, 17, 17, 0.78);
+  font-size: 0.95rem;
+  line-height: 1.88;
+  color: rgba(17, 17, 17, 0.86);
   white-space: pre-line;
+}
+
+/* 上映詳細：画像オーバーレイ（イベント詳細と同型ガラスパネル） */
+.movie-dialog-media:has(.movie-dialog-float)::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(to top, rgba(15, 17, 21, 0.52) 0%, rgba(15, 17, 21, 0.06) 42%, transparent 68%);
+}
+
+.movie-dialog-media .movie-dialog-float,
+.movie-dialog-meta.movie-dialog-float.movie-dialog-meta--below {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(15, 17, 21, 0.25);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+.movie-dialog-media .movie-dialog-float {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  width: min(max-content, 100%);
+  max-width: 100%;
+  max-height: min(62%, 22rem);
+  margin: 0;
+  padding: 0.52rem 0.68rem 0.58rem;
+  border-radius: 0;
+}
+
+.movie-dialog-meta.movie-dialog-float.movie-dialog-meta--below {
+  position: static;
+  width: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0 0 0.75rem;
+  padding: 0.52rem 0.68rem 0.58rem;
+  box-shadow: 0 8px 28px rgba(15, 17, 21, 0.14);
+}
+
+.movie-dialog-float-summary,
+.event-dialog-float-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 0.34rem;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.movie-dialog-meta.movie-dialog-float.movie-dialog-meta--below .movie-dialog-float-summary,
+.event-dialog-meta.event-dialog-float.event-dialog-meta--below .event-dialog-float-summary {
+  overflow-y: visible;
+}
+
+.movie-dialog-float-line,
+.event-dialog-float-line {
+  margin: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.38rem;
+  font-family: "Noto Sans JP", sans-serif;
+  font-size: clamp(0.66rem, 1.5vw, 0.76rem);
+  font-weight: 500;
+  line-height: 1.45;
+  letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.movie-dialog-float-icon,
+.event-dialog-float-icon {
+  flex-shrink: 0;
+  display: block;
+  width: 0.82rem;
+  height: 0.82rem;
+  margin-top: 0.18em;
+  object-fit: contain;
+  opacity: 0.72;
+  filter: brightness(0) invert(1);
+}
+
+.movie-dialog-float-line-body,
+.event-dialog-float-line-body {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.movie-dialog-float-line--schedule .movie-dialog-float-line-body,
+.event-dialog-float-line--schedule .event-dialog-float-line-body {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.2rem 0.42rem;
+}
+
+.movie-dialog-float-date,
+.event-dialog-float-date {
+  font-family: "Shippori Mincho B1", serif;
+  font-size: clamp(0.68rem, 1.55vw, 0.78rem);
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  color: rgba(255, 255, 255, 0.96);
+}
+
+.movie-dialog-float-time,
+.event-dialog-float-time {
+  font-family: "DM Mono", monospace;
+  font-size: clamp(0.64rem, 1.45vw, 0.74rem);
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.movie-dialog-float-line--venue .movie-dialog-float-line-body,
+.event-dialog-float-line--venue .event-dialog-float-line-body {
+  color: rgba(255, 255, 255, 0.84);
+}
+
+.movie-dialog-float-line--speakers .movie-dialog-float-line-body,
+.event-dialog-float-line--speakers .event-dialog-float-line-body {
+  color: rgba(255, 255, 255, 0.88);
+  white-space: pre-line;
+}
+
+.movie-dialog-float-unknown {
+  margin: 0;
+  font-size: clamp(0.64rem, 1.45vw, 0.74rem);
+  line-height: 1.48;
+  color: rgba(255, 220, 220, 0.95);
 }
 
 /* ========== EVENT DIALOG ========== */
@@ -375,9 +564,10 @@
 .event-dialog {
   padding: 0;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   max-width: calc(100vw - 2rem);
-  width: min(46rem, 100%);
+  width: min(48rem, 100%);
+  margin: auto;
   background: #fff;
   box-shadow: 0 26px 72px rgba(15, 17, 21, 0.28);
 }
@@ -387,22 +577,36 @@
   backdrop-filter: blur(1.5px);
 }
 
-.event-dialog-panel {
+.event-dialog-shell {
   position: relative;
-  padding: clamp(1rem, 2.6vw, 1.25rem) clamp(1rem, 2.6vw, 1.3rem) clamp(1.05rem, 2.6vw, 1.35rem);
-  max-height: min(86vh, 56rem);
+  display: flex;
+  flex-direction: column;
+  max-height: min(88vh, 58rem);
+  overflow: hidden;
+}
+
+.event-dialog-panel {
+  flex: 1 1 auto;
+  min-height: 0;
+  --dlg-pad-x: clamp(1.15rem, 3vw, 1.65rem);
+  --dlg-pad-y-top: clamp(1.2rem, 3vw, 1.55rem);
+  --dlg-pad-y-bottom: clamp(1.25rem, 3vw, 1.6rem);
+  padding: var(--dlg-pad-y-top) var(--dlg-pad-x) var(--dlg-pad-y-bottom);
   overflow: auto;
+  scrollbar-gutter: auto;
 }
 
 .event-dialog-close {
   position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
+  top: 0.65rem;
+  right: 0.65rem;
+  z-index: 10;
   width: 2.25rem;
   height: 2.25rem;
   border: none;
   border-radius: 999px;
-  background: rgba(17, 17, 17, 0.09);
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 2px 10px rgba(15, 17, 21, 0.12);
   color: rgba(17, 17, 17, 0.72);
   font-size: 1.35rem;
   line-height: 1;
@@ -414,17 +618,22 @@
 }
 
 .event-dialog-close:hover {
-  background: rgba(17, 17, 17, 0.16);
+  background: rgba(17, 17, 17, 0.08);
   color: rgba(17, 17, 17, 0.92);
 }
 
 .event-dialog-media {
-  margin: 0 0 0.85rem;
-  border-radius: 6px;
+  position: relative;
+  box-sizing: border-box;
+  width: calc(100% + 2 * var(--dlg-pad-x));
+  max-width: none;
+  margin: calc(-1 * var(--dlg-pad-y-top)) calc(-1 * var(--dlg-pad-x)) 1rem;
+  border-radius: 10px 10px 0 0;
   overflow: hidden;
-  border: 1px solid rgba(17, 17, 17, 0.1);
-  background: rgba(17, 17, 17, 0.04);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  border: none;
+  border-bottom: 1px solid rgba(17, 17, 17, 0.1);
+  background: rgba(17, 17, 17, 0.06);
+  box-shadow: none;
 }
 
 .event-dialog-media[hidden] {
@@ -440,155 +649,75 @@
 }
 
 .event-dialog-title {
-  margin: 0 2.3rem 0.35rem 0;
+  margin: 0 2.5rem 0.65rem 0;
   font-family: "Shippori Mincho B1", serif;
-  font-size: clamp(1.18rem, 2.9vw, 1.45rem);
+  font-size: clamp(1.18rem, 2.9vw, 1.48rem);
   font-weight: 800;
   letter-spacing: 0.03em;
-  line-height: 1.42;
+  line-height: 1.45;
   color: rgba(17, 17, 17, 0.94);
 }
 
-/* タイムテーブルカード（#event）と同じトーン・コンポーネントクラスを流用（本文よりコンパクトに） */
-.event-dialog-meta {
-  margin: 0 0 0.55rem;
-  padding: 0.48rem 0.62rem 0.52rem;
-  border-radius: 2px;
-  background: #fff;
-  border: 1px solid rgba(17, 17, 17, 0.12);
-  box-shadow: 0 4px 16px rgba(15, 17, 21, 0.05);
-  font-size: 0.78rem;
-  font-weight: 500;
-  line-height: 1.38;
-  color: rgba(17, 17, 17, 0.7);
+/* イベント詳細：画像オーバーレイ（ガラスパネル・共通スタイルは上映詳細と共有） */
+.event-dialog-media:has(.event-dialog-float)::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(to top, rgba(15, 17, 21, 0.52) 0%, rgba(15, 17, 21, 0.06) 42%, transparent 68%);
 }
 
-.event-dialog-meta--lecture {
-  border-left: 4px solid rgba(var(--brand-blue-rgb), 0.9);
-}
-
-.event-dialog-meta--workshop {
-  border-left: 4px solid rgba(var(--brand-magenta-rgb), 0.9);
-}
-
-.event-dialog-meta--permanent {
-  border-left: 4px solid rgba(var(--brand-black-rgb), 0.35);
-}
-
-.event-dialog-meta-stack {
-  display: grid;
-  gap: 0.2rem;
-}
-
-.event-dialog-meta .ev-meta {
+.event-dialog-media .event-dialog-float,
+.event-dialog-meta.event-dialog-float.event-dialog-meta--below {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.28rem 0.38rem;
-  margin-bottom: 0.12rem;
+  flex-direction: column;
+  box-sizing: border-box;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(15, 17, 21, 0.25);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
 }
 
-.event-dialog-meta .ev-cat {
-  font-size: 0.62rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: none;
-  padding: 0.1rem 0.42rem 0.11rem;
-  border-radius: 2px;
-}
-
-.event-dialog-meta .ev-cat-lecture {
-  background: rgba(var(--brand-blue-rgb), 0.14);
-  color: rgba(12, 72, 124, 0.98);
-}
-
-.event-dialog-meta .ev-cat-workshop {
-  background: rgba(var(--brand-magenta-rgb), 0.12);
-  color: rgba(140, 36, 74, 0.98);
-}
-
-.event-dialog-meta .ev-cat-permanent {
-  background: rgba(var(--brand-black-rgb), 0.1);
-  color: rgba(var(--brand-black-rgb), 0.88);
-}
-
-.event-dialog-meta .ev-domain {
-  flex-shrink: 0;
-  display: inline-flex;
-  align-items: center;
-  font-size: 0.62rem;
-  font-weight: 600;
-  letter-spacing: 0.03em;
-  line-height: 1.2;
-  color: rgba(17, 17, 17, 0.62);
-  background: rgba(17, 17, 17, 0.055);
-  border: 1px solid rgba(17, 17, 17, 0.11);
-  padding: 0.08rem 0.38rem 0.09rem;
-  border-radius: 2px;
-}
-
-.event-dialog-meta .ev-apply-inline {
-  font-size: 0.66rem;
-  color: rgba(var(--brand-magenta-rgb), 0.95);
-  font-weight: 600;
-}
-
-.event-dialog-meta .ev-speakers {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  gap: 0.28rem 0.42rem;
-  margin: 0.12rem 0 0;
-  font-size: 0.76rem;
-  font-weight: 500;
-  line-height: 1.42;
-  color: rgba(17, 17, 17, 0.7);
-}
-
-.event-dialog-meta .ev-speakers-icon {
-  flex-shrink: 0;
-  display: block;
-  width: 0.82rem;
-  height: 0.82rem;
-  margin-top: 0.18em;
-  object-fit: contain;
-  opacity: 0.5;
-}
-
-.event-dialog-meta .ev-speakers-body {
-  min-width: 0;
-  white-space: pre-line;
-}
-
-/* 日付・時刻は1行にまとめて縦幅を抑える */
-.event-dialog-datetime {
+.event-dialog-media .event-dialog-float {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  width: min(max-content, 100%);
+  max-width: 100%;
+  max-height: min(62%, 22rem);
   margin: 0;
-  font-family: "DM Mono", monospace;
-  font-size: 0.74rem;
-  font-weight: 500;
-  letter-spacing: 0.03em;
-  line-height: 1.35;
-  color: rgba(17, 17, 17, 0.62);
+  padding: 0.52rem 0.68rem 0.58rem;
+  border-radius: 0;
 }
 
-.event-dialog-venue {
-  margin: 0;
-  font-size: 0.74rem;
-  font-weight: 600;
-  line-height: 1.35;
-  color: rgba(17, 17, 17, 0.65);
+.event-dialog-meta.event-dialog-float.event-dialog-meta--below {
+  position: static;
+  width: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0 0 0.75rem;
+  padding: 0.52rem 0.68rem 0.58rem;
+  box-shadow: 0 8px 28px rgba(15, 17, 21, 0.14);
 }
 
 .event-dialog-body {
-  padding-top: 0.58rem;
-  border-top: 1px solid var(--rule);
+  display: flex;
+  flex-direction: column;
+  gap: 0.72rem;
+  padding-top: 0;
+  border-top: none;
 }
 
 .event-dialog-body .ev-desc {
   margin: 0;
-  font-size: 0.86rem;
-  line-height: 1.82;
-  color: rgba(17, 17, 17, 0.78);
+  font-size: 0.95rem;
+  line-height: 1.88;
+  color: rgba(17, 17, 17, 0.86);
   white-space: pre-line;
 }
 
@@ -601,7 +730,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.4rem;
-  margin-top: 0.65rem;
+  margin-top: 0;
   margin-bottom: 0;
 }
 
@@ -632,7 +761,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  margin-top: 0.65rem;
+  margin-top: 0;
   font-size: 0.86rem;
   font-weight: 700;
   padding: 0.45rem 1rem;
@@ -650,33 +779,43 @@
 }
 
 .event-dialog-body .ev-apply-btn::after {
-  content: none;
+  content: "";
+  display: inline-block;
+  width: 0.85em;
+  height: 0.85em;
+  flex-shrink: 0;
+  background-color: currentColor;
+  -webkit-mask: url("../images/fa-up-right-from-square.svg") center / contain no-repeat;
+  mask: url("../images/fa-up-right-from-square.svg") center / contain no-repeat;
+  opacity: 0.92;
 }
 
 .event-guest-mock {
-  margin-top: 0.95rem;
-  padding-top: 0.75rem;
-  border-top: 1px dashed rgba(17, 17, 17, 0.14);
+  margin-top: 0;
+  padding-top: 0.95rem;
+  border-top: 1px solid rgba(17, 17, 17, 0.1);
 }
 
 .event-guest-mock-heading {
-  margin: 0 0 0.45rem;
-  font-size: 0.74rem;
+  margin: 0 0 0.55rem;
+  font-size: 0.76rem;
   font-weight: 700;
   letter-spacing: 0.04em;
-  color: rgba(17, 17, 17, 0.55);
+  color: rgba(17, 17, 17, 0.52);
 }
 
 .event-guest-mock-card {
   display: grid;
-  grid-template-columns: 7rem 1fr;
-  gap: 0.62rem;
-  align-items: start;
-  padding: 0.65rem 0.75rem;
-  border-radius: 2px;
+  grid-template-columns: minmax(7.25rem, 10rem) 1fr;
+  gap: 0;
+  align-items: stretch;
+  box-sizing: border-box;
   background: #fff;
   border: 1px solid rgba(17, 17, 17, 0.12);
+  border-radius: 2px;
   box-shadow: 0 6px 22px rgba(15, 17, 21, 0.06);
+  transition: border-color var(--int-fast) var(--int-ease), box-shadow var(--int-fast) var(--int-ease);
+  overflow: hidden;
 }
 
 .event-guest-mock--lecture .event-guest-mock-card {
@@ -691,28 +830,175 @@
   border-left: 4px solid rgba(var(--brand-black-rgb), 0.35);
 }
 
+.event-guest-mock-aside {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: 1.05rem 0.65rem 1.05rem 0.85rem;
+  border-right: 1px solid var(--rule);
+  background: rgba(var(--bg-light-rgb), 0.55);
+}
+
 .event-guest-mock-thumb {
-  width: 7rem;
-  height: 7rem;
+  width: 7.25rem;
+  height: 7.25rem;
   border-radius: 999px;
   border: 1px solid rgba(17, 17, 17, 0.12);
   display: block;
   object-fit: cover;
   object-position: center;
+  flex-shrink: 0;
+}
+
+.event-guest-mock-body {
+  min-width: 0;
+  padding: 1rem 1.1rem 1.1rem;
 }
 
 .event-guest-mock-name {
-  margin: 0 0 0.28rem;
-  font-size: 0.85rem;
+  margin: 0 0 0.38rem;
+  font-size: 0.9rem;
   font-weight: 700;
-  color: rgba(17, 17, 17, 0.86);
+  letter-spacing: 0.02em;
+  line-height: 1.35;
+  color: rgba(17, 17, 17, 0.88);
 }
 
 .event-guest-mock-bio {
   margin: 0;
+  max-width: 40rem;
+  font-size: 0.82rem;
+  line-height: 1.72;
+  color: rgba(17, 17, 17, 0.7);
+}
+
+.event-speakers-block {
+  margin-top: 0;
+  padding-top: 0.95rem;
+  border-top: 1px solid rgba(17, 17, 17, 0.1);
+}
+
+.event-speakers-block__heading {
+  margin: 0 0 0.55rem;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: rgba(17, 17, 17, 0.52);
+}
+
+.event-speakers-featured-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.event-speaker-mini--full {
+  grid-column: 1 / -1;
+}
+
+.event-speaker-feature.event-guest-mock {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+}
+
+.event-speaker-feature__title {
+  margin: 0 0 0.45rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.45;
+  color: rgba(17, 17, 17, 0.58);
+}
+
+.event-guest-mock-aside--nophoto {
+  align-items: center;
+  justify-content: center;
+}
+
+.event-guest-mock-initial {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 7.25rem;
+  height: 7.25rem;
+  border-radius: 999px;
+  border: 1px solid rgba(17, 17, 17, 0.12);
+  box-sizing: border-box;
+  font-family: "Shippori Mincho B1", serif;
+  font-size: clamp(1.65rem, 4vw, 2.1rem);
+  font-weight: 800;
+  line-height: 1;
+  color: rgba(17, 17, 17, 0.32);
+  background: #fff;
+}
+
+.event-speaker-compact-list {
+  list-style: none;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.48rem;
+}
+
+.event-speaker-mini {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45rem;
+  box-sizing: border-box;
+  min-width: 0;
+  padding: 0.48rem 0.52rem;
+  border-radius: 2px;
+  border: 1px solid rgba(17, 17, 17, 0.1);
+  background: rgba(17, 17, 17, 0.02);
+}
+
+.event-speaker-mini__icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.85rem;
+  height: 1.85rem;
+  margin-top: 0.06rem;
+  border-radius: 999px;
+  background: rgba(var(--brand-blue-rgb), 0.08);
+  border: 1px solid rgba(17, 17, 17, 0.08);
+}
+
+.event-speaker-mini__icon img {
+  width: 0.95rem;
+  height: 0.95rem;
+  object-fit: contain;
+  opacity: 0.72;
+}
+
+.event-speaker-mini__body {
+  min-width: 0;
+}
+
+.event-speaker-mini__name {
+  margin: 0 0 0.12rem;
   font-size: 0.78rem;
-  line-height: 1.6;
-  color: rgba(17, 17, 17, 0.68);
+  font-weight: 700;
+  line-height: 1.35;
+  color: rgba(17, 17, 17, 0.88);
+}
+
+.event-speaker-mini__role {
+  margin: 0 0 0.18rem;
+  font-size: 0.68rem;
+  font-weight: 500;
+  line-height: 1.45;
+  color: rgba(17, 17, 17, 0.55);
+}
+
+.event-speaker-mini__note {
+  margin: 0;
+  font-size: 0.66rem;
+  line-height: 1.5;
+  color: rgba(17, 17, 17, 0.48);
 }
 
 @media (max-width: 640px) {
@@ -722,20 +1008,46 @@
   }
 
   .event-dialog-panel {
-    max-height: 84vh;
-    padding: 0.8rem 0.8rem 0.95rem;
+    max-height: 86vh;
+    padding: 1rem 0.95rem 1.1rem;
   }
 
   .event-dialog-title {
     font-size: clamp(1.05rem, 5vw, 1.24rem);
   }
 
+  .event-dialog-body {
+    gap: 0.62rem;
+  }
+
   .event-dialog-body .ev-desc {
-    font-size: 0.84rem;
-    line-height: 1.72;
+    font-size: 0.9rem;
+    line-height: 1.82;
   }
 
   .event-guest-mock-card {
+    grid-template-columns: 1fr;
+  }
+
+  .event-guest-mock-aside {
+    border-right: none;
+    border-bottom: 1px solid var(--rule);
+    padding: 0.85rem 0.75rem 0.75rem;
+  }
+
+  .event-guest-mock-thumb {
+    margin-inline: auto;
+  }
+
+  .event-guest-mock-body {
+    padding: 1rem 1.05rem 1.1rem;
+  }
+
+  .event-guest-mock-bio {
+    max-width: none;
+  }
+
+  .event-speaker-compact-list {
     grid-template-columns: 1fr;
   }
 }
@@ -852,7 +1164,22 @@
   z-index: 1;
 }
 
-.screening-slide img {
+.screening-slide-link {
+  position: absolute;
+  inset: 0;
+  display: block;
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.screening-slide-link:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.75);
+  outline-offset: -3px;
+  z-index: 3;
+}
+
+.screening-slide-link > img {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -921,7 +1248,7 @@
   pointer-events: auto;
 }
 
-.screening-slide.is-active img {
+.screening-slide.is-active .screening-slide-link > img {
   pointer-events: none;
 }
 
@@ -933,42 +1260,78 @@
   z-index: 2;
   display: flex;
   flex-direction: column;
-  /* 従来比 1.2 倍の横幅（折り返し行数を減らして縦に収める） */
+  gap: 0.34rem;
   width: min(91.2%, 22.2rem);
   max-width: calc(100% - 18px);
-  max-height: min(58%, 20rem);
+  max-height: min(62%, 22rem);
   margin: 0;
   padding: 0.52rem 0.68rem 0.58rem;
   box-sizing: border-box;
   border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.14);
-  background: rgba(15, 17, 21, 0.56);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(15, 17, 21, 0.25);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
   overflow: hidden;
 }
 
-.screening-slide .mv-float-panel.screening-carousel-float .mv-float-panel-head {
+.screening-slide .mv-float-panel.screening-carousel-float .mv-float-panel-title {
+  margin: 0;
+  flex-shrink: 0;
+  font-family: "Shippori Mincho B1", serif;
+  font-size: clamp(0.78rem, 2vw, 0.92rem);
+  font-weight: 800;
+  line-height: 1.28;
+  letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.98);
+}
+
+.screening-slide .mv-float-panel.screening-carousel-float .movie-dialog-float-summary {
   flex-shrink: 0;
 }
 
-/* 上映ヒーローでは「あらすじ」ラベルを省き、本文の余白を詰める */
-.screening-slide .mv-float-panel.screening-carousel-float .mv-float-panel-lead {
-  display: none;
+.screening-slide .mv-float-panel.screening-carousel-float .movie-dialog-float-icon {
+  flex-shrink: 0;
+  display: block;
+  width: 0.82rem;
+  height: 0.82rem;
+  max-width: 0.82rem;
+  max-height: 0.82rem;
+  margin-top: 0.18em;
+  object-fit: contain;
+  opacity: 0.72;
+  filter: brightness(0) invert(1);
 }
 
-.screening-slide .mv-float-panel.screening-carousel-float .mv-float-panel-body {
-  flex: 1 1 auto;
-  min-height: 0;
-  padding-top: 0.3rem;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  -webkit-overflow-scrolling: touch;
+.screening-slide .mv-float-panel.screening-carousel-float .mv-float-panel-credits {
+  margin: 0;
+  flex-shrink: 0;
+  font-family: "Noto Sans JP", sans-serif;
+  font-size: clamp(0.62rem, 1.55vw, 0.72rem);
+  font-weight: 500;
+  line-height: 1.45;
+  letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.82);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .screening-slide .mv-float-panel.screening-carousel-float .mv-float-panel-synopsis {
-  line-height: 1.44;
+  margin: 0;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  font-family: "Noto Sans JP", sans-serif;
+  font-size: clamp(0.62rem, 1.55vw, 0.74rem);
+  font-weight: 500;
+  line-height: 1.48;
+  letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.85);
+  white-space: pre-line;
 }
 
 .mv-float-panel .mv-float-panel-head {
@@ -1581,7 +1944,8 @@
   color: rgba(var(--brand-black-rgb), 0.88);
 }
 
-#event .ev-domain {
+#event .ev-domain,
+#event .ev-apply-inline {
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
@@ -1631,12 +1995,6 @@
 #event .ev-speakers-body {
   min-width: 0;
   white-space: pre-line;
-}
-
-#event .ev-apply-inline {
-  font-size: 0.72rem;
-  color: rgba(var(--brand-magenta-rgb), 0.95);
-  font-weight: 600;
 }
 
 #event .ev-detail {
@@ -1714,7 +2072,15 @@
 }
 
 #event .ev-apply-btn::after {
-  content: none;
+  content: "";
+  display: inline-block;
+  width: 0.85em;
+  height: 0.85em;
+  flex-shrink: 0;
+  background-color: currentColor;
+  -webkit-mask: url("../images/fa-up-right-from-square.svg") center / contain no-repeat;
+  mask: url("../images/fa-up-right-from-square.svg") center / contain no-repeat;
+  opacity: 0.92;
 }
 
 #event .ev-load-error,
@@ -2242,7 +2608,12 @@
     margin-bottom: 0;
   }
 
-  .screening-slide img {
+  .screening-slide-link {
+    position: relative;
+    inset: auto;
+  }
+
+  .screening-slide-link > img {
     height: auto;
     aspect-ratio: 16 / 9;
   }

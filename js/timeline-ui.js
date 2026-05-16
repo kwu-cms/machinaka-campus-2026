@@ -33,14 +33,16 @@ export function fillProgramTimeline(root, allEvents) {
   const axisHi = PROGRAM_TIMELINE.axisEndMin;
 
   function barChipHtml(attrs) {
-    const { mod, title, ariaLabel, href, inner } = attrs;
+    const { mod, title, ariaLabel, href, inner, eventId } = attrs;
     const t = escapeHtml(title);
     const aVal = escapeHtml(ariaLabel);
     const cls = mod ? ` program-timeline-bar--${escapeHtml(mod)}` : "";
     const body = `<span class="program-timeline-bar-label">${inner}</span>`;
     const clsAttr = `class="program-timeline-bar${cls}" title="${t}"`;
     if (href) {
-      return `<a ${clsAttr} href="${escapeHtml(href)}" aria-label="${aVal}">${body}</a>`;
+      const dataEv =
+        eventId && /^[\w-]+$/.test(eventId) ? ` data-event-id="${escapeHtml(eventId)}"` : "";
+      return `<a ${clsAttr} href="${escapeHtml(href)}" aria-label="${aVal}"${dataEv}>${body}</a>`;
     }
     return `<span ${clsAttr} role="img" aria-label="${aVal}">${body}</span>`;
   }
@@ -113,9 +115,7 @@ export function fillProgramTimeline(root, allEvents) {
       const timeSnippet = String(ev.timeLine || "").trim();
       const venuePart = ev.venue ? `／${ev.venue}` : "";
       const title = `${ev.name} ${timeSnippet}${venuePart}`;
-      const ariaLabel = `${ev.name}、${timeSnippet}${venuePart}`;
-      let hrefFrag = "#event";
-      if (ev.id && /^[\w\-]+$/.test(ev.id)) hrefFrag = `#${ev.id}`;
+      const ariaLabel = `${ev.name}、${timeSnippet}${venuePart}。イベント詳細を開く`;
       const timeLine = escapeHtml(timeSnippet);
       const nameLine = escapeHtml(ev.name);
       queued.push({
@@ -125,7 +125,8 @@ export function fillProgramTimeline(root, allEvents) {
           mod: catMod,
           title,
           ariaLabel,
-          href: hrefFrag,
+          href: "#event",
+          eventId: ev.id,
           inner: barBodyFromParts(timeLine, nameLine, catMod),
         },
       });

@@ -45,7 +45,7 @@
 
 .footer-link-with-icon {
   display: inline-flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 0.48rem;
   font-size: 0.84rem;
   font-weight: 600;
@@ -58,8 +58,11 @@
   color: var(--accent);
 }
 
+/* base.css の外部リンクアイコン（末尾）をフッターでも表示 */
 .footer-link-with-icon[target="_blank"]::after {
-  content: none;
+  flex-shrink: 0;
+  align-self: center;
+  margin-left: 0;
 }
 
 .footer-fa {

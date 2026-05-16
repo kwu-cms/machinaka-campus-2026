@@ -1,7 +1,15 @@
-import { SITE_CONFIG, PROGRAM_TIMELINE, SCREENING_SLIDESHOW_INTERVAL_MS } from "./config.js";
+import {
+  SITE_CONFIG,
+  PROGRAM_TIMELINE,
+  SCREENING_SLIDESHOW_INTERVAL_MS,
+  dialogProgramLabelText,
+} from "./config.js";
 import { parseCSV, rowToObj } from "./lib/csv.js";
 import { escapeHtml } from "./lib/html.js";
+import { getQueryParam, removeQueryParam, setQueryParam } from "./lib/url-params.js";
 import { initScreeningHeroSlideshow } from "./screening-slideshow.js";
+
+const MOVIE_QUERY_PARAM = "movie_id";
 
 export function initScreeningMovies() {
     const listHost = document.getElementById("mv-list");
@@ -165,29 +173,46 @@ export function initScreeningMovies() {
     const MV_DIALOG_VENUE = "元町映画館";
     const MV_DIALOG_PIN_SRC = "./images/fa-location-pin.svg";
 
-    /**
-     * @returns {string} HTML（escapeHtml 済みパーツのみ結合）
-     */
-    function movieDialogShowtimeHtml(m) {
-      const pinImg = `<img class="movie-dialog-showtime-pin" src="${escapeHtml(MV_DIALOG_PIN_SRC)}" alt="" width="14" height="14" decoding="async" loading="lazy" />`;
-      let dateLabel = "";
-      if (m.day === "sat") dateLabel = "7/18（土）";
-      else if (m.day === "sun") dateLabel = "7/19（日）";
-      else {
-        const d = String(m.dateLabel || "").trim();
-        if (d) dateLabel = d;
-        else {
-          return `<p class="movie-dialog-showtime-unknown" role="status">上映日が設定されていません。<code class="inline-code">上映日</code>列または ID（scr-1…6）を確認してください。</p>`;
-        }
+    const MOVIE_DIALOG_FLOAT_ICONS = {
+      schedule: "./images/icon-calendar-days.svg",
+      venue: MV_DIALOG_PIN_SRC,
+    };
+
+    function movieDialogDateLabel(m) {
+      if (m.day === "sat") return "7/18（土）";
+      if (m.day === "sun") return "7/19（日）";
+      return String(m.dateLabel || "").trim();
+    }
+
+    function movieDialogFloatLine(kind, bodyHtml) {
+      if (!bodyHtml) return "";
+      const iconSrc = MOVIE_DIALOG_FLOAT_ICONS[kind];
+      return `<p class="movie-dialog-float-line movie-dialog-float-line--${kind}">
+  <img class="movie-dialog-float-icon" src="${iconSrc}" alt="" width="14" height="14" decoding="async" aria-hidden="true" />
+  <span class="movie-dialog-float-line-body">${bodyHtml}</span>
+</p>`;
+    }
+
+    function movieDialogScheduleBodyHtml(m) {
+      const dateLabel = movieDialogDateLabel(m);
+      if (!dateLabel) return "";
+      return [
+        `<span class="movie-dialog-float-date">${escapeHtml(dateLabel)}</span>`,
+        `<span class="movie-dialog-float-time">${escapeHtml(MV_DIALOG_SLOT_RANGE)}</span>`,
+      ].join("");
+    }
+
+    /** @returns {string} */
+    function movieDialogFloatSummaryHtml(m) {
+      const scheduleBody = movieDialogScheduleBodyHtml(m);
+      if (!scheduleBody) {
+        return `<p class="movie-dialog-float-unknown" role="status">上映日が設定されていません。<code class="inline-code">上映日</code>列または ID（scr-1…6）を確認してください。</p>`;
       }
-      return `<div class="movie-dialog-showtime-inner">
-  <span class="movie-dialog-showtime-date">${escapeHtml(dateLabel)}</span>
-  <span class="movie-dialog-showtime-slot">${escapeHtml(MV_DIALOG_SLOT_RANGE)}</span>
-  <span class="movie-dialog-showtime-venue-row">
-    <span class="movie-dialog-showtime-pin-wrap" aria-hidden="true">${pinImg}</span>
-    <span class="movie-dialog-showtime-venue">${escapeHtml(MV_DIALOG_VENUE)}</span>
-  </span>
-</div>`;
+      const lines = [
+        movieDialogFloatLine("schedule", scheduleBody),
+        movieDialogFloatLine("venue", escapeHtml(MV_DIALOG_VENUE)),
+      ].filter(Boolean);
+      return `<div class="movie-dialog-float-summary">${lines.join("")}</div>`;
     }
 
     /** 監督・上映時間・卒制メタを「／」区切りの1行にまとめる */
@@ -203,7 +228,28 @@ export function initScreeningMovies() {
     }
 
     /**
-     * 上映ヒーロー共通：日付・タイトル・メタ1行・あらすじ
+     * 上映ヒーロー（index カルーセル）：モーダル同型のガラスパネル
+     * @param {object} m movies.csv 行オブジェクト
+     * @param {string} [synopsisFallback]
+     */
+    function mvFloatPanelCarouselInnerHTML(m, _synopsisFallback, uniqueKey) {
+      const titleShown = formatDisplayTitle(m.title);
+      const titleId =
+        uniqueKey != null && String(uniqueKey).trim() !== ""
+          ? `mv-float-title-${escapeHtml(m.id)}-${escapeHtml(uniqueKey)}`
+          : `mv-float-title-${escapeHtml(m.id)}`;
+      const credits = metaLine(m, true);
+      const creditsHtml = credits
+        ? `<p class="mv-float-panel-credits">${escapeHtml(credits)}</p>`
+        : "";
+
+      return `<h3 class="mv-float-panel-title" id="${titleId}">${escapeHtml(titleShown)}</h3>
+${movieDialogFloatSummaryHtml(m)}
+${creditsHtml}`;
+    }
+
+    /**
+     * 上映ヒーロー共通：日付・タイトル・メタ1行・あらすじ（サイネージ用）
      * @param {object} m movies.csv 行オブジェクト
      * @param {string} [synopsisFallback]
      */
@@ -235,18 +281,36 @@ export function initScreeningMovies() {
 
     function mvFloatPanelAsideHTML(m, asideClass, synopsisFallback, uniqueKey) {
       const titleShown = formatDisplayTitle(m.title);
-      const inner = mvFloatPanelInnerHTML(m, synopsisFallback, uniqueKey);
+      const isCarousel = String(asideClass).includes("screening-carousel-float");
+      const inner = isCarousel
+        ? mvFloatPanelCarouselInnerHTML(m, synopsisFallback, uniqueKey)
+        : mvFloatPanelInnerHTML(m, synopsisFallback, uniqueKey);
       const tid =
         uniqueKey != null && String(uniqueKey).trim() !== ""
           ? `mv-float-title-${escapeHtml(m.id)}-${escapeHtml(uniqueKey)}`
           : `mv-float-title-${escapeHtml(m.id)}`;
+      if (isCarousel) {
+        return `<aside class="${asideClass}" aria-hidden="true">${inner}</aside>`;
+      }
       return `<aside class="${asideClass}" aria-labelledby="${tid}" aria-label="${escapeHtml(titleShown)}の詳細">${inner}</aside>`;
+    }
+
+    function movieDetailHref(id) {
+      try {
+        const u = new URL(window.location.href);
+        u.searchParams.set(MOVIE_QUERY_PARAM, String(id));
+        const qs = u.searchParams.toString();
+        return `${u.pathname}${qs ? `?${qs}` : ""}${u.hash}`;
+      } catch {
+        return `?${MOVIE_QUERY_PARAM}=${encodeURIComponent(id)}`;
+      }
     }
 
     function screeningCarouselSlidesInnerHTML(orderedMovies) {
       return orderedMovies
         .map((m, j) => {
           const thumb = thumbSrc(m.thumbPath);
+          const titleShown = formatDisplayTitle(m.title);
           const active = j === 0 ? " is-active" : "";
           const loading = j === 0 ? "eager" : "lazy";
           const fp = j === 0 ? ' fetchpriority="high"' : "";
@@ -259,7 +323,9 @@ export function initScreeningMovies() {
             undefined,
             `sc-${j}`,
           );
-          return `<figure class="screening-slide${active}">${media}${panel}</figure>`;
+          const href = movieDetailHref(m.id);
+          const ariaOpen = escapeHtml(`${titleShown}の詳細を見る`);
+          return `<figure class="screening-slide${active}"><a class="screening-slide-link" href="${escapeHtml(href)}" data-movie-id="${escapeHtml(m.id)}" aria-label="${ariaOpen}">${media}${panel}</a></figure>`;
         })
         .join("");
     }
@@ -402,29 +468,86 @@ export function initScreeningMovies() {
     }
 
     const titleEl = dialog.querySelector("#movie-dialog-title");
-    const showtimeEl = dialog.querySelector("#movie-dialog-showtime");
-    const metaEl = dialog.querySelector(".movie-dialog-meta");
+    const creditsEl = dialog.querySelector(".movie-dialog-credits");
+    const floatMetaEl = dialog.querySelector(".movie-dialog-meta.movie-dialog-float");
     const bodyEl = dialog.querySelector(".movie-dialog-body");
     const mediaWrap = dialog.querySelector(".movie-dialog-media");
     const thumbEl = dialog.querySelector(".movie-dialog-thumb");
     const closeBtn = dialog.querySelector(".movie-dialog-close");
+    const navPrev = dialog.querySelector("[data-movie-dialog-prev]");
+    const navNext = dialog.querySelector("[data-movie-dialog-next]");
+    const movieDlgProgramLabel = dialog.querySelector("#movie-dialog-program-label");
+    if (movieDlgProgramLabel) {
+      movieDlgProgramLabel.textContent = dialogProgramLabelText("screening");
+    }
 
     /** @type {Record<string, object>} */
     let byId = {};
+    /** 上映日（土／日）ごとの作品 ID（表示順） */
+    let movieDialogDayGroupIds = { sat: [], sun: [] };
+    /** @type {string | null} */
+    let movieDialogCurrentId = null;
+
+    function getMovieDialogNavState(id) {
+      const m = byId[id];
+      if (!m || !m.day) return { ids: [id], index: 0 };
+      const ids = movieDialogDayGroupIds[m.day] || [];
+      if (ids.length <= 1) return { ids: ids.length ? ids : [id], index: 0 };
+      const index = ids.indexOf(id);
+      if (index < 0) return { ids: [id], index: 0 };
+      return { ids, index };
+    }
+
+    function updateMovieDialogNav(id) {
+      if (!navPrev || !navNext) return;
+      const m = byId[id];
+      const { ids, index } = getMovieDialogNavState(id);
+      const multi = ids.length > 1 && m && ids.includes(id);
+      if (!multi) {
+        navPrev.hidden = true;
+        navNext.hidden = true;
+        return;
+      }
+      navPrev.hidden = false;
+      navNext.hidden = false;
+      const pos = `${index + 1} / ${ids.length}`;
+      navPrev.setAttribute("aria-label", `前の作品へ（${pos}）`);
+      navNext.setAttribute("aria-label", `次の作品へ（${pos}）`);
+    }
+
+    function placeMovieDialogFloat(hasImage) {
+      if (!floatMetaEl || !titleEl) return;
+      if (hasImage && mediaWrap) {
+        floatMetaEl.classList.remove("movie-dialog-meta--below");
+        if (!mediaWrap.contains(floatMetaEl)) {
+          mediaWrap.appendChild(floatMetaEl);
+        }
+      } else {
+        floatMetaEl.classList.add("movie-dialog-meta--below");
+        const anchor = creditsEl && !creditsEl.hidden ? creditsEl : titleEl;
+        if (anchor.nextElementSibling !== floatMetaEl) {
+          anchor.insertAdjacentElement("afterend", floatMetaEl);
+        }
+      }
+    }
 
     function fillDialog(m) {
-      if (!titleEl || !metaEl || !bodyEl || !mediaWrap || !thumbEl) return;
+      if (!titleEl || !bodyEl || !mediaWrap || !thumbEl || !floatMetaEl) return;
       const titleShown = formatDisplayTitle(m.title);
       titleEl.textContent = titleShown;
-      metaEl.textContent = metaLine(m, true) || "";
-      if (showtimeEl) {
-        showtimeEl.innerHTML = movieDialogShowtimeHtml(m);
+      if (creditsEl) {
+        const credits = metaLine(m, true);
+        creditsEl.textContent = credits || "";
+        creditsEl.hidden = !credits;
       }
+      floatMetaEl.innerHTML = movieDialogFloatSummaryHtml(m);
       const synopsis = String(m.synopsis || "").trim();
       bodyEl.innerHTML = `<p class="movie-dialog-desc">${escapeHtml(synopsis || SYNOPSIS_PLACEHOLDER)}</p>`;
 
       const src = thumbSrc(m.thumbPath);
+      let hasImage = false;
       if (src) {
+        hasImage = true;
         thumbEl.src = src;
         thumbEl.alt = `${titleShown}のサムネイル`;
         mediaWrap.hidden = false;
@@ -433,13 +556,27 @@ export function initScreeningMovies() {
         thumbEl.alt = "";
         mediaWrap.hidden = true;
       }
+      placeMovieDialogFloat(hasImage);
     }
 
-    function openForId(id) {
+    function openForId(id, opts = {}) {
+      const fromUrl = Boolean(opts.fromUrl);
       const m = byId[id];
       if (!m) return;
+      movieDialogCurrentId = id;
       fillDialog(m);
+      updateMovieDialogNav(id);
       if (typeof dialog.showModal === "function") dialog.showModal();
+      if (!fromUrl) setQueryParam(MOVIE_QUERY_PARAM, id);
+    }
+
+    function stepMovieDialog(delta) {
+      const id = movieDialogCurrentId;
+      if (!id) return;
+      const { ids, index } = getMovieDialogNavState(id);
+      if (ids.length <= 1) return;
+      const nextIndex = (index + delta + ids.length) % ids.length;
+      openForId(ids[nextIndex]);
     }
 
     function bindCards() {
@@ -454,10 +591,40 @@ export function initScreeningMovies() {
       });
     }
 
-    closeBtn?.addEventListener("click", () => dialog.close());
-    dialog.addEventListener("click", (e) => {
-      if (e.target === dialog) dialog.close();
-    });
+    function bindScreeningCarouselSlides() {
+      const root = document.getElementById("screeningSlideshow");
+      if (!root) return;
+      root.querySelectorAll(".screening-slide-link[data-movie-id]").forEach((el) => {
+        el.addEventListener("click", (e) => {
+          e.preventDefault();
+          openForId(el.getAttribute("data-movie-id"));
+        });
+      });
+    }
+
+    if (dialog.dataset.mxmMvDlgBound !== "1") {
+      dialog.dataset.mxmMvDlgBound = "1";
+      dialog.querySelector(".movie-dialog-close")?.addEventListener("click", () => dialog.close());
+      dialog.addEventListener("click", (e) => {
+        if (e.target === dialog) dialog.close();
+      });
+      dialog.addEventListener("close", () => {
+        removeQueryParam(MOVIE_QUERY_PARAM);
+        movieDialogCurrentId = null;
+      });
+      navPrev?.addEventListener("click", () => stepMovieDialog(-1));
+      navNext?.addEventListener("click", () => stepMovieDialog(1));
+      dialog.addEventListener("keydown", (e) => {
+        if (!dialog.open) return;
+        if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+        const id = movieDialogCurrentId;
+        if (!id) return;
+        const { ids } = getMovieDialogNavState(id);
+        if (ids.length <= 1) return;
+        e.preventDefault();
+        stepMovieDialog(e.key === "ArrowLeft" ? -1 : 1);
+      });
+    }
 
     async function load() {
       const signageScreening = document.body.dataset.signage === "screening";
@@ -494,6 +661,11 @@ export function initScreeningMovies() {
             .filter((m) => m.day === key)
             .sort((a, b) => a.sort - b.sort || a.title.localeCompare(b.title, "ja"));
         }
+
+        movieDialogDayGroupIds = {
+          sat: moviesForDay("sat").map((m) => m.id),
+          sun: moviesForDay("sun").map((m) => m.id),
+        };
 
         const cardRenderer = signageScreening ? movieCardSignageHeroHTML : movieCardHTML;
 
@@ -536,10 +708,15 @@ export function initScreeningMovies() {
           if (slideshowRoot && innerEl && heroCarouselMovies.length) {
             innerEl.innerHTML = screeningCarouselSlidesInnerHTML(heroCarouselMovies);
             initScreeningHeroSlideshow(slideshowRoot);
+            bindScreeningCarouselSlides();
           }
           bindCards();
         }
+
+        const deepMovieId = getQueryParam(MOVIE_QUERY_PARAM);
+        if (deepMovieId && byId[deepMovieId]) openForId(deepMovieId, { fromUrl: true });
       } catch {
+        movieDialogDayGroupIds = { sat: [], sun: [] };
         const signageChrome =
           document.body.dataset.signage === "screening" ? signageScreeningChromeHTML() : "";
         listHost.innerHTML =

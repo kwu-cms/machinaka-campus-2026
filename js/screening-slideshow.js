@@ -37,9 +37,10 @@ export function initScreeningHeroSlideshow(root) {
     const b = document.createElement("button");
     b.type = "button";
     b.className = "screening-dot";
+    const link = slideEl.querySelector(".screening-slide-link");
     const panel = slideEl.querySelector(".mv-float-panel");
     const cap = slideEl.querySelector("figcaption");
-    const labelSrc = panel || cap;
+    const labelSrc = link || panel || cap;
     b.setAttribute(
       "aria-label",
       labelSrc && labelSrc.textContent.trim() ? labelSrc.textContent.trim() : `スライド ${j + 1}`,
