@@ -20,14 +20,15 @@ export const SITE_CONFIG = Object.freeze({
       "spk-006"
     ],
     "evt-03": [
+      "spk-007",
       "spk-008",
       "spk-009",
-      "spk-007"
+      "spk-010"
     ],
     "evt-04": [
-      "spk-010",
       "spk-011",
-      "spk-012"
+      "spk-012",
+      "spk-013"
     ],
     "evt-05": [
       "spk-007",
@@ -43,10 +44,11 @@ export const SITE_CONFIG = Object.freeze({
     ],
     "evt-03": [
       "spk-008",
-      "spk-009"
+      "spk-009",
+      "spk-010"
     ],
     "evt-04": [
-      "spk-010"
+      "spk-011"
     ],
     "evt-05": []
   },
@@ -99,9 +101,15 @@ export const PROGRAM_TIMELINE = Object.freeze({
   }
 });
 
+export const EVENT_CATEGORY_LABELS = Object.freeze({
+  "lecture": "レクチャー",
+  "workshop": "ワークショップ",
+  "permanent": "常設"
+});
+
 export const DIALOG_PROGRAM_LABELS = Object.freeze({
   "screening": "卒業制作選抜展「南女シネマ」",
-  "lecture": "トークイベント",
+  "lecture": "レクチャー",
   "workshop": "ワークショップ",
   "permanent": "常設企画"
 });

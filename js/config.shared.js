@@ -41,15 +41,15 @@ export function createSiteConfig(dataUrls) {
     eventSpeakerIds: Object.freeze({
       "evt-01": Object.freeze(["spk-001", "spk-002", "spk-003", "spk-004"]),
       "evt-02": Object.freeze(["spk-005", "spk-006"]),
-      "evt-03": Object.freeze(["spk-008", "spk-009", "spk-007"]),
-      "evt-04": Object.freeze(["spk-010", "spk-011", "spk-012"]),
+      "evt-03": Object.freeze(["spk-007", "spk-008", "spk-009", "spk-010"]),
+      "evt-04": Object.freeze(["spk-011", "spk-012", "spk-013"]),
       "evt-05": Object.freeze(["spk-007", "spk-006"]),
     }),
     eventFeaturedSpeakerIds: Object.freeze({
       "evt-01": Object.freeze(["spk-001"]),
       "evt-02": Object.freeze(["spk-005"]),
-      "evt-03": Object.freeze(["spk-008", "spk-009"]),
-      "evt-04": Object.freeze(["spk-010"]),
+      "evt-03": Object.freeze(["spk-008", "spk-009", "spk-010"]),
+      "evt-04": Object.freeze(["spk-011"]),
       "evt-05": Object.freeze([]),
     }),
     eventWideSubSpeakerIds: Object.freeze({
@@ -77,10 +77,17 @@ export const PROGRAM_TIMELINE = Object.freeze({
   },
 });
 
+/** イベントカテゴリの画面上ラベル（カード・タイムライン等） */
+export const EVENT_CATEGORY_LABELS = Object.freeze({
+  lecture: "レクチャー",
+  workshop: "ワークショップ",
+  permanent: "常設",
+});
+
 export const DIALOG_PROGRAM_LABELS = Object.freeze({
   screening: PROGRAM_TIMELINE.screening.label.replace(/\s*\n\s*/g, ""),
-  lecture: "トークイベント",
-  workshop: "ワークショップ",
+  lecture: EVENT_CATEGORY_LABELS.lecture,
+  workshop: EVENT_CATEGORY_LABELS.workshop,
   permanent: "常設企画",
 });
 
