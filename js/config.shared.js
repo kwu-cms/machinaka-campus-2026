@@ -117,6 +117,7 @@ export const TEST_PAGE_NOTICE = Object.freeze({
 export const FEATURED_EVENT_IDS = Object.freeze(["evt-01", "evt-04"]);
 export const FEATURED_PICKUP_CAROUSEL_INTERVAL_MS = SCREENING_SLIDESHOW_INTERVAL_MS;
 
+/** 論理パス（拡張子は任意）。表示時に images/{stem}-{width}.webp/jpeg へ解決される */
 export const FEATURED_IMAGE_BY_ID = Object.freeze({
   "evt-01": "./images/evt-01.png",
   "evt-04": "./images/evt-04.png",
