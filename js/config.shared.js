@@ -11,6 +11,8 @@ export const SHEET_DATA_URLS = Object.freeze({
     "https://docs.google.com/spreadsheets/d/1hXldiXUl2klbJe6v7BraKEFCXL8cxd5WAjc0RRNzlPo/export?format=csv&gid=651546877",
   speakersCsvUrl:
     "https://docs.google.com/spreadsheets/d/1hXldiXUl2klbJe6v7BraKEFCXL8cxd5WAjc0RRNzlPo/export?format=csv&gid=1429540203",
+  exhibitionsCsvUrl:
+    "https://docs.google.com/spreadsheets/d/1hXldiXUl2klbJe6v7BraKEFCXL8cxd5WAjc0RRNzlPo/export?format=csv&gid=1913009152",
 });
 
 /** 同梱 CSV（本番・オフライン用。build:prod / main CI で sync 後に使用） */
@@ -18,6 +20,7 @@ export const LOCAL_DATA_URLS = Object.freeze({
   moviesCsvUrl: "./data/movies.csv",
   eventsCsvUrl: "./data/events.csv",
   speakersCsvUrl: "./data/speakers.csv",
+  exhibitionsCsvUrl: "./data/exhibitions.csv",
 });
 
 export const DATA_URLS = Object.freeze({
@@ -34,6 +37,7 @@ export function createSiteConfig(dataUrls) {
     moviesCsvUrl: dataUrls.moviesCsvUrl,
     eventsCsvUrl: dataUrls.eventsCsvUrl,
     speakersCsvUrl: dataUrls.speakersCsvUrl,
+    exhibitionsCsvUrl: dataUrls.exhibitionsCsvUrl,
     /**
      * イベント ID → 登壇者 speaker_id の並び（上から順）。
      * 未指定のイベントは events CSV の「登壇者」列の氏名から推測。

@@ -8,6 +8,7 @@ export const SITE_CONFIG = Object.freeze({
   "moviesCsvUrl": "./data/movies.csv",
   "eventsCsvUrl": "./data/events.csv",
   "speakersCsvUrl": "./data/speakers.csv",
+  "exhibitionsCsvUrl": "./data/exhibitions.csv",
   "eventSpeakerIds": {
     "evt-01": [
       "spk-001",
@@ -63,23 +64,27 @@ export const SITE_CONFIG = Object.freeze({
 export const SHEET_DATA_URLS = Object.freeze({
   "moviesCsvUrl": "https://docs.google.com/spreadsheets/d/1hXldiXUl2klbJe6v7BraKEFCXL8cxd5WAjc0RRNzlPo/export?format=csv&gid=1499163471",
   "eventsCsvUrl": "https://docs.google.com/spreadsheets/d/1hXldiXUl2klbJe6v7BraKEFCXL8cxd5WAjc0RRNzlPo/export?format=csv&gid=651546877",
-  "speakersCsvUrl": "https://docs.google.com/spreadsheets/d/1hXldiXUl2klbJe6v7BraKEFCXL8cxd5WAjc0RRNzlPo/export?format=csv&gid=1429540203"
+  "speakersCsvUrl": "https://docs.google.com/spreadsheets/d/1hXldiXUl2klbJe6v7BraKEFCXL8cxd5WAjc0RRNzlPo/export?format=csv&gid=1429540203",
+  "exhibitionsCsvUrl": "https://docs.google.com/spreadsheets/d/1hXldiXUl2klbJe6v7BraKEFCXL8cxd5WAjc0RRNzlPo/export?format=csv&gid=1913009152"
 });
 export const LOCAL_DATA_URLS = Object.freeze({
   "moviesCsvUrl": "./data/movies.csv",
   "eventsCsvUrl": "./data/events.csv",
-  "speakersCsvUrl": "./data/speakers.csv"
+  "speakersCsvUrl": "./data/speakers.csv",
+  "exhibitionsCsvUrl": "./data/exhibitions.csv"
 });
 export const DATA_URLS = Object.freeze({
   "sheet": {
     "moviesCsvUrl": "https://docs.google.com/spreadsheets/d/1hXldiXUl2klbJe6v7BraKEFCXL8cxd5WAjc0RRNzlPo/export?format=csv&gid=1499163471",
     "eventsCsvUrl": "https://docs.google.com/spreadsheets/d/1hXldiXUl2klbJe6v7BraKEFCXL8cxd5WAjc0RRNzlPo/export?format=csv&gid=651546877",
-    "speakersCsvUrl": "https://docs.google.com/spreadsheets/d/1hXldiXUl2klbJe6v7BraKEFCXL8cxd5WAjc0RRNzlPo/export?format=csv&gid=1429540203"
+    "speakersCsvUrl": "https://docs.google.com/spreadsheets/d/1hXldiXUl2klbJe6v7BraKEFCXL8cxd5WAjc0RRNzlPo/export?format=csv&gid=1429540203",
+    "exhibitionsCsvUrl": "https://docs.google.com/spreadsheets/d/1hXldiXUl2klbJe6v7BraKEFCXL8cxd5WAjc0RRNzlPo/export?format=csv&gid=1913009152"
   },
   "local": {
     "moviesCsvUrl": "./data/movies.csv",
     "eventsCsvUrl": "./data/events.csv",
-    "speakersCsvUrl": "./data/speakers.csv"
+    "speakersCsvUrl": "./data/speakers.csv",
+    "exhibitionsCsvUrl": "./data/exhibitions.csv"
   }
 });
 
