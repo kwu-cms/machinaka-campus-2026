@@ -662,9 +662,8 @@
   scroll-margin-top: 4.5rem;
 }
 
-/* 展示カルーセルが 100vw ブレイクアウトするため、親の overflow で左右ボタンが切れないようにする */
 #exhibition.program-item {
-  overflow: visible;
+  overflow: hidden;
 }
 
 #screening .program-body {

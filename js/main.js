@@ -1,20 +1,58 @@
 import { SITE_CONFIG, TEST_PAGE_NOTICE, HERO_SPOTLIGHT_SLIDE_INTERVAL_MS } from "./config.js";
-import { initScreeningHeroSlideshow } from "./screening-slideshow.js";
 import { initScreeningMovies } from "./screening-movies.js";
+import { initExhibitionSection } from "./exhibition.js";
 import { initEventsSection } from "./events.js";
+import { initNews } from "./news.js";
+import { initScrollChoreography } from "./scroll-choreography.js";
+import { pictureHTML, setResponsivePicture } from "./lib/responsive-image.js";
+import { readActiveSignageHeroIndex, storeSignageHeroIndex } from "./signage-hero-state.js";
 
 
-/** 縦型サイネージ（1080×1920 想定）。`?signage=screening|event` または `#signage-screening` / `#signage-event` */
+/** @returns {URLSearchParams} */
+function signageSearchParams() {
+  try {
+    return new URLSearchParams(window.location.search);
+  } catch {
+    return new URLSearchParams();
+  }
+}
+
+/** サイネージの1画面あたり秒数（`duration=60`）。既定 60、最小 5、最大 3600 */
+function parseSignageDurationSeconds(raw) {
+  const n = Number.parseInt(String(raw ?? ""), 10);
+  if (!Number.isFinite(n)) return 60;
+  return Math.min(3600, Math.max(5, n));
+}
+
+/**
+ * 縦型サイネージ（1080×1920 想定）。
+ * - `?signage=screening|event` または `#signage-screening` / `#signage-event`
+ * - 交互表示: `?signage=cycle&duration=60`（`view=screening|event` で開始画面）
+ * - 別表記: `?signage=screening,event&duration=60` / `?signage=screening&cycle=1&duration=60`
+ */
 (function initSignageMode() {
   function getSignageMode() {
-    let q = "";
-    try {
-      q = new URLSearchParams(window.location.search).get("signage") || "";
-    } catch {
-      q = "";
+    const params = signageSearchParams();
+    let q = String(params.get("signage") || "").toLowerCase();
+
+    if (q === "cycle" || q === "rotate" || q === "both") {
+      const view = String(params.get("view") || params.get("phase") || "screening").toLowerCase();
+      return view === "event" ? "event" : "screening";
     }
-    q = String(q).toLowerCase();
+
+    if (q.includes(",")) {
+      const parts = q
+        .split(",")
+        .map((s) => s.trim())
+        .filter((s) => s === "screening" || s === "event");
+      if (parts.length) {
+        const view = String(params.get("view") || parts[0] || "screening").toLowerCase();
+        return view === "event" ? "event" : "screening";
+      }
+    }
+
     if (q === "event" || q === "screening") return q;
+
     const h = String(window.location.hash || "")
       .replace(/^#/, "")
       .toLowerCase();
@@ -22,6 +60,7 @@ import { initEventsSection } from "./events.js";
     if (h === "signage-screening") return "screening";
     return null;
   }
+
   const mode = getSignageMode();
   if (!mode) return;
   document.documentElement.classList.add("is-signage");
@@ -29,6 +68,60 @@ import { initEventsSection } from "./events.js";
   document.body.dataset.signage = mode;
   const suffix = mode === "event" ? "イベント（サイネージ）" : "上映プログラム（サイネージ）";
   document.title = `${document.title} — ${suffix}`;
+})();
+
+/** 上映 ⇄ イベントを一定間隔で URL 遷移して切り替え（キオスク用） */
+(function initSignageCycle() {
+  const params = signageSearchParams();
+  const rawSignage = String(params.get("signage") || "").toLowerCase();
+  const cycleFlag =
+    params.get("cycle") === "1" ||
+    params.get("rotate") === "1" ||
+    params.get("alternate") === "1";
+
+  /** @type {("screening"|"event")[]} */
+  let modes = [];
+  if (rawSignage === "cycle" || rawSignage === "rotate" || rawSignage === "both") {
+    modes = ["screening", "event"];
+  } else if (rawSignage.includes(",")) {
+    modes = rawSignage
+      .split(",")
+      .map((s) => s.trim())
+      .filter((s) => s === "screening" || s === "event");
+  } else if (cycleFlag && (rawSignage === "screening" || rawSignage === "event")) {
+    modes = ["screening", "event"];
+  }
+
+  if (modes.length < 2) return;
+  const current = document.body.dataset.signage;
+  if (current !== "screening" && current !== "event") return;
+
+  const durationSec = parseSignageDurationSeconds(params.get("duration"));
+  const idx = Math.max(0, modes.indexOf(current));
+  const next = modes[(idx + 1) % modes.length];
+
+  const useCycleParam =
+    rawSignage === "cycle" ||
+    rawSignage === "rotate" ||
+    rawSignage === "both" ||
+    rawSignage.includes(",");
+
+  window.setTimeout(() => {
+    storeSignageHeroIndex(current, readActiveSignageHeroIndex(current));
+    const p = new URLSearchParams(params);
+    if (useCycleParam) {
+      p.set("signage", "cycle");
+      p.set("view", next);
+      p.delete("phase");
+    } else {
+      p.set("signage", next);
+      p.set("cycle", "1");
+    }
+    p.set("duration", String(durationSec));
+    const qs = p.toString();
+    const hash = window.location.hash || "";
+    window.location.replace(`${window.location.pathname}${qs ? `?${qs}` : ""}${hash}`);
+  }, durationSec * 1000);
 })();
 
 (function initTestPageNotice() {
@@ -86,64 +179,8 @@ import { initEventsSection } from "./events.js";
     else io.observe(el);
   });
 
-  function newsDateLabel(item) {
-    if (item.dateDisplay) return item.dateDisplay;
-    return (item.date || "").replace(/-/g, ".");
-  }
-
-  function appendHeroMarqueeCycle(track, items) {
-    for (const item of items) {
-      const label = document.createElement("span");
-      label.className = "hero-news-label";
-      label.textContent = "NEWS";
-      const row = document.createElement("span");
-      row.className = "hero-news-item";
-      const dateEl = document.createElement("span");
-      dateEl.className = "hero-news-date";
-      dateEl.textContent = newsDateLabel(item);
-      row.appendChild(dateEl);
-      row.appendChild(document.createTextNode(item.text || ""));
-      track.appendChild(label);
-      track.appendChild(row);
-    }
-  }
-
-  (async function loadNewsJson() {
-    if (document.body.dataset.signage) return;
-    const track = document.querySelector(".hero-news-track");
-    const list = document.querySelector(".news-list");
-    if (!track || !list) return;
-    try {
-      const res = await fetch(SITE_CONFIG.newsJsonUrl, { cache: "no-cache" });
-      if (!res.ok) return;
-      const data = await res.json();
-      const items = Array.isArray(data.items) ? data.items : [];
-      if (items.length === 0) return;
-
-      track.textContent = "";
-      appendHeroMarqueeCycle(track, items);
-      appendHeroMarqueeCycle(track, items);
-
-      list.textContent = "";
-      for (const item of items) {
-        const article = document.createElement("article");
-        article.className = "news-item reveal";
-        const timeEl = document.createElement("time");
-        timeEl.className = "news-date";
-        if (item.date) timeEl.setAttribute("datetime", item.date);
-        timeEl.textContent = newsDateLabel(item);
-        const p = document.createElement("p");
-        p.className = "news-text";
-        p.textContent = item.text || "";
-        article.appendChild(timeEl);
-        article.appendChild(p);
-        list.appendChild(article);
-        io.observe(article);
-      }
-    } catch {
-      /* news.json が無い・fetch不可のときはヒーローマーキー・リストは空のまま */
-    }
-  })();
+  initNews({ observeReveal: (el) => io.observe(el) });
+  initScrollChoreography();
 })();
 
 (function () {
@@ -250,6 +287,118 @@ import { initEventsSection } from "./events.js";
   /** 語順シャッフルの次のサイクルまでの待ち（ms） */
   const CYCLE_MS = 10000;
 
+  /** 背景テキスト全体の傾き（ヒーロー中心・-20°〜20°・5°刻み）— 待機中に EaseOutQuint で切替 */
+  const HERO_FIELD_ROT_MIN = -20;
+  const HERO_FIELD_ROT_MAX = 20;
+  const HERO_FIELD_ROT_STEP = 5;
+  const HERO_FIELD_ROT_MIN_DELTA = 10;
+  const HERO_FIELD_ROT_ANGLES = (() => {
+    const angles = [];
+    for (let d = HERO_FIELD_ROT_MIN; d <= HERO_FIELD_ROT_MAX; d += HERO_FIELD_ROT_STEP) {
+      angles.push(d);
+    }
+    return angles;
+  })();
+  const HERO_FIELD_ROT_TRANSITION_MS = 680;
+  const HERO_FIELD_SCALE_BASE = 1.18;
+  /** 最大傾きでも端が抜けないよう確保する最低行数 */
+  const HERO_FIELD_LINE_FLOOR = 19;
+  /** テキスト切替の直前に回転を終える余白（ms） */
+  const HERO_FIELD_ROT_BUFFER_MS = 180;
+  /** スクランブル完了後、回転開始までの最短待ち（ms） */
+  const HERO_FIELD_ROT_MIN_IDLE_MS = 1200;
+
+  let heroFieldRotateDeg = -6;
+  let heroFieldRotateAnim = null;
+  let heroFieldCycleStartMs = performance.now();
+  let heroFieldRotateTimeout = null;
+
+  function easeOutQuint(t) {
+    return 1 - (1 - t) ** 5;
+  }
+
+  function heroFieldScaleForAngle(deg) {
+    const rad = (Math.abs(deg) * Math.PI) / 180;
+    if (rad < 0.001) return HERO_FIELD_SCALE_BASE;
+    const corrected = HERO_FIELD_SCALE_BASE / Math.cos(rad * 0.92);
+    return Math.min(corrected, HERO_FIELD_SCALE_BASE * 1.14);
+  }
+
+  function setHeroFieldRotate(deg) {
+    heroFieldRotateDeg = deg;
+    root.style.setProperty("--hero-field-rotate", `${deg.toFixed(2)}deg`);
+    root.style.setProperty("--hero-field-scale", heroFieldScaleForAngle(deg).toFixed(3));
+  }
+
+  function clearHeroFieldRotateTimeout() {
+    if (heroFieldRotateTimeout != null) {
+      window.clearTimeout(heroFieldRotateTimeout);
+      heroFieldRotateTimeout = null;
+    }
+  }
+
+  function pickNextHeroFieldRotate(current) {
+    const candidates = HERO_FIELD_ROT_ANGLES.filter((a) => Math.abs(a - current) > HERO_FIELD_ROT_MIN_DELTA);
+    if (candidates.length) {
+      return candidates[Math.floor(Math.random() * candidates.length)];
+    }
+    for (let i = 0; i < 32; i += 1) {
+      const pick = HERO_FIELD_ROT_ANGLES[Math.floor(Math.random() * HERO_FIELD_ROT_ANGLES.length)];
+      if (Math.abs(pick - current) > HERO_FIELD_ROT_MIN_DELTA) return pick;
+    }
+    return HERO_FIELD_ROT_ANGLES.find((a) => a !== current) ?? HERO_FIELD_ROT_ANGLES[0];
+  }
+
+  function animateHeroFieldRotate(toDeg) {
+    if (heroFieldRotateAnim) cancelAnimationFrame(heroFieldRotateAnim);
+
+    if (reduceMotion) {
+      setHeroFieldRotate(toDeg);
+      requestAnimationFrame(syncHeroFieldLayout);
+      return;
+    }
+
+    const fromDeg = heroFieldRotateDeg;
+    const fromScale = heroFieldScaleForAngle(fromDeg);
+    const toScale = heroFieldScaleForAngle(toDeg);
+    const start = performance.now();
+
+    const tick = (now) => {
+      const t = Math.min(1, (now - start) / HERO_FIELD_ROT_TRANSITION_MS);
+      const eased = easeOutQuint(t);
+      const deg = fromDeg + (toDeg - fromDeg) * eased;
+      const scale = fromScale + (toScale - fromScale) * eased;
+      root.style.setProperty("--hero-field-rotate", `${deg.toFixed(2)}deg`);
+      root.style.setProperty("--hero-field-scale", scale.toFixed(3));
+      if (t < 1) {
+        heroFieldRotateAnim = requestAnimationFrame(tick);
+      } else {
+        heroFieldRotateAnim = null;
+        setHeroFieldRotate(toDeg);
+        requestAnimationFrame(syncHeroFieldLayout);
+      }
+    };
+
+    heroFieldRotateAnim = requestAnimationFrame(tick);
+  }
+
+  function advanceHeroFieldRotate() {
+    animateHeroFieldRotate(pickNextHeroFieldRotate(heroFieldRotateDeg));
+  }
+
+  function scheduleIdleRotation() {
+    clearHeroFieldRotateTimeout();
+    const elapsed = performance.now() - heroFieldCycleStartMs;
+    const leadMs = HERO_FIELD_ROT_TRANSITION_MS + HERO_FIELD_ROT_BUFFER_MS;
+    const delay = Math.max(HERO_FIELD_ROT_MIN_IDLE_MS, CYCLE_MS - elapsed - leadMs);
+    heroFieldRotateTimeout = window.setTimeout(() => {
+      heroFieldRotateTimeout = null;
+      advanceHeroFieldRotate();
+    }, delay);
+  }
+
+  setHeroFieldRotate(heroFieldRotateDeg);
+
   /**
    * RandomText 既定値に対し、`_` から文字が見え始めるまでを約 1.5 倍に伸ばす。
    * （既定: speed 2 / frameOffset 30 / charOffset 20 / charStep 10）
@@ -270,7 +419,7 @@ import { initEventsSection } from "./events.js";
     const markReady = () => {
       heroFieldMplusReady = true;
       requestAnimationFrame(() => {
-        applyHeroFieldWordVerticalTighten();
+        syncHeroFieldLayout();
       });
     };
     try {
@@ -297,12 +446,12 @@ import { initEventsSection } from "./events.js";
     return a;
   }
 
-  const n = TERMS.length;
+  const nTerms = TERMS.length;
   /** 1 行あたり「全分野を一通りシャッフルした並び」を何回つなぐか（各分野はこの回数だけ等しく出る） */
   const repeatsPerLine = 3;
 
   /** 行あたりのスラッシュ区切り語数（モード間で見た目の長さを揃える） */
-  const targetItemsPerLine = repeatsPerLine * TERMS.length;
+  const targetItemsPerLine = repeatsPerLine * nTerms;
 
   /**
    * hero 背景テキストのモード（順に循環）
@@ -342,13 +491,54 @@ import { initEventsSection } from "./events.js";
 
   root.textContent = "";
   const lineEls = [];
-  for (let row = 0; row < n; row += 1) {
+  let n = 0;
+
+  function computeHeroFieldLineCount() {
+    const hero = root.closest(".hero");
+    if (!hero) return Math.max(nTerms, HERO_FIELD_LINE_FLOOR);
+
+    const { width, height } = hero.getBoundingClientRect();
+    if (height < 1) return Math.max(nTerms, HERO_FIELD_LINE_FLOOR);
+
+    const probe = lineEls[0];
+    const lineHeight =
+      probe?.getBoundingClientRect().height ||
+      parseFloat(getComputedStyle(probe || root).fontSize) ||
+      44;
+    const scale = heroFieldScaleForAngle(HERO_FIELD_ROT_MAX);
+    const maxRad = (HERO_FIELD_ROT_MAX * Math.PI) / 180;
+    const safety = 1.22;
+    const requiredContentH =
+      (height / (scale * Math.cos(maxRad))) * safety + width * Math.sin(maxRad) * 0.1;
+
+    return Math.max(nTerms, Math.ceil(requiredContentH / lineHeight), HERO_FIELD_LINE_FLOOR);
+  }
+
+  function ensureHeroFieldLineCount() {
+    const want = computeHeroFieldLineCount();
+    const text = buildLineHeroWords(heroWordCycleIndex);
+
+    while (lineEls.length < want) {
+      const p = document.createElement("p");
+      p.className = "hero-field-words-line";
+      p.textContent = text;
+      root.appendChild(p);
+      lineEls.push(p);
+    }
+    while (lineEls.length > want) {
+      lineEls.pop()?.remove();
+    }
+    n = lineEls.length;
+  }
+
+  for (let row = 0; row < nTerms; row += 1) {
     const p = document.createElement("p");
     p.className = "hero-field-words-line";
     p.textContent = buildLineHeroWords(heroWordCycleIndex);
     root.appendChild(p);
     lineEls.push(p);
   }
+  ensureHeroFieldLineCount();
 
   function applyHeroFieldWordVerticalTighten() {
     let sumL = 0;
@@ -356,17 +546,22 @@ import { initEventsSection } from "./events.js";
       sumL += el.offsetHeight;
     }
     const free = Math.max(0, root.clientHeight - sumL);
-    const pad = free / 6;
+    const pad = free / Math.max(6, n + 2);
     root.style.setProperty("--hero-field-pad-v", `${pad}px`);
   }
 
-  requestAnimationFrame(() => {
+  function syncHeroFieldLayout() {
+    ensureHeroFieldLineCount();
     applyHeroFieldWordVerticalTighten();
-    requestAnimationFrame(applyHeroFieldWordVerticalTighten);
+  }
+
+  requestAnimationFrame(() => {
+    syncHeroFieldLayout();
+    requestAnimationFrame(syncHeroFieldLayout);
   });
-  window.addEventListener("resize", applyHeroFieldWordVerticalTighten);
+  window.addEventListener("resize", syncHeroFieldLayout);
   if (document.fonts?.ready) {
-    document.fonts.ready.then(applyHeroFieldWordVerticalTighten);
+    document.fonts.ready.then(syncHeroFieldLayout);
   }
 
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -390,6 +585,8 @@ import { initEventsSection } from "./events.js";
 
   function runHeroFieldScrambleCycle() {
     heroWordCycleIndex = (heroWordCycleIndex + 1) % 4;
+    heroFieldCycleStartMs = performance.now();
+    clearHeroFieldRotateTimeout();
     cancelHeroFieldScramble();
     const modeJa = heroWordCycleIndex === 3;
     /* 日本語: M PLUS 1 Code 未読込時は即時差し替え（RandomText のコードレンジと描画の両方を安定させる） */
@@ -398,6 +595,7 @@ import { initEventsSection } from "./events.js";
         lineEls[row].textContent = buildLineHeroWords(heroWordCycleIndex);
       }
       requestAnimationFrame(applyHeroFieldWordVerticalTighten);
+      scheduleIdleRotation();
       return;
     }
 
@@ -410,6 +608,7 @@ import { initEventsSection } from "./events.js";
       completed += 1;
       if (completed >= n) {
         requestAnimationFrame(applyHeroFieldWordVerticalTighten);
+        scheduleIdleRotation();
       }
     };
 
@@ -444,105 +643,17 @@ import { initEventsSection } from "./events.js";
     }
   }
 
+  scheduleIdleRotation();
+
   window.setInterval(runHeroFieldScrambleCycle, CYCLE_MS);
   document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "hidden") cancelHeroFieldScramble();
+    if (document.visibilityState === "hidden") {
+      cancelHeroFieldScramble();
+      clearHeroFieldRotateTimeout();
+      if (heroFieldRotateAnim) cancelAnimationFrame(heroFieldRotateAnim);
+      heroFieldRotateAnim = null;
+    }
   });
-})();
-
-(function () {
-  if (document.body.dataset.signage) return;
-  const track = document.getElementById("exhTrack");
-  const prev = document.querySelector(".exh-prev");
-  const next = document.querySelector(".exh-next");
-  const dotsHost = document.getElementById("exhDots");
-  const counterEl = document.getElementById("exhCounter");
-  if (!track || !prev || !next || !dotsHost || !counterEl) return;
-
-  const cards = Array.from(track.querySelectorAll(".exh-card"));
-  if (!cards.length) return;
-
-  const reducedMq = window.matchMedia("(prefers-reduced-motion: reduce)");
-  const scrollMotion = () => (reducedMq.matches ? "auto" : "smooth");
-
-  /** @type {HTMLButtonElement[]} */
-  const dotButtons = [];
-
-  function captionAt(i) {
-    const cap = cards[i]?.querySelector("figcaption");
-    return cap?.textContent?.trim() || `作品 ${i + 1}`;
-  }
-
-  function indexFromScroll() {
-    const sl = track.scrollLeft;
-    let best = 0;
-    let minD = Infinity;
-    cards.forEach((el, i) => {
-      const d = Math.abs(el.offsetLeft - sl);
-      if (d < minD) {
-        minD = d;
-        best = i;
-      }
-    });
-    return best;
-  }
-
-  function scrollToIndex(i) {
-    const idx = Math.max(0, Math.min(cards.length - 1, i));
-    track.scrollTo({ left: cards[idx].offsetLeft, behavior: scrollMotion() });
-  }
-
-  function updateChrome() {
-    const i = indexFromScroll();
-    const n = cards.length;
-
-    prev.disabled = i <= 0;
-    next.disabled = i >= n - 1;
-
-    const prevTarget = i > 0 ? captionAt(i - 1) : null;
-    const nextTarget = i < n - 1 ? captionAt(i + 1) : null;
-    prev.setAttribute("aria-label", prevTarget ? `前へ: ${prevTarget}` : "これが最初の作品です");
-    next.setAttribute("aria-label", nextTarget ? `次へ: ${nextTarget}` : "これが最後の作品です");
-
-    counterEl.textContent = `${i + 1} / ${n}`;
-
-    dotButtons.forEach((b, j) => {
-      const on = j === i;
-      b.classList.toggle("is-active", on);
-      if (on) b.setAttribute("aria-current", "true");
-      else b.removeAttribute("aria-current");
-    });
-  }
-
-  cards.forEach((_, j) => {
-    const b = document.createElement("button");
-    b.type = "button";
-    b.className = "exh-dot";
-    b.setAttribute("aria-label", captionAt(j));
-    b.addEventListener("click", () => scrollToIndex(j));
-    dotsHost.appendChild(b);
-    dotButtons.push(b);
-  });
-
-  prev.addEventListener("click", () => scrollToIndex(indexFromScroll() - 1));
-  next.addEventListener("click", () => scrollToIndex(indexFromScroll() + 1));
-
-  if ("onscrollend" in window) {
-    track.addEventListener("scrollend", updateChrome);
-  } else {
-    let scrollEndTimer;
-    track.addEventListener("scroll", () => {
-      window.clearTimeout(scrollEndTimer);
-      scrollEndTimer = window.setTimeout(updateChrome, 150);
-    });
-  }
-
-  reducedMq.addEventListener("change", updateChrome);
-
-  const ro = new ResizeObserver(() => updateChrome());
-  ro.observe(track);
-
-  updateChrome();
 })();
 
 (function () {
@@ -567,8 +678,8 @@ import { initEventsSection } from "./events.js";
   if (!heroBg) return;
   if (document.body.dataset.signage) return;
 
-  const images = Array.from({ length: 72 }, (_, i) => `images/image_${i + 1}.jpeg`);
-  if (images.length === 0) return;
+  const stems = Array.from({ length: 72 }, (_, i) => `image_${i + 1}`);
+  if (stems.length === 0) return;
 
   const shuffle = (arr) => {
     const next = [...arr];
@@ -579,15 +690,17 @@ import { initEventsSection } from "./events.js";
     return next;
   };
 
-  let queue = shuffle(images);
-  const nextImage = () => {
-    if (queue.length === 0) queue = shuffle(images);
+  let queue = shuffle(stems);
+  const nextStem = () => {
+    if (queue.length === 0) queue = shuffle(stems);
     return queue.shift();
   };
 
+  const first = nextStem();
+  const second = nextStem();
   heroBg.innerHTML = `
-    <div class="hero-bg-slide is-active"><img src="${nextImage()}" alt="" width="1920" height="1080" decoding="async" fetchpriority="high" /></div>
-    <div class="hero-bg-slide"><img src="${nextImage()}" alt="" width="1920" height="1080" loading="lazy" decoding="async" /></div>
+    <div class="hero-bg-slide is-active">${pictureHTML(first, "hero", { alt: "", fetchpriority: "high" })}</div>
+    <div class="hero-bg-slide">${pictureHTML(second, "hero", { alt: "", loading: "lazy" })}</div>
   `;
 
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -597,18 +710,39 @@ import { initEventsSection } from "./events.js";
   window.setInterval(() => {
     const current = slides[activeIndex];
     const next = slides[1 - activeIndex];
-    const nextImg = next.querySelector("img");
-    if (nextImg) nextImg.src = nextImage();
+    setResponsivePicture(next, nextStem(), "hero", { alt: "", loading: "lazy" });
     next.classList.add("is-active");
     current.classList.remove("is-active");
     activeIndex = 1 - activeIndex;
   }, 7000);
 })();
 
-(function () {
-  const root = document.getElementById("screeningSlideshow");
-  if (!root || document.body.dataset.signage) return;
-  initScreeningHeroSlideshow(root);
+(function initStaticResponsiveImages() {
+  if (document.body.dataset.signage) return;
+
+  const spotlightStems = [
+    "screening-slides/screening_1",
+    "screening-slides/screening_2",
+    "screening-slides/screening_3",
+    "screening-slides/screening_4",
+    "screening-slides/screening_5",
+    "screening-slides/screening_6",
+  ];
+  document.querySelectorAll(".hero-screening-spotlight__slide").forEach((el, i) => {
+    if (el.tagName === "PICTURE") return;
+    const stem = spotlightStems[i];
+    if (!stem) return;
+    const loading = i === 0 ? undefined : "lazy";
+    const pic = pictureHTML(stem, "screening", { alt: "", loading, class: el.className });
+    const wrap = document.createElement("span");
+    wrap.innerHTML = pic;
+    const picture = wrap.firstElementChild;
+    if (picture) {
+      picture.classList.add("hero-screening-spotlight__slide");
+      if (el.classList.contains("is-active")) picture.classList.add("is-active");
+      el.replaceWith(picture);
+    }
+  });
 })();
 
 (function initHeroSpotlightSlideshow() {
@@ -627,6 +761,21 @@ import { initEventsSection } from "./events.js";
   window.setInterval(() => setActive(index + 1), HERO_SPOTLIGHT_SLIDE_INTERVAL_MS);
 })();
 
+(function initHeroSpotlightLink() {
+  const link = document.querySelector('a.hero-screening-spotlight[href="#screening"]');
+  if (!link || document.body.dataset.signage) return;
+
+  link.addEventListener("click", (e) => {
+    const target = document.getElementById("screening");
+    if (!target) return;
+    e.preventDefault();
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    target.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
+    history.replaceState(null, "", "#screening");
+  });
+})();
+
+initExhibitionSection();
 initScreeningMovies();
 initEventsSection();
 
@@ -638,7 +787,7 @@ initEventsSection();
       lat: 34.6861399,
       lng: 135.1828489,
       title: "こうべまちづくり会館",
-      color: "#d94e81",
+      color: "#c6171d",
     },
     {
       lat: 34.6867056,
@@ -667,7 +816,7 @@ initEventsSection();
       "・<strong>API の制限</strong>に「Maps JavaScript API」が含まれている（または一時的に「制限なし」で試す）<br />" +
       "・<strong>アプリケーションの制限</strong>が「HTTP リファラー」の場合、現在のオリジンが許可されている（例: <code>http://localhost:8080/*</code>、<code>https://ユーザー名.github.io/*</code>、<code>file://</code> は不可）<br />" +
       "・請求先が有効で「Maps JavaScript API」が有効化されている<br />" +
-      "<code>#gmap</code> の <code>data-map-id</code> には、Cloud「マップ管理」で作成した Map ID を設定してください（グレースケールは JS/CSS の filter ではなく、その Map に紐づく<a href=\"https://developers.google.com/maps/documentation/javascript/styling#cloud_tooling\" target=\"_blank\" rel=\"noopener\">クラウドのマップ スタイル</a>で設定します）。空のときは開発用 <code>DEMO_MAP_ID</code> となりカラー地図のままです。" +
+      "<code>#gmap</code> の <code>data-map-id</code> には、Cloud「マップ管理」で作成した Map ID を設定できます（<a href=\"https://developers.google.com/maps/documentation/javascript/styling#cloud_tooling\" target=\"_blank\" rel=\"noopener\">クラウドのマップ スタイル</a>で完全なグレースケール等も可能）。空のときは開発用 <code>DEMO_MAP_ID</code> となりカラー地図です。サイト上は CSS で彩度を抑えています。" +
       "</p>"
     );
   }
@@ -697,7 +846,7 @@ initEventsSection();
         mapTypeControl: false,
         streetViewControl: false,
         fullscreenControl: true,
-        zoom: 16,
+        zoom: 14,
         center: { lat: 34.68855, lng: 135.18625 },
         mapTypeId: "roadmap",
       };
@@ -726,7 +875,13 @@ initEventsSection();
       for (const v of VENUES) {
         bounds.extend({ lat: v.lat, lng: v.lng });
       }
-      map.fitBounds(bounds, { top: 48, right: 40, bottom: 48, left: 40 });
+      const fitPadding = { top: 48, right: 40, bottom: 48, left: 40 };
+      map.fitBounds(bounds, fitPadding);
+      /* fitBounds 後、UI の「−」2段階ぶん広げる（より遠方まで表示） */
+      google.maps.event.addListenerOnce(map, "idle", () => {
+        const z = map.getZoom();
+        if (typeof z === "number") map.setZoom(Math.max(z - 2, 0));
+      });
     } catch (err) {
       el.innerHTML = mapLoadFailedMessage();
       console.error(err);

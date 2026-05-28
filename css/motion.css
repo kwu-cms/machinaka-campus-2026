@@ -1,0 +1,546 @@
+/*
+ * UI 刷新（2026）— スクロール演出・章ナビ・没入モーダル・カードモダン化
+ * tokens.css の後、overrides.css の前後どちらでも可（index は overrides の次）
+ */
+
+/* ========== ベース面（編集デザイン B） ========== */
+body:not([data-signage]) {
+  background-color: var(--brand-surface);
+  background-image: none;
+}
+
+#news > .container,
+#about > .container,
+#access > .container,
+#program > .container {
+  background: var(--surface-elevated);
+  border-radius: var(--radius-md);
+  box-shadow:
+    var(--surface-shadow),
+    0 0 0 1px rgba(var(--brand-black-rgb), 0.06);
+  border: none;
+}
+
+/* ========== スクロール駆動（フォールバックは .reveal） ========== */
+@supports (animation-timeline: view()) {
+  body:not([data-signage]) .section-title.reveal {
+    animation: section-title-in linear both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 28%;
+  }
+
+  body:not([data-signage]) .program-item.reveal {
+    animation: program-chapter-in linear both;
+    animation-timeline: view();
+    animation-range: entry 5% cover 35%;
+  }
+}
+
+@keyframes section-title-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 1.25rem, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes program-chapter-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 2rem, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ========== ヒーロー・パララックス（JS が --hero-parallax-y を設定） ========== */
+html:not(.reduce-motion) body:not([data-signage]) .hero-bg {
+  transform: translate3d(0, var(--hero-parallax-bg, 0), 0);
+  will-change: transform;
+}
+
+html:not(.reduce-motion) body:not([data-signage]) .hero-scrim {
+  transform: translate3d(0, var(--hero-parallax-scrim, 0), 0);
+}
+
+html:not(.reduce-motion) body:not([data-signage]) .hero-field-words {
+  transform: translate3d(0, var(--hero-parallax-words, 0), 0)
+    rotate(var(--hero-field-rotate, -6deg))
+    scale(var(--hero-field-scale, 1.18));
+  will-change: transform;
+}
+
+html:not(.reduce-motion) body:not([data-signage]) .hero-inner {
+  transform: translate3d(0, var(--hero-parallax-inner, 0), 0);
+}
+
+html:not(.reduce-motion) body:not([data-signage]) .hero-screening-spotlight {
+  transform: translate3d(0, var(--hero-parallax-spotlight, 0), 0);
+}
+
+html:not(.reduce-motion) body:not([data-signage]) .hero-screening-spotlight:hover {
+  transform: translate3d(0, calc(var(--hero-parallax-spotlight, 0px) - 2px), 0);
+}
+
+/* ========== プログラム章ナビ ========== */
+.program-chapter-nav {
+  position: sticky;
+  top: var(--nav-h);
+  z-index: var(--z-sticky);
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0.35rem;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  margin: 0 0 clamp(1rem, 2.5vw, 1.5rem);
+  padding: 0.5rem 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(var(--uni-grey-rgb), 0.97) 0%,
+    rgba(var(--uni-grey-rgb), 0.92) 70%,
+    transparent 100%
+  );
+  border-bottom: 1px solid var(--rule);
+}
+
+.program-chapter-nav::-webkit-scrollbar {
+  display: none;
+}
+
+.program-chapter-nav a {
+  flex-shrink: 0;
+  padding: 0.45rem 0.85rem;
+  font-family: "DM Mono", monospace;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(var(--brand-black-rgb), 0.55);
+  border-radius: 999px;
+  border: 1px solid transparent;
+  transition:
+    color var(--int-fast) var(--int-ease),
+    background var(--int-fast) var(--int-ease),
+    border-color var(--int-fast) var(--int-ease);
+}
+
+.program-chapter-nav a:hover {
+  color: rgba(var(--brand-black-rgb), 0.88);
+  background: rgba(var(--brand-black-rgb), 0.04);
+}
+
+.program-chapter-nav a.is-active {
+  color: var(--text-dark);
+  background: var(--surface-elevated);
+  border-color: rgba(var(--brand-black-rgb), 0.12);
+  box-shadow: 0 4px 14px rgba(13, 13, 13, 0.06);
+}
+
+/* ========== プログラム一覧（.program-list）— 外枠は .container、章はフラット ========== */
+body:not([data-signage]) #program .program-list {
+  border-top: 1px solid var(--rule);
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+body:not([data-signage]) #program .program-item {
+  position: relative;
+  scroll-margin-top: calc(var(--nav-h) + 3.5rem);
+  margin-bottom: 0;
+  border: none;
+  border-bottom: 1px solid var(--rule);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  overflow: hidden;
+  transition: background var(--int-base) var(--int-ease);
+}
+
+body:not([data-signage]) #program .program-item:last-child {
+  margin-bottom: 0;
+  border-bottom: none;
+}
+
+body:not([data-signage]) #program .program-item:nth-child(1):hover,
+body:not([data-signage]) #program .program-item:nth-child(2):hover,
+body:not([data-signage]) #program .program-item:nth-child(3):hover {
+  background: rgba(var(--brand-black-rgb), 0.025);
+  box-shadow: none;
+}
+
+body:not([data-signage]) #program .program-item#event:nth-child(2):hover {
+  background: rgba(var(--brand-blue-rgb), 0.04);
+}
+
+body:not([data-signage]) #program .program-item#screening:nth-child(3):hover {
+  background: rgba(var(--brand-purple-rgb), 0.045);
+}
+
+body:not([data-signage]) #program .program-item:hover {
+  transform: none;
+}
+
+body:not([data-signage]) #program .program-item::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 3px;
+  pointer-events: none;
+  z-index: 2;
+}
+
+body:not([data-signage]) #program .program-item#exhibition::before {
+  background: rgba(var(--brand-black-rgb), 0.88);
+}
+
+body:not([data-signage]) #program .program-item#event::before {
+  background: rgba(var(--brand-blue-rgb), 0.92);
+}
+
+body:not([data-signage]) #program .program-item#screening::before {
+  background: rgba(var(--brand-purple-rgb), 0.92);
+}
+
+body:not([data-signage]) #program #exhibition.program-item {
+  overflow: hidden;
+}
+
+body:not([data-signage]) #program .program-item .program-head {
+  padding-block: 0.25rem;
+  padding-inline: 0;
+}
+
+body:not([data-signage]) #program .program-item .program-body,
+body:not([data-signage]) #program .program-item .screening-program-lede-stack,
+body:not([data-signage]) #program .program-item .screening-body {
+  padding-inline: 0;
+}
+
+body:not([data-signage]) #screening .screening-program-lede-stack {
+  padding-inline: 0;
+}
+
+/* ========== イベントカード（タイル） ========== */
+body:not([data-signage]) #event .ev-schedule-main .ev-card--no-thumb {
+  grid-template-columns: 1fr;
+}
+
+body:not([data-signage]) #event .ev-schedule-main .ev-card {
+  display: grid;
+  grid-template-columns: minmax(5.5rem, 7.5rem) minmax(0, 1fr);
+  gap: 0;
+  border: 1px solid rgba(17, 17, 17, 0.16);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  box-shadow: 0 8px 28px rgba(13, 13, 13, 0.06);
+  transition:
+    transform var(--int-base) var(--ease-spring),
+    box-shadow var(--int-base) var(--ease-spring),
+    border-color var(--int-base) var(--ease-spring);
+}
+
+body:not([data-signage]) #event .ev-schedule-main .ev-card:hover,
+body:not([data-signage]) #event .ev-schedule-main .ev-card:focus-visible {
+  transform: translateY(-3px);
+  border-color: rgba(17, 17, 17, 0.26);
+  box-shadow: var(--surface-shadow-hover);
+}
+
+body:not([data-signage]) #event .ev-schedule-main .ev-card--lecture {
+  border-left: 4px solid rgba(var(--brand-blue-rgb), 0.92);
+}
+
+body:not([data-signage]) #event .ev-schedule-main .ev-card--workshop {
+  border-left: 4px solid rgba(var(--brand-magenta-rgb), 0.92);
+}
+
+body:not([data-signage]) #event .ev-schedule-main .ev-card--permanent {
+  border-left: 4px solid rgba(var(--brand-black-rgb), 0.55);
+}
+
+body:not([data-signage]) #event .ev-schedule-main .ev-card--lecture:hover,
+body:not([data-signage]) #event .ev-schedule-main .ev-card--lecture:focus-visible {
+  border-color: rgba(17, 17, 17, 0.26);
+  border-left-color: rgba(var(--brand-blue-rgb), 0.92);
+}
+
+body:not([data-signage]) #event .ev-schedule-main .ev-card--workshop:hover,
+body:not([data-signage]) #event .ev-schedule-main .ev-card--workshop:focus-visible {
+  border-color: rgba(17, 17, 17, 0.26);
+  border-left-color: rgba(var(--brand-magenta-rgb), 0.92);
+}
+
+body:not([data-signage]) #event .ev-schedule-main .ev-card--permanent:hover,
+body:not([data-signage]) #event .ev-schedule-main .ev-card--permanent:focus-visible {
+  border-color: rgba(17, 17, 17, 0.26);
+  border-left-color: rgba(var(--brand-black-rgb), 0.55);
+}
+
+body:not([data-signage]) #event .ev-schedule-main .ev-card .ev-detail {
+  display: none;
+}
+
+@media (max-width: 520px) {
+  body:not([data-signage]) #event .ev-schedule-main .ev-card {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ========== 上映：タブレット幅のみ横スクロールスナップ（デスクトップは2列グリッド） ========== */
+@media (min-width: 721px) and (max-width: 900px) {
+  body:not([data-signage]) #screening .mv-schedule-main .mv-program-cols {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: clamp(0.85rem, 2vw, 1.25rem);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 0.5rem;
+    scrollbar-width: thin;
+  }
+
+  body:not([data-signage]) #screening .mv-schedule-main .mv-program-col {
+    flex: 0 0 min(42vw, 22rem);
+    scroll-snap-align: start;
+    min-width: 0;
+  }
+}
+
+/* 上映カード：角Rと border の組み合わせを避け、影で輪郭＋左アクセント */
+body:not([data-signage]) #screening .mv-schedule-main .mv-card {
+  border: none;
+  border-radius: var(--radius-sm);
+  box-shadow:
+    0 6px 22px rgba(15, 17, 21, 0.06),
+    0 0 0 1px rgba(17, 17, 17, 0.1),
+    inset 4px 0 0 var(--mv-accent);
+  transition: box-shadow var(--int-fast) var(--int-ease);
+}
+
+body:not([data-signage]) #screening .mv-schedule-main .mv-card:hover,
+body:not([data-signage]) #screening .mv-schedule-main .mv-card:focus-visible {
+  border-color: transparent;
+  box-shadow:
+    0 10px 28px rgba(15, 17, 21, 0.09),
+    0 0 0 1px rgba(17, 17, 17, 0.16),
+    inset 4px 0 0 var(--mv-accent);
+}
+
+/* ========== 展示カルーセル（コンテナ内） ========== */
+/* ========== 没入型 dialog（内容量に応じた高さ） ========== */
+.event-dialog.immersive-dialog,
+.movie-dialog.immersive-dialog {
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  width: min(48rem, calc(100vw - 2 * var(--modal-inset)));
+  max-width: none;
+  max-height: min(96dvh, 60rem);
+  height: fit-content;
+  margin: auto;
+  overflow: hidden;
+  background: var(--surface-elevated);
+  box-shadow: 0 32px 80px rgba(13, 13, 13, 0.35);
+}
+
+.event-dialog.immersive-dialog::backdrop,
+.movie-dialog.immersive-dialog::backdrop {
+  background: rgba(15, 17, 21, 0.72);
+  backdrop-filter: blur(8px);
+}
+
+.immersive-dialog .event-dialog-shell,
+.immersive-dialog .movie-dialog-shell {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  max-height: min(96dvh, 60rem);
+  height: fit-content;
+  overflow: hidden;
+}
+
+.immersive-dialog .event-dialog-panel,
+.immersive-dialog .movie-dialog-panel {
+  --dlg-pad-x: clamp(1.15rem, 3vw, 1.65rem);
+  --dlg-pad-y-top: clamp(1.2rem, 3vw, 1.55rem);
+  --dlg-pad-y-bottom: clamp(1.25rem, 3vw, 1.6rem);
+  flex: 0 0 auto;
+  display: block;
+  height: auto;
+  max-height: min(96dvh, 60rem);
+  min-height: 0;
+  padding: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.immersive-dialog .event-dialog-media,
+.immersive-dialog .movie-dialog-media {
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  margin: 0 0 1rem;
+  border-radius: 0;
+  overflow: hidden;
+  border: none;
+  border-bottom: 1px solid rgba(17, 17, 17, 0.1);
+  background: rgba(17, 17, 17, 0.06);
+  min-height: 0;
+  max-height: none;
+}
+
+.event-dialog.immersive-dialog .event-dialog-media {
+  max-height: min(40vh, 22rem);
+}
+
+.immersive-dialog .event-dialog-media picture,
+.immersive-dialog .movie-dialog-media picture {
+  display: block;
+  width: 100%;
+}
+
+.immersive-dialog .event-dialog-thumb,
+.immersive-dialog .movie-dialog-thumb {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  min-height: 0;
+  max-height: none;
+}
+
+.event-dialog.immersive-dialog .event-dialog-thumb {
+  max-height: min(40vh, 22rem);
+}
+
+.immersive-dialog .event-dialog-title,
+.immersive-dialog .movie-dialog-title,
+.immersive-dialog .movie-dialog-credits,
+.immersive-dialog .event-dialog-body,
+.immersive-dialog .movie-dialog-body,
+.immersive-dialog .exhibition-dialog-meta {
+  padding-inline: var(--dlg-pad-x);
+}
+
+.immersive-dialog .event-dialog-panel > .event-dialog-title:first-child,
+.immersive-dialog .movie-dialog-panel > .movie-dialog-title:first-child {
+  padding-top: var(--dlg-pad-y-top);
+}
+
+.immersive-dialog .event-dialog-panel > .event-dialog-media[hidden] + .event-dialog-title,
+.immersive-dialog .movie-dialog-panel > .movie-dialog-media[hidden] + .movie-dialog-title,
+.immersive-dialog .event-dialog-panel > .exhibition-dialog-hero:has(.exhibition-dialog-media[hidden]) + .event-dialog-title {
+  padding-top: var(--dlg-pad-y-top);
+}
+
+.immersive-dialog .event-dialog-panel > :last-child,
+.immersive-dialog .movie-dialog-panel > :last-child {
+  padding-bottom: var(--dlg-pad-y-bottom);
+}
+
+.immersive-dialog .event-dialog-title,
+.immersive-dialog .movie-dialog-title {
+  padding-top: 0;
+  margin: 0 2.5rem 0.65rem 0;
+}
+
+.immersive-dialog .movie-dialog-credits {
+  margin: 0 0 0.72rem;
+}
+
+.immersive-dialog .event-dialog-body,
+.immersive-dialog .movie-dialog-body {
+  flex: none;
+  min-height: 0;
+  overflow: visible;
+  padding-top: 0;
+  padding-bottom: clamp(1.5rem, 3vw, 2rem);
+}
+.immersive-dialog .event-dialog-close,
+.immersive-dialog .movie-dialog-close {
+  top: clamp(0.75rem, 2vw, 1rem);
+  right: clamp(0.75rem, 2vw, 1rem);
+}
+
+@media (max-width: 640px) {
+  .event-dialog.immersive-dialog,
+  .movie-dialog.immersive-dialog {
+    width: calc(100vw - 1rem);
+    max-width: calc(100vw - 1rem);
+    max-height: 96dvh;
+    height: fit-content;
+    border-radius: 0;
+    margin: auto;
+  }
+
+  .immersive-dialog .event-dialog-shell,
+  .immersive-dialog .movie-dialog-shell,
+  .immersive-dialog .event-dialog-panel,
+  .immersive-dialog .movie-dialog-panel {
+    max-height: 96dvh;
+  }
+
+  .immersive-dialog .event-dialog-media,
+  .immersive-dialog .movie-dialog-media {
+    border-radius: 0;
+  }
+}
+
+/* View Transitions（カード → モーダル） */
+@supports (view-transition-name: none) {
+  ::view-transition-old(vt-source),
+  ::view-transition-new(vt-dialog) {
+    animation-duration: 0.38s;
+    animation-timing-function: var(--ease-out);
+  }
+
+  ::view-transition-old(vt-dialog),
+  ::view-transition-new(vt-source) {
+    animation-duration: 0.28s;
+    animation-timing-function: var(--ease-out);
+  }
+}
+
+/* サイネージ・ reduced motion */
+html.reduce-motion body:not([data-signage]) .hero-bg,
+html.reduce-motion body:not([data-signage]) .hero-scrim,
+html.reduce-motion body:not([data-signage]) .hero-field-words,
+html.reduce-motion body:not([data-signage]) .hero-inner,
+html.reduce-motion body:not([data-signage]) .hero-screening-spotlight,
+body[data-signage] .hero-bg,
+body[data-signage] .hero-scrim,
+body[data-signage] .hero-field-words,
+body[data-signage] .hero-inner,
+body[data-signage] .hero-screening-spotlight {
+  transform: none !important;
+}
+
+body[data-signage] .program-chapter-nav {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body:not([data-signage]) .section-title.reveal,
+  body:not([data-signage]) .program-item.reveal {
+    animation: none;
+  }
+
+  body:not([data-signage]) #event .ev-schedule-main .ev-card:hover {
+    transform: none;
+  }
+}

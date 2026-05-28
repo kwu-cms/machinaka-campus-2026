@@ -1,0 +1,31 @@
+{
+  "jpegQuality": 82,
+  "webpQuality": 80,
+  "profiles": {
+    "hero": {
+      "widths": [1920, 1280, 960],
+      "sizes": "100vw",
+      "match": ["image_*.jpeg", "image_*.jpg"]
+    },
+    "event": {
+      "widths": [960, 640],
+      "sizes": "(max-width: 768px) 100vw, 960px",
+      "match": ["evt-*.png", "evt-*.jpg", "evt-*.jpeg"]
+    },
+    "screening": {
+      "widths": [960, 480],
+      "sizes": "(max-width: 480px) 120px, 240px",
+      "match": ["screening-slides/*"]
+    },
+    "guest": {
+      "widths": [480, 240],
+      "sizes": "(max-width: 480px) 50vw, 240px",
+      "match": ["guest_*", "irodori_*"]
+    },
+    "misc": {
+      "widths": [960, 640],
+      "sizes": "(max-width: 768px) 100vw, 960px",
+      "match": ["*"]
+    }
+  }
+}

@@ -3,7 +3,8 @@
  * overrides.css — レイアウト用メディアクエリ・特例（sections-* の後に読み込む）
  *
  * ・~900px / 901px+ … ヒーロー・グリッド・#news 表示切替
- * ・~1024px … 開催概要スケジュール（#about .about-schedule）の 1 列化
+ * ・~1024px … 開催概要スケジュール（#about .about-schedule,
+#about .about-timeline）の 1 列化
  * ・~640px … モバイルナビ等
  * ・body[data-signage] … 縦型サイネージ（ファイル後半）
  *
@@ -62,61 +63,74 @@
 
 @media (max-width: 1024px) {
   /* タブレット以下：イベントグリッドを 1 列にして読みやすく */
-  #about .about-schedule .about-schedule-lede {
+  #about .about-schedule,
+#about .about-timeline .about-schedule-lede {
     padding-inline: 0;
     margin-bottom: 0.6rem;
   }
 
-  #about .about-schedule .program-timeline-scroll-host {
+  #about .about-schedule,
+#about .about-timeline .program-timeline-scroll-host {
     margin-inline: 0;
     overflow-x: visible;
   }
 
-  #about .about-schedule .program-timeline-compact {
+  #about .about-schedule,
+#about .about-timeline .program-timeline-compact {
     padding-inline: 0;
   }
 
-  #about .about-schedule .program-timeline-sheet--exh,
-  #about .about-schedule .program-timeline-sheet--ev {
+  #about .about-schedule,
+#about .about-timeline .program-timeline-sheet--exh,
+  #about .about-schedule,
+#about .about-timeline .program-timeline-sheet--ev {
     padding-left: 0;
     padding-right: 0;
   }
 
-  #about .about-schedule .program-timeline-inner {
+  #about .about-schedule,
+#about .about-timeline .program-timeline-inner {
     margin-bottom: 1rem;
   }
 
-  #about .about-schedule .about-timeline-heading {
+  #about .about-schedule,
+#about .about-timeline .about-timeline-heading {
     margin-bottom: 0.65rem;
     padding-inline: 0;
   }
 
-  #about .about-schedule .program-timeline-day-block + .program-timeline-day-block {
+  #about .about-schedule,
+#about .about-timeline .program-timeline-day-block + .program-timeline-day-block {
     margin-top: clamp(0.75rem, 2.2vw, 1.15rem);
   }
 
-  #about .about-schedule .program-timeline-day-tracks {
+  #about .about-schedule,
+#about .about-timeline .program-timeline-day-tracks {
     gap: 0.55rem;
   }
 
-  #about .about-schedule .program-timeline-day-heading {
+  #about .about-schedule,
+#about .about-timeline .program-timeline-day-heading {
     margin-bottom: 0.42rem;
     padding-inline: 0;
   }
 
-  #about .about-schedule .program-timeline-sheet--exh .program-timeline-bars {
+  #about .about-schedule,
+#about .about-timeline .program-timeline-sheet--exh .program-timeline-bars {
     display: block;
     min-height: 0 !important;
   }
 
   /* 単一カラム化時は 7/18 イベント行の空き列・多列グリッドを解除（詳細度で sections の土曜ワイド用ルールに勝つ） */
-  #about .about-schedule .program-timeline-day-block[data-timeline-day="sat"] .program-timeline-sheet--ev .program-timeline-bars {
+  #about .about-schedule,
+#about .about-timeline .program-timeline-day-block[data-timeline-day="sat"] .program-timeline-sheet--ev .program-timeline-bars {
     padding-left: 0;
     grid-template-columns: 1fr;
     gap: 0.5rem;
   }
 
-  #about .about-schedule .program-timeline-sheet--ev .program-timeline-bars {
+  #about .about-schedule,
+#about .about-timeline .program-timeline-sheet--ev .program-timeline-bars {
     display: grid;
     grid-template-columns: 1fr;
     gap: 0.5rem;
@@ -126,10 +140,11 @@
 
   #about .about-schedule .program-timeline-sheet--ev {
     min-height: 0 !important;
-    padding-bottom: 0.4rem;
+    padding: 0;
   }
 
-  #about .about-schedule .program-timeline-bar {
+  #about .about-schedule,
+#about .about-timeline .program-timeline-bar {
     position: relative !important;
     left: 0 !important;
     width: 100% !important;
@@ -138,7 +153,8 @@
     z-index: auto !important;
   }
 
-  #about .about-schedule .program-timeline-bar:hover {
+  #about .about-schedule,
+#about .about-timeline .program-timeline-bar:hover {
     z-index: 5;
   }
 }
@@ -244,17 +260,36 @@ body[data-signage] #program .container {
   box-sizing: border-box;
 }
 
-body[data-signage="screening"] #program .container {
-  padding: 0.65rem 0.85rem 1rem;
-}
-
 body[data-signage="screening"] #screening .program-body {
   padding-top: 0.5rem;
-  padding-bottom: 0.85rem;
+  padding-bottom: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
 body[data-signage="screening"] #screening .screening-body {
-  gap: 1rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  min-height: 0;
+}
+
+body[data-signage="screening"] #program .container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  padding: 0.65rem 0.85rem 0;
+}
+
+body[data-signage="screening"] #program .program-list,
+body[data-signage="screening"] #screening.program-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
 body[data-signage] #program .section-label {
@@ -293,51 +328,125 @@ body[data-signage="screening"] #program .program-head {
   padding-block: 0.35rem 0.55rem;
 }
 
-/* 上映サイネージ：スライド・長い導入は非表示。2カラム＝7/18列・7/19列 */
+/* 上映サイネージ：スライドショーは非表示。教員メッセージは下部パネル */
 body[data-signage="screening"] #screening.program-item {
   overflow: visible;
 }
 
+body[data-signage="event"] #event.program-item {
+  overflow: visible;
+}
+
+body[data-signage="screening"] #screening .mv-section {
+  order: 1;
+  flex: 0 0 auto;
+}
+
 body[data-signage="screening"] #screening .screening-hero-split {
+  order: 2;
+  display: block !important;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  margin: 0;
+  grid-template-columns: 1fr;
+}
+
+body[data-signage="screening"] #screening .screening-hero-split__media {
   display: none !important;
+}
+
+body[data-signage="screening"] #screening .screening-hero-split__aside {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  width: 100%;
 }
 
 body[data-signage="screening"] #screening .program-copy.screening-intro {
   display: none;
 }
 
+body[data-signage="screening"] #screening .screening-program-lede-stack {
+  display: none !important;
+}
+
 body[data-signage="screening"] #screening > header.program-head {
   display: none !important;
 }
 
-body[data-signage="screening"] #screening .screening-body > .screening-program-lede {
-  display: none !important;
-}
-
 body[data-signage="screening"] #screening .signage-screening-chrome {
-  margin: 0 0 1.05rem;
+  margin: 0 0 0.75rem;
 }
 
-body[data-signage="screening"] #screening .signage-screening-chrome .program-head {
-  min-height: unset;
-  padding-block: 0.15rem 0.35rem;
+body[data-signage="screening"] #screening .signage-screening-chrome__head {
+  margin: 0 0 0.55rem;
+  padding: 0.15rem 0 0.15rem 0.9rem;
+  border-left: 3px solid var(--brand-purple);
 }
 
-body[data-signage="screening"] #screening .signage-screening-chrome .screening-program-lede--signage {
-  gap: 0.35rem;
-  margin-bottom: 0.85rem;
-  max-width: none;
-  padding: 0.2rem 0 0.2rem 0.9rem;
+body[data-signage="screening"] #screening .signage-screening-chrome__kicker {
+  margin: 0 0 0.28rem;
+  font-family: "DM Mono", monospace;
+  font-size: clamp(0.68rem, 1.6vw, 0.76rem);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(17, 17, 17, 0.48);
 }
 
-body[data-signage="screening"] #screening .signage-screening-chrome .screening-program-name {
-  margin-top: 0.05rem;
+body[data-signage="screening"] #screening .signage-screening-chrome__title {
+  margin: 0 0 0.3rem;
+  font-family: "Shippori Mincho B1", serif;
+  font-size: clamp(1.12rem, 2.8vw, 1.38rem);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  line-height: 1.35;
+  color: rgba(17, 17, 17, 0.94);
 }
 
-body[data-signage="screening"] #screening .signage-screening-chrome .screening-program-tagline {
-  font-size: clamp(1rem, 2.5vw, 1.15rem);
+body[data-signage="screening"] #screening .signage-screening-chrome__tagline {
+  margin: 0;
+  font-family: "Shippori Mincho B1", serif;
+  font-size: clamp(0.92rem, 2.2vw, 1.05rem);
   font-weight: 600;
   letter-spacing: 0.04em;
+  line-height: 1.55;
+  color: rgba(17, 17, 17, 0.52);
+}
+
+body[data-signage="screening"] #screening .signage-screening-chrome__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem 0.85rem;
+  margin: 0;
+  font-family: "Noto Sans JP", sans-serif;
+  font-size: clamp(0.88rem, 2.1vw, 0.98rem);
+  font-weight: 600;
+  line-height: 1.45;
+  color: rgba(17, 17, 17, 0.72);
+}
+
+body[data-signage="screening"] #screening .signage-screening-chrome__venue::before {
+  content: "";
+  display: inline-block;
+  width: 0.82rem;
+  height: 0.82rem;
+  margin-right: 0.28rem;
+  vertical-align: -0.08em;
+  background: url("../images/fa-location-pin.svg") center / contain no-repeat;
+  opacity: 0.62;
+}
+
+body[data-signage="screening"] #screening .signage-screening-chrome__time {
+  font-family: "DM Mono", monospace;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+body[data-signage="screening"] #screening .signage-screening-chrome__note {
+  font-size: 0.86em;
   color: rgba(17, 17, 17, 0.55);
 }
 
@@ -352,9 +461,13 @@ body[data-signage="screening"] #screening .mv-schedule-main .mv-program-col {
   gap: 0.8rem;
 }
 
-body[data-signage="screening"] #screening .mv-schedule-main .mv-program-col-title {
-  padding-bottom: 0.5rem;
-  gap: 0.45rem 1rem;
+body[data-signage="screening"] #screening .mv-program-col-title--signage {
+  padding-bottom: 0.42rem;
+  border-bottom: 1px solid rgba(17, 17, 17, 0.14);
+}
+
+body[data-signage="screening"] #screening .mv-program-col-title--signage .mv-program-col-meta {
+  display: none;
 }
 
 body[data-signage="screening"] #screening .mv-schedule-main .mv-program-col-date {
@@ -395,8 +508,9 @@ body[data-signage="screening"] #screening .mv-schedule-main .mv-program-col-list
   gap: 0.62rem;
 }
 
-/* ページ先頭：全作品ビジュアル — コンテナを突き抜け viewport 全幅 */
-body[data-signage="screening"] #screening .signage-mv-page-hero {
+/* ページ先頭：全幅ビジュアルカルーセル（上映・イベント共通） */
+body[data-signage="screening"] #screening .signage-mv-page-hero,
+body[data-signage="event"] #event .signage-mv-page-hero {
   width: 100vw;
   width: 100dvw;
   max-width: none;
@@ -409,13 +523,15 @@ body[data-signage="screening"] #screening .signage-mv-page-hero {
 }
 
 @supports (width: 100dvw) {
-  body[data-signage="screening"] #screening .signage-mv-page-hero {
+  body[data-signage="screening"] #screening .signage-mv-page-hero,
+  body[data-signage="event"] #event .signage-mv-page-hero {
     margin-left: calc(50% - 50dvw);
     margin-right: calc(50% - 50dvw);
   }
 }
 
-body[data-signage="screening"] #screening .signage-mv-page-slideshow {
+body[data-signage="screening"] #screening .signage-mv-page-slideshow,
+body[data-signage="event"] #event .signage-mv-page-slideshow {
   border-radius: 0;
   overflow: hidden;
   border: none;
@@ -423,14 +539,16 @@ body[data-signage="screening"] #screening .signage-mv-page-slideshow {
   background: #0f1115;
 }
 
-body[data-signage="screening"] #screening .signage-mv-page-slides-inner {
+body[data-signage="screening"] #screening .signage-mv-page-slides-inner,
+body[data-signage="event"] #event .signage-mv-page-slides-inner {
   position: relative;
   width: 100%;
   aspect-ratio: 16 / 9;
   background: rgba(15, 17, 21, 0.92);
 }
 
-body[data-signage="screening"] #screening .signage-mv-page-slide {
+body[data-signage="screening"] #screening .signage-mv-page-slide,
+body[data-signage="event"] #event .signage-mv-page-slide {
   position: absolute;
   inset: 0;
   margin: 0;
@@ -439,13 +557,15 @@ body[data-signage="screening"] #screening .signage-mv-page-slide {
   pointer-events: none;
 }
 
-body[data-signage="screening"] #screening .signage-mv-page-slide.is-active {
+body[data-signage="screening"] #screening .signage-mv-page-slide.is-active,
+body[data-signage="event"] #event .signage-mv-page-slide.is-active {
   opacity: 1;
   z-index: 1;
   pointer-events: auto;
 }
 
-body[data-signage="screening"] #screening .signage-mv-page-slide img {
+body[data-signage="screening"] #screening .signage-mv-page-slide img,
+body[data-signage="event"] #event .signage-mv-page-slide img {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -456,7 +576,20 @@ body[data-signage="screening"] #screening .signage-mv-page-slide img {
   pointer-events: none;
 }
 
-body[data-signage="screening"] #screening .signage-mv-page-slide-placeholder {
+body[data-signage="screening"] #screening .signage-mv-page-slide picture,
+body[data-signage="event"] #event .signage-mv-page-slide picture {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+body[data-signage="screening"] #screening .signage-mv-page-slide-placeholder,
+body[data-signage="event"] #event .signage-mv-page-slide-placeholder {
   width: 100%;
   height: 100%;
   position: relative;
@@ -469,7 +602,8 @@ body[data-signage="screening"] #screening .signage-mv-page-slide-placeholder {
   );
 }
 
-body[data-signage="screening"] #screening .signage-mv-page-slide::after {
+body[data-signage="screening"] #screening .signage-mv-page-slide::after,
+body[data-signage="event"] #event .signage-mv-page-slide::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -478,7 +612,8 @@ body[data-signage="screening"] #screening .signage-mv-page-slide::after {
   background: linear-gradient(to top, rgba(15, 17, 21, 0.55) 0%, rgba(15, 17, 21, 0.12) 38%, transparent 62%);
 }
 
-body[data-signage="screening"] #screening .signage-mv-page-synopsis-float {
+body[data-signage="screening"] #screening .signage-mv-page-synopsis-float,
+body[data-signage="event"] #event .signage-mv-page-synopsis-float {
   position: absolute;
   right: 18px;
   bottom: 18px;
@@ -500,27 +635,37 @@ body[data-signage="screening"] #screening .signage-mv-page-synopsis-float {
   -webkit-overflow-scrolling: touch;
 }
 
-body[data-signage="screening"] #screening .signage-mv-page-synopsis-float .mv-float-panel-title {
+body[data-signage="screening"] #screening .signage-mv-page-synopsis-float .mv-float-panel-title,
+body[data-signage="event"] #event .signage-mv-page-synopsis-float .mv-float-panel-title {
   font-size: clamp(0.88rem, 2.35vw, 1.05rem);
   margin-bottom: 0.32rem;
 }
 
-body[data-signage="screening"] #screening .signage-mv-page-synopsis-float .mv-float-panel-date-badge {
+body[data-signage="screening"] #screening .signage-mv-page-synopsis-float .mv-float-panel-date-badge,
+body[data-signage="event"] #event .signage-mv-page-synopsis-float .mv-float-panel-date-badge {
   font-size: clamp(0.66rem, 1.75vw, 0.78rem);
   padding: 0.156rem 0.494rem 0.182rem;
 }
 
-body[data-signage="screening"] #screening .signage-mv-page-synopsis-float .mv-float-panel-meta-line {
+body[data-signage="screening"] #screening .signage-mv-page-synopsis-float .mv-float-panel-meta-line,
+body[data-signage="event"] #event .signage-mv-page-synopsis-float .mv-float-panel-meta-line {
   font-size: clamp(0.66rem, 1.75vw, 0.78rem);
   line-height: 1.38;
 }
 
-body[data-signage="screening"] #screening .signage-mv-page-synopsis-float .mv-float-panel-synopsis {
+body[data-signage="screening"] #screening .signage-mv-page-synopsis-float .mv-float-panel-synopsis,
+body[data-signage="event"] #event .signage-mv-page-synopsis-float .mv-float-panel-synopsis {
   font-size: clamp(0.66rem, 1.75vw, 0.8rem);
   line-height: 1.52;
 }
 
-body[data-signage="screening"] #screening .signage-mv-page-dots {
+body[data-signage="screening"] #screening .signage-mv-page-synopsis-float .mv-float-panel-lead,
+body[data-signage="event"] #event .signage-mv-page-synopsis-float .mv-float-panel-lead {
+  font-size: clamp(0.52rem, 1.35vw, 0.58rem);
+}
+
+body[data-signage="screening"] #screening .signage-mv-page-dots,
+body[data-signage="event"] #event .signage-mv-page-dots {
   display: flex;
   flex-wrap: wrap;
   gap: 0.4rem;
@@ -529,7 +674,8 @@ body[data-signage="screening"] #screening .signage-mv-page-dots {
   background: var(--bg-light);
 }
 
-body[data-signage="screening"] #screening .signage-mv-page-dot {
+body[data-signage="screening"] #screening .signage-mv-page-dot,
+body[data-signage="event"] #event .signage-mv-page-dot {
   width: 9px;
   height: 9px;
   border-radius: 999px;
@@ -539,7 +685,8 @@ body[data-signage="screening"] #screening .signage-mv-page-dot {
   cursor: pointer;
 }
 
-body[data-signage="screening"] #screening .signage-mv-page-dot.is-active {
+body[data-signage="screening"] #screening .signage-mv-page-dot.is-active,
+body[data-signage="event"] #event .signage-mv-page-dot.is-active {
   background: rgba(var(--brand-purple-rgb), 0.88);
   border-color: rgba(var(--brand-purple-rgb), 0.92);
 }
@@ -554,64 +701,314 @@ body[data-signage="screening"] #screening .mv-signage-col-empty {
   border-radius: 2px;
 }
 
-body[data-signage="screening"] #screening .mv-schedule-main .mv-card--signage-hero {
+body[data-signage="screening"] #screening .mv-schedule-main .mv-card--signage-list {
   cursor: default;
   text-align: left;
-  padding: 0.72rem 0.78rem 0.78rem;
+  padding: 0.58rem 0.68rem 0.62rem;
   min-height: unset;
-  border-left-width: 5px;
-  box-shadow: 0 8px 26px rgba(15, 17, 21, 0.08);
+  border-left-width: 4px;
+  box-shadow: 0 4px 18px rgba(15, 17, 21, 0.06);
 }
 
-body[data-signage="screening"] #screening .mv-schedule-main .mv-card--signage-hero:hover {
-  box-shadow: 0 10px 30px rgba(15, 17, 21, 0.1);
-}
-
-body[data-signage="screening"] #screening .mv-signage-hero-body {
-  min-width: 0;
-}
-
-body[data-signage="screening"] #screening .mv-signage-hero-title {
-  margin: 0 0 0.45rem;
+body[data-signage="screening"] #screening .mv-signage-list-title {
+  margin: 0 0 0.22rem;
   font-family: "Shippori Mincho B1", serif;
-  font-size: clamp(1.02rem, 2.6vw, 1.22rem);
+  font-size: clamp(0.96rem, 2.35vw, 1.08rem);
   font-weight: 800;
   line-height: 1.38;
   letter-spacing: 0.02em;
-  color: rgba(17, 17, 17, 0.95);
+  color: rgba(17, 17, 17, 0.94);
 }
 
-body[data-signage="screening"] #screening .mv-signage-hero-meta {
-  margin: 0 0 0.55rem;
+body[data-signage="screening"] #screening .mv-signage-list-meta {
+  margin: 0;
   font-family: "DM Mono", monospace;
-  font-size: clamp(0.78rem, 2vw, 0.88rem);
+  font-size: clamp(0.72rem, 1.85vw, 0.8rem);
   font-weight: 600;
-  letter-spacing: 0.045em;
-  line-height: 1.55;
-  color: rgba(17, 17, 17, 0.66);
+  letter-spacing: 0.04em;
+  line-height: 1.45;
+  color: rgba(17, 17, 17, 0.6);
 }
 
-body[data-signage="screening"] #screening .mv-signage-hero-desc {
-  margin: 0;
-  max-height: min(11rem, 28vh);
-  overflow-y: auto;
-  padding-top: 0.55rem;
-  border-top: 1px solid var(--rule);
-  -webkit-overflow-scrolling: touch;
+/* 1080×1920 縦型ディスプレイ（9:16）向けの密度調整 */
+@media (min-width: 1000px) and (min-height: 1700px) {
+  body[data-signage] #program .container {
+    max-width: 1080px;
+    padding: 0.75rem 1rem 0;
+  }
+
+  body[data-signage="screening"] #screening .signage-mv-page-slides-inner,
+  body[data-signage="event"] #event .signage-mv-page-slides-inner {
+    max-height: min(36vh, 540px);
+  }
+
+  body[data-signage="screening"] #screening .signage-mv-page-hero,
+  body[data-signage="event"] #event .signage-mv-page-hero {
+    margin-bottom: 0.55rem;
+  }
+
+  body[data-signage="screening"] #screening .mv-program-cols {
+    gap: 0.7rem 0.85rem;
+  }
+
+  body[data-signage="screening"] #screening .mv-program-col-list {
+    gap: 0.55rem;
+  }
+
+  body[data-signage="screening"] #screening .mv-schedule-main .mv-card--signage-list {
+    padding: 0.62rem 0.72rem 0.66rem;
+  }
 }
 
-body[data-signage="screening"] #screening .mv-signage-hero-desc p {
-  margin: 0;
-  font-size: 0.82rem;
-  font-weight: 500;
-  line-height: 1.72;
-  color: rgba(17, 17, 17, 0.78);
-  white-space: pre-line;
+body[data-signage="event"] #program > .container > .section-label,
+body[data-signage="event"] #program > .container > .section-title,
+body[data-signage="event"] #program .program-chapter-nav {
+  display: none;
+}
+
+body[data-signage="event"] #program .container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  padding: 0.65rem 0.85rem 0;
+}
+
+body[data-signage="event"] #program .program-list,
+body[data-signage="event"] #event.program-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+body[data-signage="event"] #event > header.program-head {
+  display: none !important;
 }
 
 body[data-signage="event"] #event .program-copy {
-  font-size: 0.92rem;
-  line-height: 1.72;
+  display: none !important;
+}
+
+body[data-signage="event"] #event .program-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding-top: 0;
+}
+
+body[data-signage="event"] #event .signage-event-chrome {
+  margin: 0 0 0.75rem;
+}
+
+body[data-signage="event"] #event .signage-event-chrome__head {
+  margin: 0 0 0.55rem;
+  padding: 0.15rem 0 0.15rem 0.9rem;
+  border-left: 3px solid var(--brand-blue);
+}
+
+body[data-signage="event"] #event .signage-event-chrome__kicker {
+  margin: 0 0 0.28rem;
+  font-family: "DM Mono", monospace;
+  font-size: clamp(0.68rem, 1.6vw, 0.76rem);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(17, 17, 17, 0.48);
+}
+
+body[data-signage="event"] #event .signage-event-chrome__title {
+  margin: 0 0 0.3rem;
+  font-family: "Shippori Mincho B1", serif;
+  font-size: clamp(1.12rem, 2.8vw, 1.38rem);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  line-height: 1.35;
+  color: rgba(17, 17, 17, 0.94);
+}
+
+body[data-signage="event"] #event .signage-event-chrome__tagline {
+  margin: 0;
+  font-family: "Shippori Mincho B1", serif;
+  font-size: clamp(0.92rem, 2.2vw, 1.05rem);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 1.55;
+  color: rgba(17, 17, 17, 0.52);
+}
+
+body[data-signage="event"] #event .signage-event-chrome__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem 0.85rem;
+  margin: 0;
+  font-family: "Noto Sans JP", sans-serif;
+  font-size: clamp(0.88rem, 2.1vw, 0.98rem);
+  font-weight: 600;
+  line-height: 1.45;
+  color: rgba(17, 17, 17, 0.72);
+}
+
+body[data-signage="event"] #event .signage-event-chrome__venue::before {
+  content: "";
+  display: inline-block;
+  width: 0.82rem;
+  height: 0.82rem;
+  margin-right: 0.28rem;
+  vertical-align: -0.08em;
+  background: url("../images/fa-location-pin.svg") center / contain no-repeat;
+  opacity: 0.62;
+}
+
+body[data-signage="event"] #event .signage-event-chrome__dates {
+  font-family: "DM Mono", monospace;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+body[data-signage="event"] #event .signage-event-chrome__note {
+  font-size: 0.86em;
+  color: rgba(17, 17, 17, 0.55);
+}
+
+body[data-signage="event"] #event .program-body,
+body[data-signage="event"] #event .ev-section--signage,
+body[data-signage="event"] #event .ev-signage-hero {
+  overflow: visible;
+}
+
+body[data-signage="event"] #event .ev-section--signage {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-height: 0;
+}
+
+body[data-signage="event"] #event .ev-signage-hero {
+  flex: 0 0 auto;
+  width: 100%;
+  min-width: 0;
+}
+
+body[data-signage="event"] #event .ev-signage-schedule {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+body[data-signage="event"] #event .ev-signage-schedule-grid.ev-program-cols {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem 1rem;
+  align-items: start;
+  margin-top: 0.35rem;
+  height: 100%;
+  min-height: 0;
+}
+
+body[data-signage="event"] #event .ev-signage-day {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  min-height: 0;
+  min-width: 0;
+}
+
+body[data-signage="event"] #event .ev-program-col-title--signage {
+  flex: 0 0 auto;
+  margin: 0;
+  padding-bottom: 0.42rem;
+  border-bottom: 1px solid rgba(17, 17, 17, 0.14);
+}
+
+body[data-signage="event"] #event .ev-program-col-date {
+  font-size: clamp(1.28rem, 3.6vw, 1.56rem);
+  font-weight: 800;
+  line-height: 1.25;
+  letter-spacing: 0;
+  color: rgba(17, 17, 17, 0.96);
+}
+
+body[data-signage="event"] #event .ev-program-col-list {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.62rem;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+body[data-signage="event"] #event .ev-card--signage-list {
+  display: block;
+  margin: 0;
+  background: #fff;
+  border: 1px solid rgba(17, 17, 17, 0.16);
+  border-radius: 2px;
+  cursor: default;
+  text-align: left;
+  padding: 0.58rem 0.68rem 0.62rem;
+  min-height: unset;
+  border-left-width: 4px;
+  box-shadow: 0 4px 18px rgba(15, 17, 21, 0.06);
+  box-sizing: border-box;
+}
+
+body[data-signage="event"] #event .ev-card--signage-list.ev-card--lecture {
+  border-left-color: rgba(var(--brand-blue-rgb), 0.92);
+}
+
+body[data-signage="event"] #event .ev-card--signage-list.ev-card--workshop {
+  border-left-color: rgba(var(--brand-magenta-rgb), 0.92);
+}
+
+body[data-signage="event"] #event .ev-card--signage-list.ev-card--permanent {
+  border-left-color: rgba(var(--brand-black-rgb), 0.55);
+}
+
+body[data-signage="event"] #event .ev-signage-list-title {
+  margin: 0 0 0.22rem;
+  font-family: "Shippori Mincho B1", serif;
+  font-size: clamp(0.96rem, 2.35vw, 1.08rem);
+  font-weight: 800;
+  line-height: 1.38;
+  letter-spacing: 0.02em;
+  color: rgba(17, 17, 17, 0.94);
+}
+
+body[data-signage="event"] #event .ev-signage-list-meta {
+  margin: 0;
+  font-family: "DM Mono", monospace;
+  font-size: clamp(0.72rem, 1.85vw, 0.8rem);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 1.45;
+  color: rgba(17, 17, 17, 0.6);
+}
+
+body[data-signage="event"] #event .ev-signage-day-empty {
+  margin: 0;
+  padding: 0.55rem 0.65rem;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: rgba(17, 17, 17, 0.55);
+  background: rgba(17, 17, 17, 0.04);
+  border-radius: 2px;
+}
+
+@media (min-width: 1000px) and (min-height: 1700px) {
+  body[data-signage="event"] #event .ev-signage-schedule-grid.ev-program-cols {
+    gap: 0.7rem 0.85rem;
+  }
+
+  body[data-signage="event"] #event .ev-program-col-list {
+    gap: 0.55rem;
+  }
+
+  body[data-signage="event"] #event .ev-card--signage-list {
+    padding: 0.62rem 0.72rem 0.66rem;
+  }
 }
 
 /* ── 教員メッセージ（Screening セクション） ── */
@@ -704,6 +1101,43 @@ body[data-signage="event"] #event .program-copy {
   opacity: 0.9;
 }
 
-body[data-signage="screening"] #screening .faculty-message {
-  display: none;
+body[data-signage="screening"] #screening .faculty-message.faculty-message--hero-aside {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  justify-content: center;
+  margin: 0;
+  padding: clamp(1.1rem, 2.8vh, 2rem) clamp(0.9rem, 2.2vw, 1.35rem)
+    clamp(1.25rem, 3vh, 2.25rem);
+  border-left: 4px solid rgba(var(--brand-purple-rgb), 0.82);
+  background: linear-gradient(
+    180deg,
+    rgba(var(--brand-purple-rgb), 0.05) 0%,
+    rgba(var(--brand-purple-rgb), 0.1) 100%
+  );
+  box-sizing: border-box;
+}
+
+body[data-signage="screening"] #screening .faculty-message--hero-aside .faculty-message__catch {
+  font-size: clamp(1.32rem, 3.4vw, 1.82rem);
+  line-height: 1.48;
+  margin-bottom: clamp(0.65rem, 1.6vh, 1rem);
+}
+
+body[data-signage="screening"] #screening .faculty-message--hero-aside .faculty-message__body p {
+  font-size: clamp(0.94rem, 2.15vw, 1.08rem);
+  line-height: 1.88;
+  opacity: 0.9;
+}
+
+body[data-signage="screening"] #screening .faculty-message--hero-aside .faculty-message__attribution {
+  margin-top: clamp(0.75rem, 1.8vh, 1.15rem);
+}
+
+body[data-signage="screening"] #screening .faculty-message--hero-aside .faculty-message__title {
+  font-size: clamp(0.72rem, 1.6vw, 0.82rem);
+}
+
+body[data-signage="screening"] #screening .faculty-message--hero-aside .faculty-message__name {
+  font-size: clamp(0.92rem, 2vw, 1.05rem);
 }

@@ -15,9 +15,12 @@ export function initScreeningHeroSlideshow(root) {
   if (!root) return;
   if (document.body.dataset.signage) return;
 
-  const slides = Array.from(root.querySelectorAll(".screening-slide"));
   const dotsHost = root.querySelector(".screening-slideshow-dots");
-  if (!slides.length || !dotsHost) return;
+  if (!dotsHost) return;
+
+  const getSlides = () => Array.from(root.querySelectorAll(".screening-slide"));
+  const initialSlides = getSlides();
+  if (!initialSlides.length) return;
 
   dotsHost.textContent = "";
 
@@ -25,6 +28,8 @@ export function initScreeningHeroSlideshow(root) {
   let index = 0;
 
   const setActive = (nextIndex) => {
+    const slides = getSlides();
+    if (!slides.length) return;
     const i = (nextIndex + slides.length) % slides.length;
     index = i;
     slides.forEach((s, j) => s.classList.toggle("is-active", j === i));
@@ -33,7 +38,7 @@ export function initScreeningHeroSlideshow(root) {
     });
   };
 
-  slides.forEach((slideEl, j) => {
+  initialSlides.forEach((slideEl, j) => {
     const b = document.createElement("button");
     b.type = "button";
     b.className = "screening-dot";

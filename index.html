@@ -3,6 +3,17 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-P5CWJM58SB"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "G-P5CWJM58SB");
+    </script>
     <title>MEDIA x MOTOMACHI - まちなかキャンパス 2026</title>
     <meta name="robots" content="noindex, nofollow">
     <meta
@@ -19,7 +30,7 @@
     <!-- GitHub Actions デプロイ時に __SITE_ORIGIN__ が公開オリジンへ置換されます（ローカルでは未置換のまま） -->
     <meta
       property="og:image"
-      content="__SITE_ORIGIN__/images/image_1.jpeg"
+      content="__SITE_ORIGIN__/images/image_1-1920.jpeg"
     />
     <meta property="og:image:alt" content="MEDIA x MOTOMACHI まちなかキャンパス 2026" />
     <meta name="twitter:card" content="summary_large_image" />
@@ -28,7 +39,7 @@
       name="twitter:description"
       content="2026年7月18日(土)-19日(日) 開催。神戸元町でひらかれる学外イベント。入場無料。"
     />
-    <meta name="twitter:image" content="__SITE_ORIGIN__/images/image_1.jpeg" />
+    <meta name="twitter:image" content="__SITE_ORIGIN__/images/image_1-1920.jpeg" />
     <meta name="theme-color" content="#0f1115" />
     <link rel="icon" href="./images/favicon.svg" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -46,6 +57,7 @@
     <link rel="stylesheet" href="./css/sections-about-access.css" />
     <link rel="stylesheet" href="./css/access-footer.css" />
     <link rel="stylesheet" href="./css/overrides.css" />
+    <link rel="stylesheet" href="./css/motion.css" />
   </head>
   <body>
     <header class="nav">
@@ -78,22 +90,10 @@
 
     <main>
       <section class="hero" aria-labelledby="hero-heading">
+        <!-- 背景スライドは js/main.js が <picture> で組み立て（旧 image_N.jpeg は削除済み） -->
         <div class="hero-bg" aria-hidden="true">
-          <div class="hero-bg-slide is-active">
-            <img src="./images/image_1.jpeg" alt="" width="1920" height="1080" decoding="async" fetchpriority="high" />
-          </div>
-          <div class="hero-bg-slide">
-            <img src="./images/image_2.jpeg" alt="" width="1920" height="1080" loading="lazy" decoding="async" />
-          </div>
-          <div class="hero-bg-slide">
-            <img src="./images/image_3.jpeg" alt="" width="1920" height="1080" loading="lazy" decoding="async" />
-          </div>
-          <div class="hero-bg-slide">
-            <img src="./images/image_4.jpeg" alt="" width="1920" height="1080" loading="lazy" decoding="async" />
-          </div>
-          <div class="hero-bg-slide">
-            <img src="./images/image_5.jpeg" alt="" width="1920" height="1080" loading="lazy" decoding="async" />
-          </div>
+          <div class="hero-bg-slide is-active"></div>
+          <div class="hero-bg-slide"></div>
         </div>
         <div class="hero-scrim" aria-hidden="true"></div>
         <div class="hero-field-words" id="hero-field-words" aria-hidden="true"></div>
@@ -122,59 +122,30 @@
         >
           <span class="hero-screening-spotlight__cols">
             <span class="hero-screening-spotlight__media" aria-hidden="true">
-              <img
-                class="hero-screening-spotlight__slide is-active"
-                src="./images/screening-slides/screening_1.png"
-                alt=""
-                width="120"
-                height="68"
-                decoding="async"
-              />
-              <img
-                class="hero-screening-spotlight__slide"
-                src="./images/screening-slides/screening_2.png"
-                alt=""
-                width="120"
-                height="68"
-                decoding="async"
-                loading="lazy"
-              />
-              <img
-                class="hero-screening-spotlight__slide"
-                src="./images/screening-slides/screening_3.png"
-                alt=""
-                width="120"
-                height="68"
-                decoding="async"
-                loading="lazy"
-              />
-              <img
-                class="hero-screening-spotlight__slide"
-                src="./images/screening-slides/screening_4.png"
-                alt=""
-                width="120"
-                height="68"
-                decoding="async"
-                loading="lazy"
-              />
-              <img
-                class="hero-screening-spotlight__slide"
-                src="./images/screening-slides/screening_5.png"
-                alt=""
-                width="120"
-                height="68"
-                decoding="async"
-                loading="lazy"
-              />
-              <img
-                class="hero-screening-spotlight__slide"
-                src="./images/screening-slides/screening_6.png"
-                alt=""
-                width="120"
-                height="68"
-                decoding="async"
-                loading="lazy"
-              />
+              <picture class="hero-screening-spotlight__slide is-active">
+                <source type="image/webp" srcset="./images/screening-slides/screening_1-960.webp 960w, ./images/screening-slides/screening_1-480.webp 480w" sizes="(max-width: 480px) 120px, 240px" />
+                <img src="./images/screening-slides/screening_1-480.jpeg" srcset="./images/screening-slides/screening_1-960.jpeg 960w, ./images/screening-slides/screening_1-480.jpeg 480w" sizes="(max-width: 480px) 120px, 240px" alt="" width="120" height="68" decoding="async" />
+              </picture>
+              <picture class="hero-screening-spotlight__slide">
+                <source type="image/webp" srcset="./images/screening-slides/screening_2-960.webp 960w, ./images/screening-slides/screening_2-480.webp 480w" sizes="(max-width: 480px) 120px, 240px" />
+                <img src="./images/screening-slides/screening_2-480.jpeg" srcset="./images/screening-slides/screening_2-960.jpeg 960w, ./images/screening-slides/screening_2-480.jpeg 480w" sizes="(max-width: 480px) 120px, 240px" alt="" width="120" height="68" decoding="async" loading="lazy" />
+              </picture>
+              <picture class="hero-screening-spotlight__slide">
+                <source type="image/webp" srcset="./images/screening-slides/screening_3-960.webp 960w, ./images/screening-slides/screening_3-480.webp 480w" sizes="(max-width: 480px) 120px, 240px" />
+                <img src="./images/screening-slides/screening_3-480.jpeg" srcset="./images/screening-slides/screening_3-960.jpeg 960w, ./images/screening-slides/screening_3-480.jpeg 480w" sizes="(max-width: 480px) 120px, 240px" alt="" width="120" height="68" decoding="async" loading="lazy" />
+              </picture>
+              <picture class="hero-screening-spotlight__slide">
+                <source type="image/webp" srcset="./images/screening-slides/screening_4-960.webp 960w, ./images/screening-slides/screening_4-480.webp 480w" sizes="(max-width: 480px) 120px, 240px" />
+                <img src="./images/screening-slides/screening_4-480.jpeg" srcset="./images/screening-slides/screening_4-960.jpeg 960w, ./images/screening-slides/screening_4-480.jpeg 480w" sizes="(max-width: 480px) 120px, 240px" alt="" width="120" height="68" decoding="async" loading="lazy" />
+              </picture>
+              <picture class="hero-screening-spotlight__slide">
+                <source type="image/webp" srcset="./images/screening-slides/screening_5-960.webp 960w, ./images/screening-slides/screening_5-480.webp 480w" sizes="(max-width: 480px) 120px, 240px" />
+                <img src="./images/screening-slides/screening_5-480.jpeg" srcset="./images/screening-slides/screening_5-960.jpeg 960w, ./images/screening-slides/screening_5-480.jpeg 480w" sizes="(max-width: 480px) 120px, 240px" alt="" width="120" height="68" decoding="async" loading="lazy" />
+              </picture>
+              <picture class="hero-screening-spotlight__slide">
+                <source type="image/webp" srcset="./images/screening-slides/screening_6-960.webp 960w, ./images/screening-slides/screening_6-480.webp 480w" sizes="(max-width: 480px) 120px, 240px" />
+                <img src="./images/screening-slides/screening_6-480.jpeg" srcset="./images/screening-slides/screening_6-960.jpeg 960w, ./images/screening-slides/screening_6-480.jpeg 480w" sizes="(max-width: 480px) 120px, 240px" alt="" width="120" height="68" decoding="async" loading="lazy" />
+              </picture>
             </span>
             <span class="hero-screening-spotlight__text">
               <span class="hero-screening-spotlight__lead">
@@ -226,37 +197,37 @@
               <dt>会期</dt>
               <dd>
                 2026年7月18日（土）・19日（日）<br />
-                10:00–18:00　こうべまちづくり会館（2F ホール、3F多目的室）<br />
-                17:00～19:10　元町映画館
+                10:00 – 18:00（こうべまちづくり会館）<br />
+                17:00 – 19:10（元町映画館）
               </dd>
               <dt>会場</dt>
-              <dd>
-                こうべまちづくり会館　2F ホール、3F多目的室<br />
-                元町映画館
-              </dd>
+              <dd>こうべまちづくり会館 2F・3F / 元町映画館</dd>
               <dt>入場</dt>
               <dd>無料</dd>
               <dt>主催</dt>
               <dd>甲南女子大学 文学部 メディア表現学科</dd>
             </dl>
           </div>
-          <!-- スケジュール DOM: js/timeline-ui.js が #about-timeline-root を埋める -->
+          <h3 id="about-timeline-heading" class="about-timeline-heading reveal">スケジュール</h3>
           <div
-            id="schedule"
-            class="about-schedule"
-            role="region"
+            id="about-timeline-root"
+            class="program-timeline reveal about-timeline about-schedule"
             aria-labelledby="about-timeline-heading"
-          >
-            <h3 id="about-timeline-heading" class="about-timeline-heading reveal">スケジュール</h3>
-            <p class="about-schedule-lede reveal">
-            </p>
-            <div
-              id="about-timeline-root"
-              class="program-timeline reveal about-timeline"
-              aria-labelledby="about-timeline-heading"
-              hidden
-            ></div>
-          </div>
+            hidden
+          ></div>
+        </div>
+      </section>
+
+      <section id="news" aria-labelledby="news-heading">
+        <div class="container">
+          <p class="section-label reveal">- News</p>
+          <h2 id="news-heading" class="section-title reveal">お知らせ</h2>
+          <p class="section-note reveal">
+            テキストのお知らせは <code class="inline-code">data/news.json</code> で管理しています。速報・ビジュアルは
+            <a href="https://www.instagram.com/mediastudies_kwu/" target="_blank" rel="noopener noreferrer">公式 Instagram（@mediastudies_kwu）</a>
+            からどうぞ。
+          </p>
+          <div class="news-list"></div>
         </div>
       </section>
 
@@ -265,8 +236,14 @@
           <p class="section-label reveal">- Program</p>
           <h2 id="program-heading" class="section-title reveal">プログラム</h2>
 
+          <nav class="program-chapter-nav reveal" aria-label="プログラム内ナビ">
+            <a href="#exhibition">展示</a>
+            <a href="#event">イベント</a>
+            <a href="#screening">上映</a>
+          </nav>
+
           <div class="program-list">
-            <!-- 展示: この article 内は静的 HTML＋画像。データ CSV なし -->
+            <!-- 展示: Google スプレッドシート（exhibitionsCsvUrl）→ js/exhibition.js -->
             <article class="program-item reveal" id="exhibition">
               <header class="program-head">
                 <div class="program-head-main">
@@ -281,125 +258,36 @@
                   さまざまな表現を体験してください。
                 </p>
                 <h4 class="program-subhd">展示作品</h4>
-                <div class="exh-carousel exh-carousel--full" role="region" aria-roledescription="カルーセル" aria-label="展示作品のサムネイル">
+                <div class="exh-section" aria-busy="true">
+                <div class="exh-carousel exh-carousel--full" role="region" aria-roledescription="カルーセル" aria-label="展示作品">
                   <div class="exh-carousel-inner">
-                    <button type="button" class="exh-btn exh-prev" aria-label="前の作品へ">
-                      <svg viewBox="0 0 10 10" fill="none" aria-hidden="true">
-                        <path
-                          d="M6 2L3 5l3 3"
-                          stroke="currentColor"
-                          stroke-width="1.3"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                        />
-                      </svg>
-                    </button>
-                    <div class="exh-track" id="exhTrack">
-                      <figure class="exh-card">
-                        <img
-                          src="./images/image_4.jpeg"
-                          alt="展示作品01のイメージ写真"
-                          width="640"
-                          height="480"
-                          loading="lazy"
-                          decoding="async"
-                        />
-                        <figcaption>展示作品 01</figcaption>
-                      </figure>
-                      <figure class="exh-card">
-                        <img
-                          src="./images/image_6.jpeg"
-                          alt="展示作品02のイメージ写真"
-                          width="640"
-                          height="480"
-                          loading="lazy"
-                          decoding="async"
-                        />
-                        <figcaption>展示作品 02</figcaption>
-                      </figure>
-                      <figure class="exh-card">
-                        <img
-                          src="./images/image_7.jpeg"
-                          alt="展示作品03のイメージ写真"
-                          width="640"
-                          height="480"
-                          loading="lazy"
-                          decoding="async"
-                        />
-                        <figcaption>展示作品 03</figcaption>
-                      </figure>
-                      <figure class="exh-card">
-                        <img
-                          src="./images/image_8.jpeg"
-                          alt="展示作品04のイメージ写真"
-                          width="640"
-                          height="480"
-                          loading="lazy"
-                          decoding="async"
-                        />
-                        <figcaption>展示作品 04</figcaption>
-                      </figure>
-                      <figure class="exh-card">
-                        <img
-                          src="./images/image_9.jpeg"
-                          alt="展示作品05のイメージ写真"
-                          width="640"
-                          height="480"
-                          loading="lazy"
-                          decoding="async"
-                        />
-                        <figcaption>展示作品 05</figcaption>
-                      </figure>
-                      <figure class="exh-card">
-                        <img
-                          src="./images/image_11.jpeg"
-                          alt="展示作品06のイメージ写真"
-                          width="640"
-                          height="480"
-                          loading="lazy"
-                          decoding="async"
-                        />
-                        <figcaption>展示作品 06</figcaption>
-                      </figure>
-                      <figure class="exh-card">
-                        <img
-                          src="./images/image_12.jpeg"
-                          alt="展示作品07のイメージ写真"
-                          width="640"
-                          height="480"
-                          loading="lazy"
-                          decoding="async"
-                        />
-                        <figcaption>展示作品 07</figcaption>
-                      </figure>
-                      <figure class="exh-card">
-                        <img
-                          src="./images/image_13.jpeg"
-                          alt="展示作品08のイメージ写真"
-                          width="640"
-                          height="480"
-                          loading="lazy"
-                          decoding="async"
-                        />
-                        <figcaption>展示作品 08</figcaption>
-                      </figure>
+                    <div class="exh-carousel-stage">
+                      <div class="exh-track" id="exhTrack" aria-busy="true"></div>
+                      <button type="button" class="exh-btn exh-btn--overlay exh-prev" aria-label="前の作品へ">
+                        <svg viewBox="0 0 10 10" fill="none" aria-hidden="true">
+                          <path
+                            d="M6 2L3 5l3 3"
+                            stroke="currentColor"
+                            stroke-width="1.3"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          />
+                        </svg>
+                      </button>
+                      <button type="button" class="exh-btn exh-btn--overlay exh-next" aria-label="次の作品へ">
+                        <svg viewBox="0 0 10 10" fill="none" aria-hidden="true">
+                          <path
+                            d="M4 2l3 3-3 3"
+                            stroke="currentColor"
+                            stroke-width="1.3"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          />
+                        </svg>
+                      </button>
                     </div>
-                    <button type="button" class="exh-btn exh-next" aria-label="次の作品へ">
-                      <svg viewBox="0 0 10 10" fill="none" aria-hidden="true">
-                        <path
-                          d="M4 2l3 3-3 3"
-                          stroke="currentColor"
-                          stroke-width="1.3"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                        />
-                      </svg>
-                    </button>
                   </div>
-                  <div class="exh-carousel-foot">
-                    <div class="exh-carousel-dots" id="exhDots" aria-label="作品を直接選ぶ"></div>
-                    <p class="exh-carousel-counter" id="exhCounter" aria-live="polite">1 / 8</p>
-                  </div>
+                </div>
                 </div>
               </div>
             </article>
@@ -414,7 +302,7 @@
               </header>
               <div class="program-body">
                 <p class="program-copy">
-                  学科の学びを紹介するトークイベント・ワークショップ・常設企画を実施します。<br>
+                  学科の学びを紹介するレクチャー・ワークショップ・常設企画を実施します。<br>
                   ※ワークショップは事前申込制です。それ以外の催しは予約不要です。
                 </p>
                 <div class="ev-section" aria-busy="true">
@@ -458,39 +346,16 @@
                     <div class="screening-hero-split__media">
                       <div class="screening-visual screening-visual--hero">
                         <div
-                          class="screening-slideshow"
+                          class="screening-slideshow is-loading"
                           id="screeningSlideshow"
                           role="region"
                           aria-roledescription="カルーセル"
                           aria-label="上映作品のイメージスライド（16:9）"
+                          aria-busy="true"
                         >
-                          <div class="screening-slideshow-inner">
-                            <figure class="screening-slide is-active">
-                              <img src="./images/screening-slides/slide-01.png" alt="" width="1920" height="1080" decoding="async" />
-                              <figcaption>「父、木になる」 7/18</figcaption>
-                            </figure>
-                            <figure class="screening-slide">
-                              <img src="./images/screening-slides/slide-02.png" alt="" width="1920" height="1080" loading="lazy" decoding="async" />
-                              <figcaption>「夢現 ーユメウツツー」 7/18</figcaption>
-                            </figure>
-                            <figure class="screening-slide">
-                              <img src="./images/screening-slides/slide-03.png" alt="" width="1920" height="1080" loading="lazy" decoding="async" />
-                              <figcaption>「コットンダイアリー」 7/18</figcaption>
-                            </figure>
-                            <figure class="screening-slide">
-                              <img src="./images/screening-slides/slide-04.png" alt="" width="1920" height="1080" loading="lazy" decoding="async" />
-                              <figcaption>「雲の上はいつも晴れ」 7/19</figcaption>
-                            </figure>
-                            <figure class="screening-slide">
-                              <img src="./images/screening-slides/slide-05.png" alt="" width="1920" height="1080" loading="lazy" decoding="async" />
-                              <figcaption>「脳内干渉314」 7/19</figcaption>
-                            </figure>
-                            <figure class="screening-slide">
-                              <img src="./images/screening-slides/slide-06.png" alt="" width="1920" height="1080" loading="lazy" decoding="async" />
-                              <figcaption>「チア！ まちの映画館」 7/19</figcaption>
-                            </figure>
-                          </div>
-                          <div class="screening-slideshow-dots" aria-hidden="false"></div>
+                          <div class="screening-slideshow-inner" aria-hidden="true"></div>
+                          <div class="screening-slideshow-dots" aria-hidden="true"></div>
+                          <p class="screening-slideshow-status" role="status">上映作品を読み込み中…</p>
                         </div>
                       </div>
                     </div>
@@ -577,10 +442,9 @@
             <div class="map-block reveal">
               <div class="map-frame">
                 <!--
-                  会場地図: data-map-id に Cloud「マップ管理」の Map ID を入れる。
-                  グレースケールは JS/CSS の filter ではなく、その Map に紐づくマップ スタイルで設定（Saturation -100 等）。
-                  手順: Cloud Console → マップ管理 → マップスタイル作成 → Map ID を作成してスタイルと紐付け → 下の data-map-id に貼付。
-                  空のままだと DEMO_MAP_ID となりカラー地図。ピン色は tokens.css の --venue-pin-a / --venue-pin-b（地図は main.js が同変数を参照）。
+                  会場地図: data-map-id に Cloud「マップ管理」の Map ID を入れると、コンソール側のマップスタイルも適用可能。
+                  サイト上の見た目は CSS で彩度を抑え（イベントサムネと同系）、地図ブロック hover で本来の色に戻す。
+                  完全なグレースケールは Cloud のマップスタイル（Saturation -100 等）でも設定可。空の data-map-id は DEMO_MAP_ID（カラー）。
                 -->
                 <div
                   id="gmap"
@@ -637,6 +501,20 @@
         <p class="footer-copy">© 2026 Konan Women's University, Creative Media Studies</p>
       </div>
     </footer>
+    <!-- お知らせ一覧（901px 以上でナビ「お知らせ」から表示） -->
+    <dialog id="news-dialog" class="news-dialog" aria-labelledby="news-dialog-heading">
+      <div class="news-dialog-shell">
+        <button type="button" class="news-dialog-close" aria-label="閉じる">&times;</button>
+        <div class="news-dialog-panel">
+          <p class="section-label">- News</p>
+          <h2 id="news-dialog-heading" class="news-dialog-title">お知らせ</h2>
+          <p class="section-note news-dialog-note">
+            <a href="https://www.instagram.com/mediastudies_kwu/" target="_blank" rel="noopener noreferrer">公式 Instagram（@mediastudies_kwu）</a>では、イベントの最新情報や制作風景、学生作品などを随時発信しています。
+          </p>
+          <div class="news-list news-dialog-list"></div>
+        </div>
+      </div>
+    </dialog>
     <!-- test-page-notice: 本番では TEST_PAGE_NOTICE.ENABLED を false にするか、この dialog ブロックを削除 -->
     <dialog
       id="test-page-notice-dialog"
@@ -650,6 +528,9 @@
           <p>
             現在ご覧のページは、本番公開前のテスト用ページです。ご利用の環境や表示内容に不具合がある場合があります。
           </p>
+          <p class="test-page-notice-confidential">
+            外部への情報共有は関係者のみにとどめ、公開はお控えください。
+          </p>
           <p>
             開催に向けた情報は順次反映します。また掲載している画像・テキスト・レイアウトなどの内容は、今後、内容の追加・修正・差し替えが生じることがあります。最新の正式な情報は、改めて公開される本番サイトや関連の案内をご確認ください。
           </p>
@@ -658,8 +539,52 @@
         <button type="button" class="btn btn-light test-page-notice-btn" data-test-notice-confirm>内容を確認しました</button>
       </div>
     </dialog>
+    <!-- 展示作品カード（data/exhibitions.csv）から開く詳細 -->
+    <dialog id="exhibition-detail-dialog" class="event-dialog exhibition-detail-dialog immersive-dialog" aria-labelledby="exhibition-dialog-title">
+      <div class="event-dialog-shell">
+        <span
+          class="dialog-program-label dialog-program-label--exhibition"
+          id="exhibition-dialog-program-label"
+        ></span>
+        <button type="button" class="event-dialog-close exhibition-dialog-close" aria-label="閉じる">&times;</button>
+        <div class="event-dialog-panel">
+          <div class="exhibition-dialog-hero">
+            <div class="exhibition-dialog-media" hidden>
+              <div class="exhibition-dialog-media-frame">
+                <img class="exhibition-dialog-thumb" alt="" width="640" height="480" decoding="async" />
+              </div>
+            </div>
+            <button
+              type="button"
+              class="exhibition-dialog-nav exhibition-dialog-nav--prev"
+              aria-label="前の作品へ"
+              hidden
+              data-exhibition-dialog-prev
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M15 18l-6-6 6-6" />
+              </svg>
+            </button>
+            <button
+              type="button"
+              class="exhibition-dialog-nav exhibition-dialog-nav--next"
+              aria-label="次の作品へ"
+              hidden
+              data-exhibition-dialog-next
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M9 18l6-6-6-6" />
+              </svg>
+            </button>
+          </div>
+          <h3 id="exhibition-dialog-title" class="event-dialog-title"></h3>
+          <div class="exhibition-dialog-meta" aria-label="展示情報" hidden></div>
+          <div id="exhibition-dialog-body" class="event-dialog-body"></div>
+        </div>
+      </div>
+    </dialog>
     <!-- 上映作品カード（data/movies.csv）から開く詳細 -->
-    <dialog id="movie-detail-dialog" class="movie-dialog" aria-labelledby="movie-dialog-title">
+    <dialog id="movie-detail-dialog" class="movie-dialog immersive-dialog" aria-labelledby="movie-dialog-title">
       <div class="movie-dialog-shell">
         <span
           class="dialog-program-label dialog-program-label--screening"
@@ -722,7 +647,7 @@
       </div>
     </dialog>
     <!-- イベントカード・注目ヒーローから開く詳細 -->
-    <dialog id="event-detail-dialog" class="event-dialog" aria-labelledby="event-dialog-title">
+    <dialog id="event-detail-dialog" class="event-dialog immersive-dialog" aria-labelledby="event-dialog-title">
       <div class="event-dialog-shell">
         <span
           class="dialog-program-label dialog-program-label--lecture"

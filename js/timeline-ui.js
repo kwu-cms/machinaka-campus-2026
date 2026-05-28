@@ -1,4 +1,4 @@
-import { PROGRAM_TIMELINE } from "./config.js";
+import { PROGRAM_TIMELINE, EVENT_CATEGORY_LABELS } from "./config.js";
 import { escapeHtml } from "./lib/html.js";
 import { timeSortKey, timeEndSortKey } from "./lib/event-time.js";
 import { intersectAxisRange, parseHmToMinutes, eventTimedRangeMinutes } from "./lib/timeline.js";
@@ -6,8 +6,9 @@ import { intersectAxisRange, parseHmToMinutes, eventTimedRangeMinutes } from "./
 function tagLabelForMod(mod) {
   if (mod === "exhibition") return "展示";
   if (mod === "screening") return "上映プログラム";
-  if (mod === "workshop") return "ワークショップ";
-  return "トークイベント";
+  if (mod === "workshop") return EVENT_CATEGORY_LABELS.workshop;
+  if (mod === "lecture") return EVENT_CATEGORY_LABELS.lecture;
+  return EVENT_CATEGORY_LABELS.lecture;
 }
 
 function barBodyFromParts(timeHtml, nameHtml, mod) {

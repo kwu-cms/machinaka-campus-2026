@@ -14,6 +14,7 @@ html {
 
 body {
   margin: 0;
+  /* 全面テクスチャは従来どおり。motion.css 読込時はフラット面 + セクション単位の elevation に切替 */
   background-color: var(--brand-surface);
   background-image: url("../images/ep_naturalwhite.webp");
   background-repeat: repeat;

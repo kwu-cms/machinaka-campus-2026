@@ -1,0 +1,22 @@
+{
+  "name": "machinaka-campus-2026",
+  "private": true,
+  "type": "module",
+  "description": "まちなかキャンパス 2026 静的サイト",
+  "scripts": {
+    "config:sheet": "node scripts/generate-config.mjs sheet",
+    "config:local": "node scripts/generate-config.mjs local",
+    "sync:data": "node scripts/sync-sheets.mjs",
+    "build:test": "bash scripts/build.sh test",
+    "build:prod": "bash scripts/build.sh prod",
+    "assemble": "bash scripts/assemble-site.sh _site",
+    "deploy:heteml": "bash scripts/deploy-heteml.sh",
+    "deploy:prod": "bash scripts/deploy-prod.sh",
+    "serve": "python3 -m http.server 8080",
+    "setup:env": "test -f .env || cp .env.example .env",
+    "optimize:images": "node scripts/optimize-images.mjs"
+  },
+  "devDependencies": {
+    "sharp": "^0.33.5"
+  }
+}

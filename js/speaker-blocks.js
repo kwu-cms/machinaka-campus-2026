@@ -1,5 +1,6 @@
 import { escapeHtml } from "./lib/html.js";
 import { parseCSV, rowToObj } from "./lib/csv.js";
+import { pictureHTMLFromPath, resolveImageStem, inferProfileFromStem } from "./lib/responsive-image.js";
 
 const H = {
   id: "speaker_id",
@@ -7,6 +8,7 @@ const H = {
   legal: "氏名",
   kind: "種別",
   title: "肩書",
+  imageFile: "画像ファイル名",
   photo: "プロフィール画像の共有（外部ゲストのみ）",
   profile: "プロフィール（200文字程度）",
   notes: "備考",
@@ -18,9 +20,41 @@ function looksLikeUrl(s) {
   return /^https?:\/\//i.test(t) || t.startsWith("./") || t.startsWith("/");
 }
 
+const PROFILE_EXTERNAL_URL_RE = /https?:\/\/[^\s<>"']+/gi;
+
+/** プロフィール文の改行と http(s) URL を外部リンク化（エスケープ済み HTML を返す） */
+function formatSpeakerProfileHtml(raw) {
+  const text = String(raw || "");
+  if (!text) return "";
+  const escaped = escapeHtml(text);
+  const withBreaks = escaped.replace(/\r\n|\r|\n/g, "<br>");
+  return withBreaks.replace(PROFILE_EXTERNAL_URL_RE, (match) => {
+    let href = match;
+    let suffix = "";
+    const punct = href.match(/[.,;:!?、。]+$/);
+    if (punct) {
+      suffix = punct[0];
+      href = href.slice(0, -suffix.length);
+    }
+    if (!href) return match;
+    return `<a href="${href}" class="event-speaker-profile-link" target="_blank" rel="noopener noreferrer">${href}</a>${suffix}`;
+  });
+}
+
+/** 画像ファイル名（images/ 配下）または共有 URL → 表示用 src */
+export function resolveSpeakerImageUrl(raw) {
+  const t = String(raw || "").trim();
+  if (!t || /^(true|false)$/i.test(t)) return "";
+  if (looksLikeUrl(t)) return t;
+  if (t.startsWith("images/")) return t.startsWith("./") ? t : `./${t}`;
+  if (t.startsWith("./") || t.startsWith("../")) return t;
+  return `./images/${t.replace(/^\.?\//, "")}`;
+}
+
 export function speakerFromRow(r) {
   const id = String(r[H.id] ?? "").trim();
   if (!id) return null;
+  const imageFile = String(r[H.imageFile] ?? "").trim();
   const photoRaw = String(r[H.photo] ?? "").trim();
   const profileCell = String(r[H.profile] ?? "").trim();
   let profile = profileCell;
@@ -34,7 +68,8 @@ export function speakerFromRow(r) {
     profile = title;
     title = "";
   }
-  const photoUrl = looksLikeUrl(photoRaw) ? photoRaw : "";
+  const photoUrl =
+    resolveSpeakerImageUrl(imageFile) || (looksLikeUrl(photoRaw) ? photoRaw : "");
   return {
     id,
     displayName: String(r[H.display] ?? "").trim(),
@@ -95,8 +130,19 @@ function sectionHeadingForCat(cat) {
 function iconSrcForKind(kind) {
   const k = String(kind || "");
   if (k.includes("外部")) return "./images/fa-up-right-from-square.svg";
-  if (k.includes("教員")) return "./images/fa-university.svg";
+  if (k.includes("教員")) return "./images/user-alt.svg";
   return "./images/fa-users.svg";
+}
+
+function isStudentKind(kind) {
+  return String(kind || "").includes("学生");
+}
+
+function speakerPhotoProfile(photoUrl) {
+  const stem = resolveImageStem(photoUrl);
+  const base = stem.split("/").pop() || stem;
+  if (/^guest_/i.test(base) || /^irodori_/i.test(base)) return "guest";
+  return inferProfileFromStem(stem);
 }
 
 function renderFeatureCard(cat, sp, { sub = false } = {}) {
@@ -104,16 +150,27 @@ function renderFeatureCard(cat, sp, { sub = false } = {}) {
   const subCls = sub ? " event-speaker-feature--sub" : "";
   const cardCls = sub ? "event-guest-mock-card event-guest-mock-card--sub" : "event-guest-mock-card";
   const titleLine = sp.title ? `<p class="event-speaker-feature__title">${escapeHtml(sp.title)}</p>` : "";
-  const bio = sp.profile ? `<p class="event-guest-mock-bio">${escapeHtml(sp.profile)}</p>` : "";
+  const studentCls = isStudentKind(sp.kind) ? " event-guest-mock--student" : "";
+  const bio = sp.profile
+    ? `<p class="event-guest-mock-bio${isStudentKind(sp.kind) ? " event-guest-mock-bio--student" : ""}">${formatSpeakerProfileHtml(sp.profile)}</p>`
+    : "";
   const initial = escapeHtml(String(nameLine || "?").charAt(0));
-  const aside = sp.photoUrl
-    ? `<div class="event-guest-mock-aside">
-        <img class="event-guest-mock-thumb" src="${escapeHtml(sp.photoUrl)}" alt="${escapeHtml(nameLine)}" width="240" height="240" loading="lazy" decoding="async" />
-      </div>`
+  const guestPic =
+    pictureHTMLFromPath(sp.photoUrl, {
+      profile: speakerPhotoProfile(sp.photoUrl),
+      class: "event-guest-mock-thumb",
+      alt: nameLine,
+      loading: "lazy",
+    }) ||
+    (sp.photoUrl
+      ? `<img class="event-guest-mock-thumb" src="${escapeHtml(sp.photoUrl)}" alt="${escapeHtml(nameLine)}" width="240" height="240" loading="lazy" decoding="async" />`
+      : "");
+  const aside = guestPic
+    ? `<div class="event-guest-mock-aside">${guestPic}</div>`
     : `<div class="event-guest-mock-aside event-guest-mock-aside--nophoto" aria-hidden="true">
         <span class="event-guest-mock-initial">${initial}</span>
       </div>`;
-  return `<div class="event-speaker-feature event-guest-mock event-guest-mock--${escapeHtml(cat)}${subCls}">
+  return `<div class="event-speaker-feature event-guest-mock event-guest-mock--${escapeHtml(cat)}${subCls}${studentCls}">
       <div class="${cardCls}">
         ${aside}
         <div class="event-guest-mock-body">
@@ -130,12 +187,16 @@ function renderCompactItem(sp, { fullWidth = false } = {}) {
   const role = sp.title ? `<p class="event-speaker-mini__role">${escapeHtml(sp.title)}</p>` : "";
   const profileText = sp.profile || "";
   const noteLimit = fullWidth ? 280 : 120;
-  const note = profileText
-    ? `<p class="event-speaker-mini__note">${escapeHtml(profileText.length > noteLimit ? `${profileText.slice(0, noteLimit)}…` : profileText)}</p>`
-    : "";
   const icon = iconSrcForKind(sp.kind);
   const fullCls = fullWidth ? " event-speaker-mini--full" : "";
-  return `<li class="event-speaker-mini${fullCls}">
+  const studentCls = isStudentKind(sp.kind) ? " event-speaker-mini--student" : "";
+  const noteCls = isStudentKind(sp.kind) ? " event-speaker-mini__note--student" : "";
+  const notePlain =
+    profileText.length > noteLimit ? `${profileText.slice(0, noteLimit)}…` : profileText;
+  const note = profileText
+    ? `<p class="event-speaker-mini__note${noteCls}">${formatSpeakerProfileHtml(notePlain)}</p>`
+    : "";
+  return `<li class="event-speaker-mini${fullCls}${studentCls}">
       <span class="event-speaker-mini__icon" aria-hidden="true">
         <img src="${escapeHtml(icon)}" alt="" width="18" height="18" decoding="async" />
       </span>
@@ -162,7 +223,11 @@ export function renderEventSpeakersSectionHtml(ev, featured, compact, wideSub) {
     html += `</div>`;
   }
   if (mini.length || wide.length) {
-    html += `<ul class="event-speaker-compact-list" role="list">`;
+    const singleColCompact =
+      ["evt-02", "evt-03"].includes(ev.id) && mini.length > 0;
+    html += `<ul class="event-speaker-compact-list${
+      singleColCompact ? " event-speaker-compact-list--single-col" : ""
+    }" role="list">`;
     html += mini.map((sp) => renderCompactItem(sp)).join("");
     html += wide.map((sp) => renderCompactItem(sp, { fullWidth: true })).join("");
     html += `</ul>`;
