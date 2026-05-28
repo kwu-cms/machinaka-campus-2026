@@ -15,7 +15,8 @@
       gtag("config", "G-P5CWJM58SB");
     </script>
     <title>MEDIA x MOTOMACHI - まちなかキャンパス 2026</title>
-    <meta name="robots" content="noindex, nofollow">
+    <!-- 6/5 までテスト運用: noindex / nofollow（6/6 以降に index,follow へ切替） -->
+    <meta name="robots" content="noindex, nofollow" />
     <meta
       name="description"
       content="甲南女子大学 文学部 メディア表現学科が街へひらく2日間。展示・イベント・上映を通して、問いと表現が交差する。"
@@ -27,6 +28,8 @@
     />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="ja_JP" />
+    <meta property="og:url" content="__SITE_ORIGIN__/" />
+    <link rel="canonical" href="__SITE_ORIGIN__/" />
     <!-- GitHub Actions デプロイ時に __SITE_ORIGIN__ が公開オリジンへ置換されます（ローカルでは未置換のまま） -->
     <meta
       property="og:image"
@@ -41,6 +44,49 @@
     />
     <meta name="twitter:image" content="__SITE_ORIGIN__/images/image_1-1920.jpeg" />
     <meta name="theme-color" content="#0f1115" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Event",
+        "name": "MEDIA x MOTOMACHI まちなかキャンパス 2026",
+        "description": "甲南女子大学 文学部 メディア表現学科が街へひらく2日間。展示・イベント・上映を通して、問いと表現が交差する。",
+        "startDate": "2026-07-18T10:00:00+09:00",
+        "endDate": "2026-07-19T19:10:00+09:00",
+        "eventStatus": "https://schema.org/EventScheduled",
+        "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+        "isAccessibleForFree": true,
+        "image": ["__SITE_ORIGIN__/images/image_1-1920.jpeg"],
+        "url": "__SITE_ORIGIN__/",
+        "organizer": {
+          "@type": "Organization",
+          "name": "甲南女子大学 文学部 メディア表現学科"
+        },
+        "location": [
+          {
+            "@type": "Place",
+            "name": "こうべまちづくり会館",
+            "address": {
+              "@type": "PostalAddress",
+              "postalCode": "650-0022",
+              "addressRegion": "兵庫県",
+              "addressLocality": "神戸市中央区",
+              "streetAddress": "元町通4-2-14"
+            }
+          },
+          {
+            "@type": "Place",
+            "name": "元町映画館",
+            "address": {
+              "@type": "PostalAddress",
+              "postalCode": "650-0022",
+              "addressRegion": "兵庫県",
+              "addressLocality": "神戸市中央区",
+              "streetAddress": "元町通4-1-12"
+            }
+          }
+        ]
+      }
+    </script>
     <link rel="icon" href="./images/favicon.svg" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
