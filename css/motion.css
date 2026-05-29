@@ -403,7 +403,7 @@ body:not([data-signage]) #screening .mv-schedule-main .mv-card:focus-visible {
 }
 
 .event-dialog.immersive-dialog .event-dialog-media {
-  max-height: min(40vh, 22rem);
+  max-height: min(52vh, 28rem);
 }
 
 .immersive-dialog .event-dialog-media picture,
@@ -425,7 +425,9 @@ body:not([data-signage]) #screening .mv-schedule-main .mv-card:focus-visible {
 }
 
 .event-dialog.immersive-dialog .event-dialog-thumb {
-  max-height: min(40vh, 22rem);
+  aspect-ratio: 4 / 3;
+  object-position: center 35%;
+  max-height: min(52vh, 28rem);
 }
 
 .immersive-dialog .event-dialog-title,

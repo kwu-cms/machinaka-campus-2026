@@ -10,6 +10,8 @@
     "build:test": "bash scripts/build.sh test",
     "build:prod": "bash scripts/build.sh prod",
     "assemble": "bash scripts/assemble-site.sh _site",
+    "deploy": "bash scripts/deploy.sh",
+    "deploy:full": "bash scripts/deploy.sh full",
     "deploy:heteml": "bash scripts/deploy-heteml.sh",
     "deploy:prod": "bash scripts/deploy-prod.sh",
     "serve": "python3 -m http.server 8080",

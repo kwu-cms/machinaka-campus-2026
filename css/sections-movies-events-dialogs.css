@@ -707,7 +707,7 @@
   z-index: 2;
   width: min(max-content, 100%);
   max-width: 100%;
-  max-height: min(62%, 22rem);
+  max-height: min(55%, 26rem);
   margin: 0;
   padding: 0.52rem 0.68rem 0.58rem;
   border-radius: 0;
