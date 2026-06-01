@@ -160,7 +160,7 @@ function renderFeatureCard(cat, sp, { sub = false } = {}) {
       profile: speakerPhotoProfile(sp.photoUrl),
       class: "event-guest-mock-thumb",
       alt: nameLine,
-      loading: "lazy",
+      loading: "eager",
     }) ||
     (sp.photoUrl
       ? `<img class="event-guest-mock-thumb" src="${escapeHtml(sp.photoUrl)}" alt="${escapeHtml(nameLine)}" width="240" height="240" loading="lazy" decoding="async" />`

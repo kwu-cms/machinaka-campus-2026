@@ -881,6 +881,12 @@
   background: rgba(var(--bg-light-rgb), 0.55);
 }
 
+.event-guest-mock-aside picture {
+  display: block;
+  flex-shrink: 0;
+  line-height: 0;
+}
+
 .event-guest-mock-thumb {
   width: 7.25rem;
   height: 7.25rem;

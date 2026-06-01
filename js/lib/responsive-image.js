@@ -1,4 +1,5 @@
 import { IMAGE_PROFILES } from "../image-profiles.js";
+import { IMAGE_VARIANT_WIDTHS } from "../image-variants.js";
 import { escapeHtml } from "./html.js";
 
 const IMAGES_PREFIX = "./images/";
@@ -56,6 +57,36 @@ export function inferProfileFromStem(stem) {
   return "misc";
 }
 
+/** @param {string} logicalPath */
+function originalImageUrl(logicalPath) {
+  const t = String(logicalPath || "").trim();
+  if (!t || /^https?:\/\//i.test(t)) return "";
+  if (t.startsWith("./")) return t;
+  if (t.startsWith("images/")) return `./${t}`;
+  if (t.startsWith("../")) return t;
+  return `${IMAGES_PREFIX}${t.replace(/^\.?\//, "")}`;
+}
+
+/**
+ * @param {string} stem
+ * @param {{ widths: number[], defaultWidth?: number }} profile
+ */
+function resolveVariantWidths(stem, profile) {
+  const { widths, defaultWidth } = profile;
+  const dw = defaultWidth || widths[0];
+  const manifest = IMAGE_VARIANT_WIDTHS[stem];
+  if (Array.isArray(manifest) && manifest.length) {
+    const filtered = widths.filter((w) => manifest.includes(w));
+    if (filtered.length) {
+      return {
+        widths: filtered,
+        defaultWidth: filtered.includes(dw) ? dw : filtered[filtered.length - 1],
+      };
+    }
+  }
+  return { widths, defaultWidth: dw };
+}
+
 /**
  * @param {string} logicalPath
  * @param {object} [opts]
@@ -64,7 +95,7 @@ export function pictureHTMLFromPath(logicalPath, opts = {}) {
   const stem = resolveImageStem(logicalPath);
   if (!stem) return "";
   const profile = opts.profile || inferProfileFromStem(stem);
-  return pictureHTML(stem, profile, opts);
+  return pictureHTML(stem, profile, { ...opts, logicalPath });
 }
 
 /**
@@ -74,8 +105,8 @@ export function pictureHTMLFromPath(logicalPath, opts = {}) {
  */
 export function pictureHTML(stem, profileName, opts = {}) {
   const profile = getProfile(profileName);
-  const { widths, sizes, defaultWidth, aspect } = profile;
-  const dw = defaultWidth || widths[0];
+  const { sizes, aspect } = profile;
+  const { widths, defaultWidth: dw } = resolveVariantWidths(stem, profile);
   const alt = escapeHtml(opts.alt ?? "");
   const cls = opts.class ? ` class="${escapeHtml(opts.class)}"` : "";
   const loading = opts.loading ? ` loading="${opts.loading}"` : "";
@@ -86,12 +117,26 @@ export function pictureHTML(stem, profileName, opts = {}) {
 
   const webpSrcset = escapeHtml(buildSrcset(stem, widths, "webp"));
   const jpegSrcset = escapeHtml(buildSrcset(stem, widths, "jpeg"));
-  const fallback = escapeHtml(variantUrl(stem, dw, "jpeg"));
+  const originalSrc = originalImageUrl(opts.logicalPath);
+  const fallback = escapeHtml(
+    originalSrc || variantUrl(stem, dw, "jpeg"),
+  );
   const sizesAttr = escapeHtml(opts.sizes ?? sizes);
+  const srcsetAttrs =
+    widths.length > 1
+      ? ` srcset="${webpSrcset}" sizes="${sizesAttr}"`
+      : widths.length === 1
+        ? ` srcset="${escapeHtml(variantUrl(stem, widths[0], "webp"))}"`
+        : "";
+
+  const imgSrcset =
+    widths.length > 1
+      ? ` srcset="${jpegSrcset}" sizes="${sizesAttr}"`
+      : "";
 
   return `<picture>
-  <source type="image/webp" srcset="${webpSrcset}" sizes="${sizesAttr}" />
-  <img src="${fallback}" srcset="${jpegSrcset}" sizes="${sizesAttr}" alt="${alt}" width="${w}" height="${h}" decoding="${decoding}"${cls}${loading}${fetchpriority} />
+  <source type="image/webp"${srcsetAttrs} />
+  <img src="${fallback}"${imgSrcset} alt="${alt}" width="${w}" height="${h}" decoding="${decoding}"${cls}${loading}${fetchpriority} />
 </picture>`;
 }
 
@@ -122,8 +167,8 @@ export function cssBackgroundImageSet(stem, profileName, opts = {}) {
 export function applyResponsiveImageToImg(img, stem, profileName) {
   if (!img || !stem) return;
   const profile = getProfile(profileName);
-  const { widths, sizes, defaultWidth } = profile;
-  const dw = defaultWidth || widths[0];
+  const { sizes } = profile;
+  const { widths, defaultWidth: dw } = resolveVariantWidths(stem, profile);
 
   let picture = img.closest("picture");
   if (!picture) {
@@ -136,12 +181,24 @@ export function applyResponsiveImageToImg(img, stem, profileName) {
 
   const source = picture.querySelector('source[type="image/webp"]');
   if (source) {
-    source.srcset = buildSrcset(stem, widths, "webp");
-    source.sizes = sizes;
+    if (widths.length > 1) {
+      source.srcset = buildSrcset(stem, widths, "webp");
+      source.sizes = sizes;
+    } else {
+      source.removeAttribute("srcset");
+      source.removeAttribute("sizes");
+    }
   }
-  img.src = variantUrl(stem, dw, "jpeg");
-  img.srcset = buildSrcset(stem, widths, "jpeg");
-  img.sizes = sizes;
+  if (widths.length > 1) {
+    img.srcset = buildSrcset(stem, widths, "jpeg");
+    img.sizes = sizes;
+  } else {
+    img.removeAttribute("srcset");
+    img.removeAttribute("sizes");
+  }
+  if (!img.getAttribute("src") || img.src.includes(`${stem}-`)) {
+    img.src = variantUrl(stem, dw, "jpeg");
+  }
 }
 
 /**

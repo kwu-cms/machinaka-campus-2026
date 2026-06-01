@@ -9,6 +9,7 @@ import {
   mkdirSync,
   readFileSync,
   readdirSync,
+  writeFileSync,
 } from "node:fs";
 import { basename, dirname, extname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -130,7 +131,7 @@ async function processRaster(absSrc) {
   }
 
   console.log(`${profileName.padEnd(10)} ${rel} → ${written + 1} files`);
-  return written + 1;
+  return { fileCount: written + 1, stem, widths };
 }
 
 /** @param {string} absSrc */
@@ -162,6 +163,8 @@ async function main() {
   let variantCount = 0;
   let svgCount = 0;
   let skipped = 0;
+  /** @type {Record<string, number[]>} */
+  const variantWidthsByStem = {};
 
   for (const absSrc of inputs.sort()) {
     const ext = extname(absSrc).toLowerCase();
@@ -174,8 +177,20 @@ async function main() {
       skipped += 1;
       continue;
     }
-    variantCount += await processRaster(absSrc);
+    const result = await processRaster(absSrc);
+    variantCount += result.fileCount;
+    variantWidthsByStem[result.stem] = result.widths;
   }
+
+  const manifestPath = join(root, "js", "image-variants.js");
+  const manifestBody = `/**
+ * scripts/optimize-images.mjs が生成（手編集しない）
+ * srcset に載せる幅は実在する派生ファイルのみ
+ */
+export const IMAGE_VARIANT_WIDTHS = Object.freeze(${JSON.stringify(variantWidthsByStem, null, 2)});
+`;
+  writeFileSync(manifestPath, manifestBody, "utf8");
+  console.log(`Wrote ${relative(root, manifestPath)} (${Object.keys(variantWidthsByStem).length} stems)`);
 
   console.log(`Done. ${variantCount} variants, ${svgCount} svg copied, ${skipped} skipped.`);
 }
