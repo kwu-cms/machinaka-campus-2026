@@ -587,7 +587,7 @@
   min-width: max-content;
   padding: 0.82rem 0;
   white-space: nowrap;
-  animation: heroMarquee 48s linear infinite;
+  animation: heroMarquee 72s linear infinite;
   will-change: transform;
 }
 

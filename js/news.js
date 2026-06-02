@@ -24,11 +24,23 @@ function createNewsArticle(item) {
   return article;
 }
 
+const NEWS_ANCHOR_RE = /<a\s+href\s*=\s*(['"])(.*?)\1[^>]*>([\s\S]*?)<\/a>/gi;
+
+/** @param {string} href */
+function isSafeNewsHref(href) {
+  const h = String(href || "").trim();
+  if (!h) return false;
+  if (/^(javascript|data|vbscript):/i.test(h)) return false;
+  if (/^https?:\/\//i.test(h)) return true;
+  if (h.startsWith("./") || h.startsWith("../") || h.startsWith("/")) return true;
+  return false;
+}
+
 /**
- * ニュース本文の URL / Instagram アカウント（@handle）をリンク化する。
+ * プレーンテキスト部分の URL / @handle をリンク化（HTML はエスケープ）。
  * @param {string} text
  */
-function newsTextWithLinks(text) {
+function linkifyPlainNewsText(text) {
   const src = String(text || "");
   if (!src) return "";
   const tokenRe = /https?:\/\/[^\s<>"']+|@[A-Za-z0-9._]{1,30}/g;
@@ -44,7 +56,6 @@ function newsTextWithLinks(text) {
       out += `<a href="${href}" target="_blank" rel="noopener noreferrer">${href}</a>`;
     } else {
       const prev = i > 0 ? src[i - 1] : "";
-      // メールアドレス等の一部（foo@bar）を除外
       if (prev && /[A-Za-z0-9._-]/.test(prev)) {
         out += escapeHtml(token);
       } else {
@@ -59,6 +70,44 @@ function newsTextWithLinks(text) {
   return out;
 }
 
+/**
+ * ニュース本文: 許可した &lt;a href&gt; を維持し、それ以外はエスケープ＋URL/@ をリンク化。
+ * @param {string} text
+ */
+function newsTextWithLinks(text) {
+  const src = String(text || "");
+  if (!src) return "";
+  if (!/<a\s/i.test(src)) return linkifyPlainNewsText(src);
+
+  NEWS_ANCHOR_RE.lastIndex = 0;
+  let out = "";
+  let last = 0;
+  let m;
+  while ((m = NEWS_ANCHOR_RE.exec(src)) !== null) {
+    const i = m.index ?? 0;
+    out += linkifyPlainNewsText(src.slice(last, i));
+    const href = m[2];
+    const inner = m[3];
+    if (isSafeNewsHref(href)) {
+      const escHref = escapeHtml(href);
+      const escInner = linkifyPlainNewsText(inner);
+      out += `<a href="${escHref}" target="_blank" rel="noopener noreferrer">${escInner}</a>`;
+    } else {
+      out += escapeHtml(m[0]);
+    }
+    last = i + m[0].length;
+  }
+  out += linkifyPlainNewsText(src.slice(last));
+  return out;
+}
+
+/** マーキー用: HTML タグを除いたプレーンテキスト */
+function newsTextPlain(text) {
+  return String(text || "")
+    .replace(/<a\s+href\s*=\s*(['"])(.*?)\1[^>]*>([\s\S]*?)<\/a>/gi, "$3")
+    .replace(/<[^>]+>/g, "");
+}
+
 function appendHeroMarqueeCycle(track, items) {
   for (const item of items) {
     const label = document.createElement("span");
@@ -70,7 +119,7 @@ function appendHeroMarqueeCycle(track, items) {
     dateEl.className = "hero-news-date";
     dateEl.textContent = newsDateLabel(item);
     row.appendChild(dateEl);
-    row.appendChild(document.createTextNode(item.text || ""));
+    row.appendChild(document.createTextNode(newsTextPlain(item.text || "")));
     track.appendChild(label);
     track.appendChild(row);
   }
