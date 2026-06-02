@@ -79,12 +79,13 @@ html:not(.reduce-motion) body:not([data-signage]) .hero-inner {
   transform: translate3d(0, var(--hero-parallax-inner, 0), 0);
 }
 
-html:not(.reduce-motion) body:not([data-signage]) .hero-screening-spotlight {
+html:not(.reduce-motion) body:not([data-signage]) .hero-promo-stack {
   transform: translate3d(0, var(--hero-parallax-spotlight, 0), 0);
 }
 
-html:not(.reduce-motion) body:not([data-signage]) .hero-screening-spotlight:hover {
-  transform: translate3d(0, calc(var(--hero-parallax-spotlight, 0px) - 2px), 0);
+html:not(.reduce-motion) body:not([data-signage]) .hero-promo-stack .hero-screening-spotlight:hover,
+html:not(.reduce-motion) body:not([data-signage]) .hero-promo-stack .hero-flyer-spotlight:hover {
+  transform: translateY(-2px);
 }
 
 /* ========== プログラム章ナビ ========== */
@@ -523,12 +524,12 @@ html.reduce-motion body:not([data-signage]) .hero-bg,
 html.reduce-motion body:not([data-signage]) .hero-scrim,
 html.reduce-motion body:not([data-signage]) .hero-field-words,
 html.reduce-motion body:not([data-signage]) .hero-inner,
-html.reduce-motion body:not([data-signage]) .hero-screening-spotlight,
+html.reduce-motion body:not([data-signage]) .hero-promo-stack,
 body[data-signage] .hero-bg,
 body[data-signage] .hero-scrim,
 body[data-signage] .hero-field-words,
 body[data-signage] .hero-inner,
-body[data-signage] .hero-screening-spotlight {
+body[data-signage] .hero-promo-stack {
   transform: none !important;
 }
 

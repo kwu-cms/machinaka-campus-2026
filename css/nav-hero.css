@@ -220,16 +220,37 @@
   max-width: min(42rem, calc(100% - (var(--shell-pad) * 2)));
 }
 
-/* 上映プログラムへのフローティング導線（右下・ニュース帯の上）
-   2カラム：左スライド／右テキスト。カラム行に padding なし。上辺 2px 角丸／下直角、左のみ紫線 */
-.hero-screening-spotlight {
+/* ヒーロー右下：南女シネマ（左）+ フライヤー画像（右） */
+.hero-promo-stack {
+  --hero-promo-card-h: clamp(5.65rem, 31.5vw, 7.875rem);
   position: absolute;
   right: var(--shell-pad);
   bottom: clamp(4.25rem, 11vw, 5.75rem);
   z-index: 7;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  gap: clamp(0.65rem, 2vw, 0.95rem);
+  width: fit-content;
+  max-width: min(34rem, calc(100vw - var(--shell-pad) * 2 - 1rem));
+}
 
+.hero-promo-stack > .hero-screening-spotlight,
+.hero-promo-stack > .hero-flyer-spotlight {
+  height: var(--hero-promo-card-h);
+}
+
+.hero-promo-stack .hero-screening-spotlight {
+  position: static;
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: min(24rem, 100%);
+}
+
+/* 上映プログラムへのフローティング導線（右下・ニュース帯の上）
+   2カラム：左スライド／右テキスト。カラム行に padding なし。上辺 2px 角丸／下直角、左のみ紫線 */
+.hero-screening-spotlight {
   display: block;
-  max-width: min(24rem, calc(100vw - var(--shell-pad) * 2 - 1rem));
   padding: 0;
 
   box-sizing: border-box;
@@ -286,12 +307,81 @@
   background: rgba(var(--brand-black-rgb), 0.06);
 }
 
-.hero-screening-spotlight__slide {
+/* 南女シネマ：2倍幅メディア・カード高さ固定 */
+.hero-screening-spotlight--tall {
+  display: flex;
+  align-items: stretch;
+}
+
+.hero-screening-spotlight--tall .hero-screening-spotlight__cols {
+  flex: 1;
+  align-items: stretch;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+.hero-screening-spotlight--tall .hero-screening-spotlight__media {
+  flex: 0 0 clamp(10rem, 56vw, 14rem);
+  width: clamp(10rem, 56vw, 14rem);
+  height: 100%;
+  min-height: 0;
+  align-self: stretch;
+}
+
+.hero-screening-spotlight--tall .hero-screening-spotlight__text {
+  padding-block: 0.4rem;
+  padding-inline: 0 0.55rem;
+  gap: 0.35rem;
+}
+
+.hero-screening-spotlight--tall .hero-screening-spotlight__program-name {
+  font-size: clamp(0.82rem, 2.1vw, 0.98rem);
+}
+
+.hero-screening-spotlight--tall .hero-screening-spotlight__cinema-name {
+  font-size: clamp(1rem, 2.6vw, 1.18rem);
+}
+
+.hero-screening-spotlight--tall .hero-screening-spotlight__meta {
+  font-size: clamp(0.62rem, 1.6vw, 0.76rem);
+}
+
+.hero-screening-spotlight__media picture.hero-screening-spotlight__slide {
   position: absolute;
   inset: 0;
   display: block;
   width: 100%;
   height: 100%;
+  margin: 0;
+  padding: 0;
+  opacity: 0;
+  transition: opacity 1.35s cubic-bezier(0.42, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+.hero-screening-spotlight__media picture.hero-screening-spotlight__slide img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.hero-screening-spotlight__media picture.hero-screening-spotlight__slide.is-active {
+  opacity: 1;
+  z-index: 1;
+}
+
+/* 旧 img 直指定スライド（JS 差し替え前の互換） */
+.hero-screening-spotlight__slide:not(picture) {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
   object-fit: cover;
   object-position: center;
   opacity: 0;
@@ -299,7 +389,7 @@
   pointer-events: none;
 }
 
-.hero-screening-spotlight__slide.is-active {
+.hero-screening-spotlight__slide:not(picture).is-active {
   opacity: 1;
   z-index: 1;
 }
@@ -394,22 +484,86 @@
   background: rgba(var(--brand-purple-rgb), 0.1);
 }
 
+/* フライヤー：画像のみ（幅＝画像幅・右余白なし） */
+.hero-flyer-spotlight {
+  flex: 0 0 auto;
+  display: block;
+  width: auto;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  border: none;
+  border-left: 4px solid rgba(var(--brand-magenta-rgb), 0.88);
+  border-radius: 2px 2px 0 0;
+  background: var(--brand-surface);
+  box-shadow: 0 8px 24px rgba(var(--brand-black-rgb), 0.08);
+  overflow: hidden;
+  line-height: 0;
+  font-size: 0;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    transform var(--int-fast) var(--int-ease),
+    border-left-color var(--int-fast) var(--int-ease),
+    box-shadow var(--int-fast) var(--int-ease);
+}
+
+.hero-flyer-spotlight:hover {
+  transform: translateY(-2px);
+  border-left-color: rgba(var(--brand-magenta-rgb), 1);
+  box-shadow: 0 12px 32px rgba(var(--brand-black-rgb), 0.12);
+}
+
+.hero-flyer-spotlight:focus-visible {
+  outline: 2px solid rgba(var(--brand-magenta-rgb), 0.65);
+  outline-offset: 3px;
+}
+
+.hero-flyer-spotlight picture {
+  display: block;
+  height: 100%;
+  width: auto;
+  margin: 0;
+  padding: 0;
+}
+
+.hero-flyer-spotlight__thumb {
+  display: block;
+  height: 100%;
+  width: auto;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  vertical-align: top;
+  object-fit: contain;
+  object-position: top center;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .hero-screening-spotlight__slide {
+  .hero-screening-spotlight__media picture.hero-screening-spotlight__slide,
+  .hero-screening-spotlight__slide:not(picture) {
     transition: none;
   }
 
-  .hero-screening-spotlight:hover {
+  .hero-screening-spotlight:hover,
+  .hero-flyer-spotlight:hover {
     transform: none;
   }
 }
 
 @media (max-width: 520px) {
-  .hero-screening-spotlight {
+  .hero-promo-stack {
+    --hero-promo-card-h: clamp(4.2rem, 24vw, 5.65rem);
     left: var(--shell-pad);
     right: var(--shell-pad);
     max-width: none;
     bottom: clamp(3.75rem, 18vw, 4.75rem);
+    gap: 0.55rem;
+  }
+
+  .hero-screening-spotlight--tall .hero-screening-spotlight__media {
+    flex-basis: clamp(7.5rem, 42vw, 10rem);
+    width: clamp(7.5rem, 42vw, 10rem);
   }
 }
 

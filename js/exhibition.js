@@ -1,4 +1,4 @@
-import { SITE_CONFIG, PROGRAM_TIMELINE } from "./config.js";
+import { SITE_CONFIG, PROGRAM_TIMELINE, EXHIBITION_UI } from "./config.js";
 import { parseCSV, rowToObj } from "./lib/csv.js";
 import { escapeHtml } from "./lib/html.js";
 import { getQueryParam, removeQueryParam, setQueryParam } from "./lib/url-params.js";
@@ -11,6 +11,21 @@ import {
 import { withViewTransition, tagViewTransitionPair } from "./lib/view-transition.js";
 
 const EXHIBITION_QUERY_PARAM = "exhibition_id";
+
+/** @returns {"simple"|"full"} */
+export function resolveExhibitionUiMode() {
+  const mode = EXHIBITION_UI.mode;
+  if (mode === "simple") return "simple";
+  if (mode === "full") return "full";
+  const from = String(EXHIBITION_UI.fullDetailFrom || "").trim();
+  if (!from) return "full";
+  const today = new Date();
+  const y = today.getFullYear();
+  const m = String(today.getMonth() + 1).padStart(2, "0");
+  const d = String(today.getDate()).padStart(2, "0");
+  const todayYmd = `${y}-${m}-${d}`;
+  return todayYmd >= from ? "full" : "simple";
+}
 
 /** @param {string} raw */
 function resolveExhibitionImagePath(raw) {
@@ -93,6 +108,87 @@ function cardPictureHtml(item) {
     height: 480,
     loading: "eager",
   });
+}
+
+/** シンプル表示: タイトル確定かつ画像あり */
+/** @param {ReturnType<typeof exhibitionRowToRecord>} item */
+function isConfirmedExhibitionForSimple(item) {
+  if (!String(item.title || "").trim()) return false;
+  return Boolean(resolveImageStem(item.imagePath));
+}
+
+/** @param {ReturnType<typeof exhibitionRowToRecord>} item */
+function exhibitionSimpleImageHtml(item) {
+  const stem = resolveImageStem(item.imagePath);
+  if (!stem) return "";
+  const profile = inferProfileFromStem(stem);
+  return `<li class="exh-simple-cell">${pictureHTMLFromPath(item.imagePath, {
+    profile,
+    alt: "展示作品",
+    width: 640,
+    height: 480,
+    loading: "lazy",
+  })}</li>`;
+}
+
+/** @param {ReturnType<typeof exhibitionRowToRecord>[]} items */
+function exhibitionSimpleGridHtml(items) {
+  const confirmed = items.filter(isConfirmedExhibitionForSimple);
+  if (!confirmed.length) {
+    return `<p class="exh-empty">展示作品の情報を読み込めませんでした。</p>`;
+  }
+  return `<ul class="exh-simple-grid">${confirmed.map(exhibitionSimpleImageHtml).join("")}</ul>`;
+}
+
+/**
+ * @param {HTMLElement} sectionRoot
+ * @param {HTMLElement} track
+ */
+function applyExhibitionSimpleChrome(sectionRoot, track) {
+  document.getElementById("exh-preview-note")?.remove();
+  if (sectionRoot) sectionRoot.dataset.exhUi = "simple";
+  const carousel = track.closest(".exh-carousel");
+  if (carousel) carousel.setAttribute("aria-label", "展示作品一覧");
+  const stage = track.closest(".exh-carousel-stage");
+  stage?.querySelector(".exh-prev")?.setAttribute("hidden", "");
+  stage?.querySelector(".exh-next")?.setAttribute("hidden", "");
+}
+
+/**
+ * @param {HTMLElement} sectionRoot
+ * @param {HTMLElement} track
+ */
+function applyExhibitionFullChrome(sectionRoot, track) {
+  if (sectionRoot) sectionRoot.dataset.exhUi = "full";
+  const carousel = track.closest(".exh-carousel");
+  if (carousel) carousel.setAttribute("aria-label", "展示作品");
+  const stage = track.closest(".exh-carousel-stage");
+  stage?.querySelector(".exh-prev")?.removeAttribute("hidden");
+  stage?.querySelector(".exh-next")?.removeAttribute("hidden");
+}
+
+/**
+ * @param {HTMLElement} track
+ * @param {HTMLElement | null} sectionRoot
+ * @param {ReturnType<typeof exhibitionRowToRecord>[]} items
+ */
+function renderExhibitionSimple(track, sectionRoot, items) {
+  applyExhibitionSimpleChrome(sectionRoot, track);
+  track.innerHTML = exhibitionSimpleGridHtml(items);
+}
+
+/**
+ * @param {HTMLElement} track
+ * @param {HTMLElement | null} sectionRoot
+ * @param {ReturnType<typeof exhibitionRowToRecord>[]} items
+ * @param {{ bindCards: () => void, openDeepLink: () => void }} hooks
+ */
+function renderExhibitionFull(track, sectionRoot, items, hooks) {
+  applyExhibitionFullChrome(sectionRoot, track);
+  track.innerHTML = items.map(exhibitionCardHtml).join("");
+  initExhibitionCarousel();
+  hooks.bindCards();
+  hooks.openDeepLink();
 }
 
 /** @param {ReturnType<typeof exhibitionRowToRecord>} item */
@@ -313,13 +409,19 @@ export function initExhibitionSection() {
         return;
       }
 
-      track.innerHTML = items.map(exhibitionCardHtml).join("");
-      initExhibitionCarousel();
-      bindCards();
-
-      const deepId = getQueryParam(EXHIBITION_QUERY_PARAM);
-      if (deepId && byId[deepId]) {
-        openForId(deepId, { fromUrl: true });
+      const uiMode = resolveExhibitionUiMode();
+      if (uiMode === "simple") {
+        renderExhibitionSimple(track, sectionRoot, items);
+      } else {
+        renderExhibitionFull(track, sectionRoot, items, {
+          bindCards,
+          openDeepLink: () => {
+            const deepId = getQueryParam(EXHIBITION_QUERY_PARAM);
+            if (deepId && byId[deepId]) {
+              openForId(deepId, { fromUrl: true });
+            }
+          },
+        });
       }
     })
     .catch(() => {

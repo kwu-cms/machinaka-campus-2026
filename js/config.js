@@ -140,6 +140,11 @@ export const TEST_PAGE_NOTICE = Object.freeze({
   "STORAGE_KEY": "mxm2026_testPageNoticeDismissed_v1"
 });
 
+export const EXHIBITION_UI = Object.freeze({
+  "mode": "auto",
+  "fullDetailFrom": "2026-06-12"
+});
+
 export const FEATURED_EVENT_IDS = Object.freeze([
   "evt-01",
   "evt-04"

@@ -161,11 +161,12 @@
             <a class="btn" href="#access"><img class="btn-icon" src="./images/fa-location-pin.svg" alt="" width="14" height="14" decoding="async" /> アクセス</a>
           </div>
         </div>
-        <a
-          class="hero-screening-spotlight reveal"
-          href="#screening"
-          aria-label="上映プログラム「南女シネマ」7月18日・19日、元町映画館へ"
-        >
+        <div class="hero-promo-stack">
+          <a
+            class="hero-screening-spotlight hero-screening-spotlight--tall reveal"
+            href="#screening"
+            aria-label="上映プログラム「南女シネマ」7月18日・19日、元町映画館へ"
+          >
           <span class="hero-screening-spotlight__cols">
             <span class="hero-screening-spotlight__media" aria-hidden="true">
               <picture class="hero-screening-spotlight__slide is-active">
@@ -207,7 +208,33 @@
               </span>
             </span>
           </span>
-        </a>
+          </a>
+          <a
+            class="hero-flyer-spotlight reveal"
+            href="./data/2026-06-02_machinaka_campus_2026.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="まちなかキャンパス 2026 イベントフライヤー（PDF）を開く"
+          >
+            <picture>
+              <source
+                type="image/webp"
+                srcset="./images/2026-06-02_machinaka_campus_2026-960.webp 960w, ./images/2026-06-02_machinaka_campus_2026-480.webp 480w"
+                sizes="(max-width: 480px) 88px, 120px"
+              />
+              <img
+                class="hero-flyer-spotlight__thumb"
+                src="./images/2026-06-02_machinaka_campus_2026-480.jpeg"
+                srcset="./images/2026-06-02_machinaka_campus_2026-960.jpeg 960w, ./images/2026-06-02_machinaka_campus_2026-480.jpeg 480w"
+                sizes="(max-width: 480px) 88px, 120px"
+                alt=""
+                width="120"
+                height="170"
+                decoding="async"
+              />
+            </picture>
+          </a>
+        </div>
         <!-- マーキー文言: data/news.json（詳細は docs/CONTENT.md） -->
         <div class="hero-news-marquee" aria-label="最新のお知らせ">
           <div class="hero-news-track"></div>

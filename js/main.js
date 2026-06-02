@@ -746,7 +746,7 @@ function parseSignageDurationSeconds(raw) {
 })();
 
 (function initHeroSpotlightSlideshow() {
-  const root = document.querySelector(".hero-screening-spotlight");
+  const root = document.querySelector('a.hero-screening-spotlight[href="#screening"]');
   if (!root || document.body.dataset.signage) return;
   const slides = root.querySelectorAll(".hero-screening-spotlight__slide");
   if (slides.length < 2) return;

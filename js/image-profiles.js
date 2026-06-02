@@ -20,6 +20,12 @@ export const IMAGE_PROFILES = {
     defaultWidth: 480,
     aspect: { width: 120, height: 68 },
   },
+  flyer: {
+    widths: [960, 480],
+    sizes: "(max-width: 480px) 120px, 240px",
+    defaultWidth: 480,
+    aspect: { width: 120, height: 170 },
+  },
   guest: {
     widths: [480, 240],
     sizes: "(max-width: 480px) 50vw, 240px",

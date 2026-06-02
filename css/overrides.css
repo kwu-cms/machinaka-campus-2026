@@ -18,7 +18,7 @@
   }
 
   /* ニュース帯が無いのでフローティングパネルを下へ詰める */
-  .hero-screening-spotlight {
+  .hero-promo-stack {
     bottom: clamp(1.35rem, 5vw, 2.25rem);
   }
 
@@ -221,7 +221,7 @@ body.is-signage-vertical {
   overflow-x: hidden;
 }
 
-body[data-signage] .hero-screening-spotlight {
+body[data-signage] .hero-promo-stack {
   display: none !important;
 }
 

@@ -22,6 +22,11 @@
       "sizes": "(max-width: 480px) 50vw, 240px",
       "match": ["guest_*", "irodori_*"]
     },
+    "flyer": {
+      "widths": [960, 480],
+      "sizes": "(max-width: 480px) 120px, 240px",
+      "match": ["*machinaka_campus*"]
+    },
     "misc": {
       "widths": [960, 640],
       "sizes": "(max-width: 768px) 100vw, 960px",

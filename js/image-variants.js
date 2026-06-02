@@ -3,6 +3,10 @@
  * srcset に載せる幅は実在する派生ファイルのみ
  */
 export const IMAGE_VARIANT_WIDTHS = Object.freeze({
+  "2026-06-02_machinaka_campus_2026": [
+    960,
+    480
+  ],
   "evt-01": [
     960,
     640

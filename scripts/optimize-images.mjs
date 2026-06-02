@@ -24,7 +24,7 @@ const config = JSON.parse(readFileSync(join(__dirname, "image-profiles.json"), "
 const { profiles, jpegQuality = 82, webpQuality = 80 } = config;
 
 const RASTER_EXT = new Set([".avif", ".gif", ".jpg", ".jpeg", ".png", ".webp"]);
-const PROFILE_ORDER = ["hero", "event", "screening", "guest", "misc"];
+const PROFILE_ORDER = ["hero", "event", "screening", "flyer", "guest", "misc"];
 
 /** @param {string} dir */
 function walk(dir) {
