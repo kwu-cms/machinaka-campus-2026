@@ -2676,6 +2676,14 @@
   color: rgba(17, 17, 17, 0.62);
 }
 
+.exh-works-note {
+  margin: -0.2rem 0 0.55rem;
+  font-size: 0.72rem;
+  font-weight: 500;
+  line-height: 1.45;
+  color: rgba(17, 17, 17, 0.4);
+}
+
 /* ========== EXHIBITION · シンプル（6/12 前・画像3列） ========== */
 
 .exh-section[data-exh-ui="simple"] .exh-btn {

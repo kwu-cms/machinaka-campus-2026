@@ -131,9 +131,22 @@ function exhibitionSimpleImageHtml(item) {
   })}</li>`;
 }
 
+/** シンプル3列グリッド: 1行目と2行目の並びを入れ替える */
+const EXH_SIMPLE_GRID_COLS = 3;
+
+/** @param {ReturnType<typeof exhibitionRowToRecord>[]} items */
+function reorderSimpleGridSwapFirstTwoRows(items) {
+  const n = items.length;
+  if (n <= EXH_SIMPLE_GRID_COLS) return items;
+  const row1 = items.slice(0, EXH_SIMPLE_GRID_COLS);
+  const row2 = items.slice(EXH_SIMPLE_GRID_COLS, EXH_SIMPLE_GRID_COLS * 2);
+  const rest = items.slice(EXH_SIMPLE_GRID_COLS * 2);
+  return [...row2, ...row1, ...rest];
+}
+
 /** @param {ReturnType<typeof exhibitionRowToRecord>[]} items */
 function exhibitionSimpleGridHtml(items) {
-  const confirmed = items.filter(isConfirmedExhibitionForSimple);
+  const confirmed = reorderSimpleGridSwapFirstTwoRows(items.filter(isConfirmedExhibitionForSimple));
   if (!confirmed.length) {
     return `<p class="exh-empty">展示作品の情報を読み込めませんでした。</p>`;
   }
