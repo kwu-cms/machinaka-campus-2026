@@ -399,16 +399,29 @@ ${creditsHtml}`;
       </article>`;
     }
 
-    /** 縦型サイネージ（上映）：日別リストはタイトル＋メタのみ（あらすじは上部スライド） */
+    /** 縦型サイネージ（上映）：左サムネ＋右テキスト（あらすじは上部スライド） */
     function movieCardSignageListHTML(m) {
       const titleShown = formatDisplayTitle(m.title);
       const meta = metaLine(m, true);
       const metaBlock = meta
         ? `<p class="mv-signage-list-meta">${escapeHtml(meta)}</p>`
         : "";
-      return `<article class="mv-card mv-card--signage-list" data-movie-id="${escapeHtml(m.id)}">
-        <p class="mv-signage-list-title">${escapeHtml(titleShown)}</p>
-        ${metaBlock}
+      const thumb = thumbSrc(m.thumbPath);
+      const mediaHtml = thumb
+        ? thumbPictureHTML(thumb, {
+            alt: "",
+            loading: "lazy",
+            sizes: "120px",
+            width: 240,
+            height: 136,
+          })
+        : `<div class="mv-signage-list-media-placeholder" aria-hidden="true"></div>`;
+      return `<article class="mv-card mv-card--signage-list mv-card--signage-media" data-movie-id="${escapeHtml(m.id)}">
+        <div class="mv-signage-list-media">${mediaHtml}</div>
+        <div class="mv-signage-list-body">
+          <p class="mv-signage-list-title">${escapeHtml(titleShown)}</p>
+          ${metaBlock}
+        </div>
       </article>`;
     }
 

@@ -237,6 +237,7 @@ body[data-signage] {
   --sg-float-body: clamp(0.8rem, 1.65vh, 0.94rem);
   --sg-gap: clamp(0.55rem, 1.25vh, 0.9rem);
   --sg-hero-max-h: clamp(280px, 34vh, 420px);
+  --sg-card-thumb-w: clamp(88px, 14vw, 120px);
 }
 
 body[data-signage="screening"] {
@@ -579,6 +580,7 @@ body[data-signage="screening"] #screening .mv-schedule-main .mv-program-col {
   flex-direction: column;
   gap: clamp(0.55rem, 1.1vh, 0.75rem);
   min-height: 0;
+  height: 100%;
 }
 
 body[data-signage="screening"] #screening .mv-program-col-title--signage {
@@ -634,7 +636,15 @@ body[data-signage] .ev-card--signage-list {
   box-sizing: border-box;
 }
 
-body[data-signage="screening"] #screening .mv-schedule-main .mv-program-col-list,
+body[data-signage="screening"] #screening .mv-schedule-main .mv-program-col-list {
+  flex: 1 1 auto;
+  display: grid;
+  grid-template-rows: repeat(3, minmax(0, 1fr));
+  gap: var(--sg-gap);
+  min-height: 0;
+  overflow: hidden;
+}
+
 body[data-signage="event"] #event .ev-program-col-list {
   flex: 1 1 auto;
   display: flex;
@@ -865,6 +875,70 @@ body[data-signage="screening"] #screening .mv-schedule-main .mv-card--signage-li
   background: #fff;
   border: 1px solid rgba(17, 17, 17, 0.16);
   border-radius: 2px;
+}
+
+body[data-signage="screening"] #screening .mv-schedule-main .mv-card--signage-media {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  height: 100%;
+  min-height: 0;
+  padding: 0;
+  overflow: hidden;
+  border-left-width: 4px;
+  border-left-color: rgba(var(--sg-accent-rgb), 0.88);
+}
+
+body[data-signage="screening"] #screening .mv-signage-list-media {
+  flex: 0 0 var(--sg-card-thumb-w);
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background: rgba(15, 17, 21, 0.06);
+  position: relative;
+}
+
+body[data-signage="screening"] #screening .mv-signage-list-media picture {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+body[data-signage="screening"] #screening .mv-signage-list-media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+body[data-signage="screening"] #screening .mv-signage-list-media-placeholder {
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  background: linear-gradient(
+    145deg,
+    rgba(var(--brand-purple-rgb), 0.38) 0%,
+    rgba(45, 42, 52, 0.96) 42%,
+    rgba(15, 17, 21, 1) 100%
+  );
+}
+
+body[data-signage="screening"] #screening .mv-signage-list-body {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  padding: clamp(0.45rem, 0.9vh, 0.6rem) clamp(0.55rem, 1.1vw, 0.68rem);
+}
+
+body[data-signage="screening"] #screening .mv-signage-list-body .mv-signage-list-title {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  margin-bottom: 0.2rem;
 }
 
 body[data-signage="screening"] #screening .mv-signage-col-empty {
