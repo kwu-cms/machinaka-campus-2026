@@ -33,7 +33,7 @@ export function readActiveSignageHeroIndex(mode) {
   const selector =
     mode === "event"
       ? "#ev-signage-hero .signage-mv-page-slideshow, #event .signage-mv-page-slideshow"
-      : "#screening .signage-mv-page-slideshow";
+      : "#mv-signage-hero .signage-mv-page-slideshow, #screening .signage-mv-page-slideshow";
   const root = document.querySelector(selector);
   if (!root) return 0;
   const slides = root.querySelectorAll(".signage-mv-page-slide");

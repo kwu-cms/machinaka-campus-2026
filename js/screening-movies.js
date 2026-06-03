@@ -412,6 +412,44 @@ ${creditsHtml}`;
       </article>`;
     }
 
+    /** 上映サイネージ：chrome・ヒーロー・日別リストをイベントサイネージと同型の DOM に配置 */
+    function ensureSignageScreeningShell() {
+      const programBody = document.querySelector("#screening .program-body");
+      const screeningBody = programBody?.querySelector(".screening-body");
+      if (!programBody || !screeningBody) {
+        return { heroHost: null, programBody: null };
+      }
+      let heroHost = document.getElementById("mv-signage-hero");
+      if (!heroHost) {
+        heroHost = document.createElement("div");
+        heroHost.id = "mv-signage-hero";
+        heroHost.className = "signage-mv-hero-host";
+        const mvSection = screeningBody.querySelector(".mv-section");
+        if (mvSection) screeningBody.insertBefore(heroHost, mvSection);
+        else screeningBody.appendChild(heroHost);
+      }
+      return { heroHost, programBody };
+    }
+
+    function applySignageScreeningLayout({ chromeHtml, heroHtml, scheduleHtml }) {
+      const { heroHost, programBody } = ensureSignageScreeningShell();
+      if (programBody && chromeHtml) {
+        const existing = programBody.querySelector(".signage-screening-chrome");
+        if (existing) existing.outerHTML = chromeHtml;
+        else programBody.insertAdjacentHTML("afterbegin", chromeHtml);
+      }
+      listHost.innerHTML = scheduleHtml;
+      if (!heroHost) return;
+      if (heroHtml) {
+        heroHost.hidden = false;
+        heroHost.innerHTML = heroHtml;
+        wireSignagePageHeroSlideshow(heroHost);
+      } else {
+        heroHost.hidden = true;
+        heroHost.innerHTML = "";
+      }
+    }
+
     /** 上映サイネージ：プログラム名・会場・時間（列見出しと重複しない共通情報） */
     function signageScreeningChromeHTML(timeDisplay, venue) {
       return `<div class="signage-screening-chrome">
@@ -775,8 +813,15 @@ ${creditsHtml}`;
         const signageChrome = signageScreening
           ? signageScreeningChromeHTML(MV_PROGRAM_SLOT_TIME, MV_PROGRAM_SLOT_VENUE)
           : "";
-        listHost.innerHTML = signageChrome + (signagePageHero || "") + bodyHtml;
-        if (signageScreening) wireSignagePageHeroSlideshow(listHost);
+        if (signageScreening) {
+          applySignageScreeningLayout({
+            chromeHtml: signageChrome,
+            heroHtml: signagePageHero || "",
+            scheduleHtml: bodyHtml,
+          });
+        } else {
+          listHost.innerHTML = bodyHtml;
+        }
         if (!signageScreening) {
           const heroCarouselMovies = moviesInDisplayOrder();
           const slideshowRoot = document.getElementById("screeningSlideshow");
@@ -806,9 +851,17 @@ ${creditsHtml}`;
                 PROGRAM_TIMELINE.screening.venue,
               )
             : "";
-        listHost.innerHTML =
-          signageChrome +
+        const errHtml =
           '<p class="mv-load-error" role="alert">上映作品一覧を読み込めませんでした。スプレッドシートの共有（リンクを知っている全員が閲覧可）とネットワークを確認し、しばらくしてから再度お試しください。</p>';
+        if (document.body.dataset.signage === "screening") {
+          applySignageScreeningLayout({
+            chromeHtml: signageChrome,
+            heroHtml: "",
+            scheduleHtml: errHtml,
+          });
+        } else {
+          listHost.innerHTML = errHtml;
+        }
         if (screeningSlideshowRoot && document.body.dataset.signage !== "screening") {
           screeningSlideshowRoot.classList.remove("is-loading");
           screeningSlideshowRoot.setAttribute("aria-busy", "false");
