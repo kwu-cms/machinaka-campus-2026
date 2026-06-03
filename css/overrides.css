@@ -230,14 +230,13 @@ body[data-signage] {
   --sg-tagline: clamp(1.08rem, 2.35vh, 1.32rem);
   --sg-meta: clamp(0.98rem, 2.05vh, 1.15rem);
   --sg-col-date: clamp(1.52rem, 3.15vh, 1.92rem);
-  --sg-list-title: clamp(1.06rem, 2.35vh, 1.28rem);
-  --sg-list-meta: clamp(0.84rem, 1.75vh, 0.98rem);
+  --sg-list-title: clamp(0.96rem, 2.05vh, 1.14rem);
+  --sg-list-meta: clamp(0.76rem, 1.55vh, 0.88rem);
   --sg-float-title: clamp(1rem, 2.15vh, 1.18rem);
   --sg-float-meta: clamp(0.78rem, 1.55vh, 0.9rem);
   --sg-float-body: clamp(0.8rem, 1.65vh, 0.94rem);
   --sg-gap: clamp(0.55rem, 1.25vh, 0.9rem);
   --sg-hero-max-h: clamp(280px, 34vh, 420px);
-  --sg-card-thumb-w: clamp(88px, 14vw, 120px);
 }
 
 body[data-signage="screening"] {
@@ -331,11 +330,11 @@ body[data-signage="screening"] #screening .program-body {
 body[data-signage="screening"] #screening .screening-body {
   flex: 1 1 auto;
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-rows: auto auto minmax(0, 1fr);
   grid-template-areas:
     "hero"
-    "schedule"
-    "faculty";
+    "faculty"
+    "schedule";
   gap: var(--sg-gap);
   min-height: 0;
   overflow: hidden;
@@ -372,42 +371,62 @@ body[data-signage="screening"] #screening .screening-hero-split {
   display: block !important;
   min-height: 0;
   width: 100%;
+  max-width: none;
   margin: 0;
   overflow: hidden;
 }
 
-body[data-signage="screening"] #screening .faculty-message--hero-aside {
-  max-width: none;
+body[data-signage="screening"] #screening .screening-hero-split__aside {
+  display: block;
+  flex-direction: unset;
   width: 100%;
+  min-height: 0;
+  padding: 0;
   margin: 0;
-  padding: clamp(0.55rem, 1.1vh, 0.75rem) 0 clamp(0.45rem, 0.9vh, 0.65rem)
-    clamp(0.65rem, 1.4vw, 0.95rem);
+}
+
+body[data-signage="screening"] #screening .faculty-message.faculty-message--hero-aside {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: clamp(0.65rem, 1.3vh, 0.85rem) clamp(0.85rem, 2vw, 1.05rem);
+  border-left: none;
+  border-radius: 2px;
+  border: 1px solid rgba(17, 17, 17, 0.1);
+  border-left: 4px solid rgba(var(--sg-accent-rgb), 0.82);
+  background: linear-gradient(
+    180deg,
+    rgba(var(--sg-accent-rgb), 0.05) 0%,
+    rgba(var(--sg-accent-rgb), 0.1) 100%
+  );
   box-sizing: border-box;
-  border-left-width: 3px;
-  border-left-color: rgba(var(--sg-accent-rgb), 0.42);
 }
 
 body[data-signage="screening"] #screening .faculty-message--hero-aside .faculty-message__catch {
-  font-size: clamp(1.12rem, 2.45vh, 1.38rem);
-  line-height: 1.48;
+  font-size: clamp(1.05rem, 2.2vh, 1.28rem);
+  line-height: 1.45;
   margin-bottom: clamp(0.35rem, 0.75vh, 0.5rem);
 }
 
 body[data-signage="screening"] #screening .faculty-message--hero-aside .faculty-message__body p {
-  font-size: clamp(0.88rem, 1.85vh, 1rem);
-  line-height: 1.68;
+  font-size: clamp(0.82rem, 1.7vh, 0.94rem);
+  line-height: 1.65;
+  opacity: 0.9;
 }
 
 body[data-signage="screening"] #screening .faculty-message--hero-aside .faculty-message__attribution {
-  margin-top: clamp(0.35rem, 0.75vh, 0.5rem);
+  margin-top: clamp(0.4rem, 0.85vh, 0.55rem);
 }
 
 body[data-signage="screening"] #screening .faculty-message--hero-aside .faculty-message__title {
-  font-size: clamp(0.72rem, 1.45vh, 0.82rem);
+  font-size: clamp(0.68rem, 1.35vh, 0.78rem);
 }
 
 body[data-signage="screening"] #screening .faculty-message--hero-aside .faculty-message__name {
-  font-size: clamp(0.88rem, 1.75vh, 0.98rem);
+  font-size: clamp(0.82rem, 1.65vh, 0.92rem);
 }
 
 body[data-signage] #program .section-label {
@@ -457,13 +476,6 @@ body[data-signage="event"] #event.program-item {
 
 body[data-signage="screening"] #screening .screening-hero-split__media {
   display: none !important;
-}
-
-body[data-signage="screening"] #screening .screening-hero-split__aside {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  min-height: 0;
 }
 
 body[data-signage="screening"] #screening .program-copy.screening-intro {
@@ -625,8 +637,8 @@ body[data-signage] .ev-signage-list-meta {
   color: rgba(17, 17, 17, 0.58);
 }
 
-body[data-signage] .mv-card--signage-list,
-body[data-signage] .ev-card--signage-list {
+body[data-signage] .mv-card--signage-list:not(.mv-card--signage-media),
+body[data-signage] .ev-card--signage-list:not(.ev-card--signage-media) {
   cursor: default;
   text-align: left;
   padding: clamp(0.55rem, 1.1vh, 0.68rem) clamp(0.62rem, 1.2vw, 0.72rem);
@@ -794,7 +806,7 @@ body[data-signage="event"] #event .signage-mv-page-synopsis-float {
   z-index: 2;
   width: min(46%, 26rem);
   max-width: calc(100% - 36px);
-  max-height: min(46%, 18rem);
+  max-height: calc(100% - 36px);
   margin: 0;
   padding: 0.624rem 0.806rem 0.715rem;
   box-sizing: border-box;
@@ -804,9 +816,7 @@ body[data-signage="event"] #event .signage-mv-page-synopsis-float {
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   box-shadow: 0 12px 44px rgba(0, 0, 0, 0.38);
-  overflow-x: hidden;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
+  overflow: hidden;
 }
 
 body[data-signage="screening"] #screening .signage-mv-page-synopsis-float .mv-float-panel-title,
@@ -830,7 +840,11 @@ body[data-signage="event"] #event .signage-mv-page-synopsis-float .mv-float-pane
 body[data-signage="screening"] #screening .signage-mv-page-synopsis-float .mv-float-panel-synopsis,
 body[data-signage="event"] #event .signage-mv-page-synopsis-float .mv-float-panel-synopsis {
   font-size: var(--sg-float-body);
-  line-height: 1.52;
+  line-height: 1.48;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 8;
+  overflow: hidden;
 }
 
 body[data-signage="screening"] #screening .signage-mv-page-synopsis-float .mv-float-panel-lead,
@@ -869,15 +883,20 @@ body[data-signage="event"] #event .signage-mv-page-dot.is-active {
   border-color: rgba(var(--sg-accent-rgb), 0.92);
 }
 
-body[data-signage="screening"] #screening .mv-schedule-main .mv-card--signage-list {
+body[data-signage="screening"] #screening .mv-schedule-main .mv-card--signage-list,
+body[data-signage="event"] #event .ev-card--signage-list {
   display: block;
   margin: 0;
   background: #fff;
   border: 1px solid rgba(17, 17, 17, 0.16);
   border-radius: 2px;
+  box-shadow: 0 4px 18px rgba(15, 17, 21, 0.06);
+  box-sizing: border-box;
+  cursor: default;
 }
 
-body[data-signage="screening"] #screening .mv-schedule-main .mv-card--signage-media {
+body[data-signage="screening"] #screening .mv-schedule-main .mv-card--signage-media,
+body[data-signage="event"] #event .ev-card--signage-media {
   display: flex;
   flex-direction: row;
   align-items: stretch;
@@ -886,11 +905,18 @@ body[data-signage="screening"] #screening .mv-schedule-main .mv-card--signage-me
   padding: 0;
   overflow: hidden;
   border-left-width: 4px;
+}
+
+body[data-signage="screening"] #screening .mv-schedule-main .mv-card--signage-media {
   border-left-color: rgba(var(--sg-accent-rgb), 0.88);
 }
 
-body[data-signage="screening"] #screening .mv-signage-list-media {
-  flex: 0 0 var(--sg-card-thumb-w);
+body[data-signage] .mv-signage-list-media,
+body[data-signage] .ev-signage-list-media {
+  flex: 0 0 auto;
+  height: 100%;
+  width: auto;
+  aspect-ratio: 1 / 1;
   min-width: 0;
   min-height: 0;
   overflow: hidden;
@@ -898,13 +924,15 @@ body[data-signage="screening"] #screening .mv-signage-list-media {
   position: relative;
 }
 
-body[data-signage="screening"] #screening .mv-signage-list-media picture {
+body[data-signage] .mv-signage-list-media picture,
+body[data-signage] .ev-signage-list-media picture {
   display: block;
   width: 100%;
   height: 100%;
 }
 
-body[data-signage="screening"] #screening .mv-signage-list-media img {
+body[data-signage] .mv-signage-list-media img,
+body[data-signage] .ev-signage-list-media img {
   display: block;
   width: 100%;
   height: 100%;
@@ -912,33 +940,36 @@ body[data-signage="screening"] #screening .mv-signage-list-media img {
   object-position: center;
 }
 
-body[data-signage="screening"] #screening .mv-signage-list-media-placeholder {
+body[data-signage] .mv-signage-list-media-placeholder,
+body[data-signage] .ev-signage-list-media-placeholder {
   width: 100%;
   height: 100%;
   min-height: 100%;
   background: linear-gradient(
     145deg,
-    rgba(var(--brand-purple-rgb), 0.38) 0%,
+    rgba(var(--sg-accent-rgb), 0.38) 0%,
     rgba(45, 42, 52, 0.96) 42%,
     rgba(15, 17, 21, 1) 100%
   );
 }
 
-body[data-signage="screening"] #screening .mv-signage-list-body {
+body[data-signage="screening"] #screening .mv-signage-list-body,
+body[data-signage="event"] #event .ev-signage-list-body {
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
   justify-content: center;
   min-width: 0;
-  padding: clamp(0.45rem, 0.9vh, 0.6rem) clamp(0.55rem, 1.1vw, 0.68rem);
+  padding: clamp(0.38rem, 0.75vh, 0.5rem) clamp(0.5rem, 1vw, 0.62rem);
 }
 
-body[data-signage="screening"] #screening .mv-signage-list-body .mv-signage-list-title {
+body[data-signage="screening"] #screening .mv-signage-list-body .mv-signage-list-title,
+body[data-signage="event"] #event .ev-signage-list-body .ev-signage-list-title {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
   overflow: hidden;
-  margin-bottom: 0.2rem;
+  margin-bottom: 0.16rem;
 }
 
 body[data-signage="screening"] #screening .mv-signage-col-empty {
@@ -972,7 +1003,7 @@ body[data-signage="screening"] #screening .mv-signage-col-empty {
   body[data-signage="screening"] #screening .signage-mv-page-synopsis-float,
   body[data-signage="event"] #event .signage-mv-page-synopsis-float {
     width: min(48%, 28rem);
-    max-height: min(52%, 20rem);
+    max-height: calc(100% - 36px);
     padding: clamp(0.65rem, 1.3vh, 0.85rem) clamp(0.75rem, 1.5vw, 0.95rem);
   }
 }
@@ -1071,14 +1102,6 @@ body[data-signage="event"] #event .ev-program-col-title--signage {
   margin: 0;
   padding-bottom: clamp(0.32rem, 0.7vh, 0.42rem);
   border-bottom: 1px solid rgba(17, 17, 17, 0.14);
-}
-
-body[data-signage="event"] #event .ev-card--signage-list {
-  display: block;
-  margin: 0;
-  background: #fff;
-  border: 1px solid rgba(17, 17, 17, 0.16);
-  border-radius: 2px;
 }
 
 body[data-signage="event"] #event .ev-card--signage-list.ev-card--lecture {
@@ -1191,45 +1214,4 @@ body[data-signage="event"] #event .ev-signage-day-empty {
   border-radius: 50%;
   object-fit: cover;
   opacity: 0.9;
-}
-
-body[data-signage="screening"] #screening .faculty-message.faculty-message--hero-aside {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  justify-content: center;
-  margin: 0;
-  padding: clamp(1.1rem, 2.8vh, 2rem) clamp(0.9rem, 2.2vw, 1.35rem)
-    clamp(1.25rem, 3vh, 2.25rem);
-  border-left: 4px solid rgba(var(--brand-purple-rgb), 0.82);
-  background: linear-gradient(
-    180deg,
-    rgba(var(--brand-purple-rgb), 0.05) 0%,
-    rgba(var(--brand-purple-rgb), 0.1) 100%
-  );
-  box-sizing: border-box;
-}
-
-body[data-signage="screening"] #screening .faculty-message--hero-aside .faculty-message__catch {
-  font-size: clamp(1.32rem, 3.4vw, 1.82rem);
-  line-height: 1.48;
-  margin-bottom: clamp(0.65rem, 1.6vh, 1rem);
-}
-
-body[data-signage="screening"] #screening .faculty-message--hero-aside .faculty-message__body p {
-  font-size: clamp(0.94rem, 2.15vw, 1.08rem);
-  line-height: 1.88;
-  opacity: 0.9;
-}
-
-body[data-signage="screening"] #screening .faculty-message--hero-aside .faculty-message__attribution {
-  margin-top: clamp(0.75rem, 1.8vh, 1.15rem);
-}
-
-body[data-signage="screening"] #screening .faculty-message--hero-aside .faculty-message__title {
-  font-size: clamp(0.72rem, 1.6vw, 0.82rem);
-}
-
-body[data-signage="screening"] #screening .faculty-message--hero-aside .faculty-message__name {
-  font-size: clamp(0.92rem, 2vw, 1.05rem);
 }

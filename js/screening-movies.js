@@ -411,9 +411,9 @@ ${creditsHtml}`;
         ? thumbPictureHTML(thumb, {
             alt: "",
             loading: "lazy",
-            sizes: "120px",
+            sizes: "160px",
             width: 240,
-            height: 136,
+            height: 240,
           })
         : `<div class="mv-signage-list-media-placeholder" aria-hidden="true"></div>`;
       return `<article class="mv-card mv-card--signage-list mv-card--signage-media" data-movie-id="${escapeHtml(m.id)}">

@@ -363,13 +363,26 @@ export function initEventsSection() {
   </div>`;
   }
 
-  /** 縦型サイネージ：日別リスト（上映サイネージの mv-card--signage-list に相当） */
+  /** 縦型サイネージ：左サムネ＋右テキスト（上映サイネージの mv-card--signage-list に相当） */
   function cardSignageListHTML(ev) {
     const meta = signageEventListMeta(ev);
     const metaBlock = meta ? `<p class="ev-signage-list-meta">${escapeHtml(meta)}</p>` : "";
-    return `<article class="ev-card ev-card--signage-list ev-card--${escapeHtml(ev.cat)}" role="presentation">
-        <p class="ev-signage-list-title">${escapeHtml(ev.name)}</p>
-        ${metaBlock}
+    const logicalSrc = pickupImageSrc(ev);
+    const mediaHtml = logicalSrc
+      ? pictureHTMLFromPath(logicalSrc, {
+          alt: "",
+          loading: "lazy",
+          sizes: "160px",
+          width: 240,
+          height: 240,
+        })
+      : `<div class="ev-signage-list-media-placeholder" aria-hidden="true"></div>`;
+    return `<article class="ev-card ev-card--signage-list ev-card--signage-media ev-card--${escapeHtml(ev.cat)}" role="presentation">
+        <div class="ev-signage-list-media">${mediaHtml}</div>
+        <div class="ev-signage-list-body">
+          <p class="ev-signage-list-title">${escapeHtml(ev.name)}</p>
+          ${metaBlock}
+        </div>
       </article>`;
   }
 
