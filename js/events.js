@@ -4,7 +4,6 @@ import {
   FEATURED_IMAGE_BY_ID,
   FEATURED_IMAGE_FALLBACK,
   FEATURED_PICKUP_CAROUSEL_INTERVAL_MS,
-  SCREENING_SLIDESHOW_INTERVAL_MS,
   EVENT_CATEGORY_LABELS,
   dialogProgramLabelMod,
   dialogProgramLabelText,
@@ -29,7 +28,15 @@ import {
   applyResponsiveImageToImg,
 } from "./lib/responsive-image.js";
 import { withViewTransition, tagViewTransitionPair } from "./lib/view-transition.js";
-import { resolveSignageHeroStartIndex } from "./signage-hero-state.js";
+import {
+  mountSignageShellChrome,
+  signageEventTopHTML,
+  signageFooterHTML,
+} from "./signage-layout.js";
+import {
+  resolveSignageHeroStartIndex,
+  storeSignageHeroIndex,
+} from "./signage-hero-state.js";
 
 let mxmEvPickupCarouselTimer = null;
 
@@ -40,11 +47,16 @@ function clearEvPickupCarouselTimer() {
   }
 }
 
-/** `#ev-pickup .ev-pickup-hero` 生成後に描画完了コールバックへ渡す用 */
-function initEvPickupCarousel(root) {
+/**
+ * `#ev-pickup .ev-pickup-hero` / サイネージ `.ev-signage-hero-carousel` 用
+ * @param {HTMLElement | null} root
+ * @param {{ signage?: boolean }} [options]
+ */
+function initEvPickupCarousel(root, options = {}) {
+  const signage = Boolean(options.signage);
   clearEvPickupCarouselTimer();
   if (!root) return;
-  if (document.body.dataset.signage) return;
+  if (document.body.dataset.signage && !signage) return;
 
   const slides = Array.from(root.querySelectorAll(".ev-pickup-slide"));
   const dotsHost = root.querySelector(".ev-pickup-dots");
@@ -54,7 +66,7 @@ function initEvPickupCarousel(root) {
   if (!slides.length || !dotsHost) return;
 
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  let index = 0;
+  let index = signage ? resolveSignageHeroStartIndex(slides.length, "event") : 0;
 
   const announce = (slideEl) => {
     if (!liveEl) return;
@@ -77,6 +89,7 @@ function initEvPickupCarousel(root) {
       d.setAttribute("aria-current", j === i ? "true" : "false");
     });
     announce(slides[i]);
+    if (signage) storeSignageHeroIndex("event", i);
   };
 
   const restartAuto = () => {
@@ -108,25 +121,36 @@ function initEvPickupCarousel(root) {
 
   if (controls) controls.hidden = slides.length < 2;
 
-  setActive(0);
+  setActive(index);
   restartAuto();
 }
 
 const SIGNAGE_EVENT_VENUE = "こうべまちづくり会館 3F多目的室";
 
-function signageEventChromeHTML() {
-  return `<div class="signage-event-chrome">
-    <header class="signage-event-chrome__head">
-      <p class="signage-event-chrome__kicker">イベントプログラム</p>
-      <h1 class="signage-event-chrome__title">イベント</h1>
-      <p class="signage-event-chrome__tagline">レクチャー・ワークショップ・常設企画</p>
-    </header>
-    <p class="signage-event-chrome__meta">
-      <span class="signage-event-chrome__venue">${escapeHtml(SIGNAGE_EVENT_VENUE)}</span>
-      <span class="signage-event-chrome__dates">7/18（土）・7/19（日）</span>
-      <span class="signage-event-chrome__note">入場無料（ワークショップは要申込）</span>
-    </p>
-  </div>`;
+/** @param {ParentNode} programBody @param {HTMLElement} sectionRoot */
+function ensureSignageEventHosts(programBody, sectionRoot) {
+  if (!programBody || !sectionRoot) {
+    return { featuredHost: null };
+  }
+  mountSignageShellChrome(
+    programBody,
+    signageEventTopHTML(),
+    signageFooterHTML({ mode: "event" }),
+  );
+
+  let featuredHost = document.getElementById("ev-signage-featured");
+  if (!featuredHost) {
+    featuredHost = document.createElement("div");
+    featuredHost.id = "ev-signage-featured";
+    featuredHost.className = "signage-featured-host";
+    featuredHost.setAttribute("role", "region");
+    featuredHost.setAttribute("aria-label", "注目プログラム");
+    sectionRoot.parentElement?.insertBefore(featuredHost, sectionRoot);
+  }
+
+  programBody.querySelector(".signage-aside-host")?.remove();
+
+  return { featuredHost };
 }
 
 export function initEventsSection() {
@@ -152,26 +176,17 @@ export function initEventsSection() {
     return;
   }
 
+  let signageFeaturedHost = null;
+
   if (isSignageEvent && sectionRoot) {
     sectionRoot.classList.add("ev-section--signage");
     sectionRoot.innerHTML = `<div id="ev-list" class="ev-signage-schedule" aria-label="イベントスケジュール"></div>`;
     listHost = document.getElementById("ev-list");
     permanentHost = null;
+    pickupHost = null;
     const programBody = document.querySelector("#event .program-body");
-    if (programBody && !programBody.querySelector(".signage-event-chrome")) {
-      programBody.insertAdjacentHTML("afterbegin", signageEventChromeHTML());
-    }
-    pickupHost = document.getElementById("ev-signage-hero");
-    if (!pickupHost && programBody && sectionRoot.parentElement) {
-      const heroEl = document.createElement("div");
-      heroEl.id = "ev-signage-hero";
-      heroEl.className = "ev-signage-hero";
-      heroEl.setAttribute("role", "region");
-      heroEl.setAttribute("aria-label", "イベントビジュアル");
-      heroEl.hidden = true;
-      sectionRoot.parentElement.insertBefore(heroEl, sectionRoot);
-      pickupHost = heroEl;
-    }
+    const hosts = ensureSignageEventHosts(programBody, sectionRoot);
+    signageFeaturedHost = hosts.featuredHost;
   } else if (!permanentHost || !listHost) {
     return;
   }
@@ -239,46 +254,56 @@ export function initEventsSection() {
     return end && end !== start ? `${start} – ${end}` : start;
   }
 
+  /** サイネージ：レクチャー／WS 等の規定色インラインラベル */
+  function signageCatLabelHTML(cat) {
+    const tone = ["lecture", "workshop", "permanent"].includes(cat) ? cat : "lecture";
+    return `<span class="ev-cat ev-cat-${escapeHtml(tone)}">${escapeHtml(catLabel(cat))}</span>`;
+  }
+
+  const SIGNAGE_META_ICONS = Object.freeze({
+    speakers: "./images/fa-users.svg",
+    time: "./images/icon-calendar-days.svg",
+  });
+
   /** @param {object} ev */
-  function signageEventListMeta(ev) {
-    const parts = [
-      catLabel(ev.cat),
-      signageEventTimeLine(ev),
-      String(ev.dateLine || "").trim(),
-      ev.apply ? "要申込" : "",
-    ].filter(Boolean);
-    return parts.join(" · ");
+  function signageSpeakersHTML(ev) {
+    const speakers = String(ev.speakers || "").trim();
+    if (!speakers) return "";
+    return `<p class="ev-signage-speakers ev-signage-meta-line" role="group" aria-label="登壇者">
+      <img class="ev-signage-meta-icon" src="${SIGNAGE_META_ICONS.speakers}" alt="" width="18" height="18" decoding="async" aria-hidden="true" />
+      <span class="ev-signage-meta-text">${escapeHtml(speakers)}</span>
+    </p>`;
   }
 
-  /** @param {object} ev @param {string} uniqueKey */
-  function signageEventFloatPanelInnerHTML(ev, uniqueKey) {
-    const dateLine = String(ev.dateLine || "").trim();
-    const timeStr = signageEventTimeLine(ev);
-    const titleId = `ev-float-title-${escapeHtml(ev.id)}-${escapeHtml(uniqueKey)}`;
-    const metaParts = [catLabel(ev.cat), timeStr, ev.apply ? "要申込" : ""].filter(Boolean);
-    const metaJoined = metaParts.join("／");
-    const synopsisRaw = String(ev.desc || "").trim() || DETAIL_PLACEHOLDER;
-    const synopsis =
-      synopsisRaw.length > 140 ? `${synopsisRaw.slice(0, 139).trim()}…` : synopsisRaw;
-    const metaHtml = metaJoined
-      ? `<p class="mv-float-panel-meta-line">${escapeHtml(metaJoined)}</p>`
-      : "";
-
-    return `<div class="mv-float-panel-head">
-  ${dateLine ? `<p class="mv-float-panel-date"><span class="mv-float-panel-date-badge">${escapeHtml(dateLine)}</span></p>` : ""}
-  <h3 class="mv-float-panel-title" id="${titleId}">${escapeHtml(ev.name)}</h3>
-  ${metaHtml}
-</div>
-<div class="mv-float-panel-body">
-  <p class="mv-float-panel-lead">概要</p>
-  <p class="mv-float-panel-synopsis">${escapeHtml(synopsis)}</p>
-</div>`;
+  /** @param {object} ev */
+  function signageTimeHTML(ev) {
+    const time = signageEventTimeLine(ev);
+    if (!time) return "";
+    return `<p class="ev-signage-time ev-signage-meta-line">
+      <img class="ev-signage-meta-icon" src="${SIGNAGE_META_ICONS.time}" alt="" width="18" height="18" decoding="async" aria-hidden="true" />
+      <span class="ev-signage-meta-text">${escapeHtml(time)}</span>
+    </p>`;
   }
 
-  /** @param {object} ev @param {string} uniqueKey */
-  function signageEventInfoFloatHTML(ev, uniqueKey) {
-    const titleId = `ev-float-title-${escapeHtml(ev.id)}-${escapeHtml(uniqueKey)}`;
-    return `<aside class="signage-mv-page-synopsis-float mv-float-panel" aria-labelledby="${titleId}" aria-label="${escapeHtml(ev.name)}">${signageEventFloatPanelInnerHTML(ev, uniqueKey)}</aside>`;
+  /** @param {object} ev */
+  function signageApplyInlineHTML(ev) {
+    if (!ev.apply) return "";
+    return `<span class="ev-signage-apply">要申込</span>`;
+  }
+
+  /** @param {object} ev @param {{ loading?: string, sizes: string, width: number, height: number }} imgOpts */
+  function signageEventThumbHTML(ev, imgOpts) {
+    const logicalSrc = pickupImageSrc(ev);
+    if (!logicalSrc) {
+      return `<div class="ev-signage-thumb-placeholder" aria-hidden="true"></div>`;
+    }
+    return pictureHTMLFromPath(logicalSrc, {
+      alt: `${ev.name}のキービジュアル`,
+      loading: imgOpts.loading ?? "lazy",
+      sizes: imgOpts.sizes,
+      width: imgOpts.width,
+      height: imgOpts.height,
+    });
   }
 
   function tagsFromCell(tagCell) {
@@ -363,25 +388,59 @@ export function initEventsSection() {
   </div>`;
   }
 
-  /** 縦型サイネージ：左サムネ＋右テキスト（上映サイネージの mv-card--signage-list に相当） */
-  function cardSignageListHTML(ev) {
-    const meta = signageEventListMeta(ev);
-    const metaBlock = meta ? `<p class="ev-signage-list-meta">${escapeHtml(meta)}</p>` : "";
+  /** 縦型サイネージ：7/18列など・大きなビジュアル1枚（または縦積み） */
+  function cardSignagePosterHTML(ev) {
     const logicalSrc = pickupImageSrc(ev);
     const mediaHtml = logicalSrc
       ? pictureHTMLFromPath(logicalSrc, {
-          alt: "",
+          alt: `${ev.name}のキービジュアル`,
           loading: "lazy",
-          sizes: "160px",
-          width: 240,
-          height: 240,
+          sizes: "(max-width: 1080px) 50vw, 480px",
+          width: 480,
+          height: 640,
         })
-      : `<div class="ev-signage-list-media-placeholder" aria-hidden="true"></div>`;
-    return `<article class="ev-card ev-card--signage-list ev-card--signage-media ev-card--${escapeHtml(ev.cat)}" role="presentation">
-        <div class="ev-signage-list-media">${mediaHtml}</div>
-        <div class="ev-signage-list-body">
-          <p class="ev-signage-list-title">${escapeHtml(ev.name)}</p>
-          ${metaBlock}
+      : `<div class="signage-poster-media-placeholder" aria-hidden="true"></div>`;
+    return `<article class="ev-card ev-card--signage-poster ev-card--${escapeHtml(ev.cat)}" role="presentation">
+        <div class="signage-poster-media">${mediaHtml}</div>
+      </article>`;
+  }
+
+  /** 縦型サイネージ：日別列・上映ポスターと同型（画像上＋情報下） */
+  function cardSignageListHTML(ev) {
+    const mediaHtml = signageEventThumbHTML(ev, {
+      sizes: "(max-width: 1080px) 50vw, 480px",
+      width: 480,
+      height: 480,
+    });
+    const applyHtml = signageApplyInlineHTML(ev);
+    const labelRow = `<div class="ev-signage-list-labels">${signageCatLabelHTML(ev.cat)}${applyHtml}</div>`;
+    return `<article class="ev-card ev-card--signage-poster ev-card--signage-list ev-card--${escapeHtml(ev.cat)}" role="presentation">
+        <div class="signage-poster-media">${mediaHtml}</div>
+        <div class="signage-poster-caption ev-signage-poster-caption">
+          ${labelRow}
+          <h4 class="signage-poster-title ev-signage-list-title">${escapeHtml(ev.name)}</h4>
+          ${signageSpeakersHTML(ev)}
+          ${signageTimeHTML(ev)}
+        </div>
+      </article>`;
+  }
+
+  /** 下段：常設企画コンパクトカード */
+  function cardSignageAsideHTML(ev) {
+    const mediaHtml = signageEventThumbHTML(ev, {
+      sizes: "min(38vw, 360px)",
+      width: 360,
+      height: 280,
+    });
+    const applyHtml = signageApplyInlineHTML(ev);
+    const labelRow = `<div class="ev-signage-list-labels">${signageCatLabelHTML(ev.cat)}${applyHtml}</div>`;
+    return `<article class="ev-card ev-card--signage-aside-compact ev-card--${escapeHtml(ev.cat)}" role="presentation">
+        <div class="signage-aside-compact__media">${mediaHtml}</div>
+        <div class="signage-aside-compact__body">
+          ${labelRow}
+          <h4 class="signage-aside-compact__title">${escapeHtml(ev.name)}</h4>
+          ${signageSpeakersHTML(ev)}
+          ${signageTimeHTML(ev)}
         </div>
       </article>`;
   }
@@ -396,7 +455,30 @@ export function initEventsSection() {
     return a.sort - b.sort;
   }
 
-  function signageScheduleGridHTML(scheduleTimed, permanents) {
+  /** @param {object[]} events @param {string[]} featuredIds */
+  function pickSignageFeaturedCarousel(events, featuredIds) {
+    const seen = new Set();
+    const out = [];
+    for (const id of featuredIds) {
+      const ev = events.find((e) => e.id === id && e.cat !== "permanent");
+      if (ev && !seen.has(ev.id)) {
+        seen.add(ev.id);
+        out.push(ev);
+      }
+    }
+    const flagged = events
+      .filter((e) => e.featured && e.cat !== "permanent")
+      .sort((a, b) => a.sort - b.sort);
+    for (const ev of flagged) {
+      if (!seen.has(ev.id)) {
+        seen.add(ev.id);
+        out.push(ev);
+      }
+    }
+    return out;
+  }
+
+  function signageScheduleGridHTML(scheduleTimed) {
     const days = [
       { key: "sat", label: "7/18（土）" },
       { key: "sun", label: "7/19（日）" },
@@ -404,16 +486,12 @@ export function initEventsSection() {
     const cols = days
       .map(({ key, label }) => {
         const dayEvs = scheduleTimed
-          .filter((e) => e.day === key || e.day === "both")
+          .filter((e) => e.day === key)
           .sort(sortSignageEvents);
         const rows = dayEvs.map((ev) => cardSignageListHTML(ev)).join("");
-        const permanentRows =
-          key === "sat" && permanents.length
-            ? permanents.map((ev) => cardSignageListHTML(ev)).join("")
-            : "";
-        return `<section class="ev-signage-day" aria-labelledby="ev-signage-day-${escapeHtml(key)}">
-          <h3 class="ev-signage-day-title ev-program-col-title--signage" id="ev-signage-day-${escapeHtml(key)}"><span class="ev-program-col-date">${escapeHtml(label)}</span></h3>
-          <div class="ev-signage-day-rows ev-program-col-list">${rows}${permanentRows || ""}${!rows && !permanentRows ? '<p class="ev-signage-day-empty">—</p>' : ""}</div>
+        return `<section class="ev-signage-day" id="ev-signage-day-${escapeHtml(key)}" aria-labelledby="ev-signage-day-${escapeHtml(key)}-title">
+          <h3 class="ev-signage-day-title ev-program-col-title--signage" id="ev-signage-day-${escapeHtml(key)}-title"><span class="ev-program-col-date">${escapeHtml(label)}</span></h3>
+          <div class="ev-signage-day-rows ev-program-col-list">${rows || '<p class="ev-signage-day-empty">—</p>'}</div>
         </section>`;
       })
       .join("");
@@ -603,92 +681,6 @@ export function initEventsSection() {
     return FEATURED_IMAGE_BY_ID[ev.id] || byIdDefault || FEATURED_IMAGE_FALLBACK;
   }
 
-  /** @param {object[]} events */
-  function sortSignageCarouselEvents(events) {
-    const dayOrder = { sat: 0, sun: 1, both: 2 };
-    return [...events].sort((a, b) => {
-      const da = dayOrder[a.day] ?? 99;
-      const db = dayOrder[b.day] ?? 99;
-      if (da !== db) return da - db;
-      return sortSignageEvents(a, b);
-    });
-  }
-
-  /** @param {object[]} orderedEvents */
-  function signageEventPageHeroHTML(orderedEvents) {
-    if (!orderedEvents.length) return "";
-    const slidesHtml = orderedEvents
-      .map((ev, j) => {
-        const logicalSrc = pickupImageSrc(ev);
-        const active = j === 0 ? " is-active" : "";
-        const loading = j === 0 ? "eager" : "lazy";
-        const media = logicalSrc
-          ? pictureHTMLFromPath(logicalSrc, {
-              loading,
-              alt: `${ev.name}のキービジュアル`,
-              sizes: "100vw",
-              width: 1080,
-              height: 608,
-              ...(j === 0 ? { fetchpriority: "high" } : {}),
-            })
-          : `<div class="signage-mv-page-slide-placeholder" aria-hidden="true"></div>`;
-        return `<figure class="signage-mv-page-slide${active}">${media}${signageEventInfoFloatHTML(ev, `ev-${j}`)}</figure>`;
-      })
-      .join("");
-    return `<div class="signage-mv-page-hero">
-    <div class="signage-mv-page-slideshow" role="region" aria-roledescription="カルーセル" aria-label="イベントビジュアル">
-      <div class="signage-mv-page-slides-inner">${slidesHtml}</div>
-      <div class="signage-mv-page-dots" aria-hidden="false"></div>
-    </div>
-  </div>`;
-  }
-
-  /** @param {ParentNode} host */
-  function wireSignageEventPageHero(host) {
-    const root = host.querySelector(".signage-mv-page-slideshow");
-    if (!root) return;
-    const slides = Array.from(root.querySelectorAll(".signage-mv-page-slide"));
-    const dotsHost = root.querySelector(".signage-mv-page-dots");
-    if (!slides.length || !dotsHost) return;
-
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    let index = 0;
-    let timer = null;
-
-    const setActive = (nextIndex) => {
-      const i = (nextIndex + slides.length) % slides.length;
-      index = i;
-      slides.forEach((s, j) => s.classList.toggle("is-active", j === i));
-      dotsHost.querySelectorAll("button").forEach((d, j) => {
-        d.classList.toggle("is-active", j === i);
-      });
-    };
-
-    dotsHost.textContent = "";
-    slides.forEach((slideEl, j) => {
-      const b = document.createElement("button");
-      b.type = "button";
-      b.className = "signage-mv-page-dot";
-      const panel = slideEl.querySelector(".mv-float-panel-title");
-      b.setAttribute(
-        "aria-label",
-        panel?.textContent?.trim() ? panel.textContent.trim() : `スライド ${j + 1}`,
-      );
-      b.addEventListener("click", () => {
-        setActive(j);
-        if (timer) window.clearInterval(timer);
-        if (!reduced) {
-          timer = window.setInterval(() => setActive(index + 1), SCREENING_SLIDESHOW_INTERVAL_MS);
-        }
-      });
-      dotsHost.appendChild(b);
-    });
-
-    setActive(resolveSignageHeroStartIndex(slides.length, "event"));
-    if (reduced) return;
-    timer = window.setInterval(() => setActive(index + 1), SCREENING_SLIDESHOW_INTERVAL_MS);
-  }
-
   /** イベント CSV の「画像」「画像ファイル名」（旧「サムネURL」）→ thumbUrl 用文字列 */
   function thumbUrlFromRow(r) {
     const hasImageCol = r["画像"] !== undefined && String(r["画像"]).trim() !== "";
@@ -702,14 +694,18 @@ export function initEventsSection() {
 
   function pickupHeroSlideHTML(ev, idx, signage = false) {
     const logicalSrc = pickupImageSrc(ev);
-    const mediaHtml = pictureHTMLFromPath(logicalSrc, {
-      class: "ev-pickup-media-img",
-      loading: idx === 0 ? "eager" : "lazy",
-      alt: "",
-      sizes: signage ? "100vw" : "(max-width: 900px) 100vw, 44vw",
-      width: 640,
-      height: 360,
-    });
+    const mediaHtml = logicalSrc
+      ? pictureHTMLFromPath(logicalSrc, {
+          class: "ev-pickup-media-img",
+          loading: idx === 0 ? "eager" : "lazy",
+          alt: signage ? `${ev.name}のキービジュアル` : "",
+          sizes: signage ? "100vw" : "(max-width: 900px) 100vw, 44vw",
+          width: signage ? 1080 : 640,
+          height: signage ? 720 : 360,
+        })
+      : signage
+        ? `<div class="ev-signage-thumb-placeholder" aria-hidden="true"></div>`
+        : "";
     const { start, end } = splitTimeDisplay(ev);
     const timeStr =
       start === "常設"
@@ -740,13 +736,16 @@ export function initEventsSection() {
     const badgeHtml = signage ? "" : '<span class="ev-pickup-badge">注目</span>';
 
     if (signage) {
+      const applyHtml = signageApplyInlineHTML(ev);
+      const labelRow = `<div class="ev-signage-hero-labels">${signageCatLabelHTML(ev.cat)}${applyHtml}</div>`;
       return `<article class="ev-signage-hero-slide ev-pickup-slide ev-pickup-slide--${escapeHtml(ev.cat)}${activeCls}" id="ev-pickup-slide-${idx}" aria-roledescription="スライド" aria-hidden="${ariaHidden}">
-      <div class="ev-signage-hero-slide-inner">
-        <div class="ev-signage-hero-media">${mediaHtml}</div>
-        <div class="ev-signage-hero-caption">
-          <span class="ev-cat ev-cat-${escapeHtml(ev.cat)}">${escapeHtml(catLabel(ev.cat))}</span>
-          <h3 class="ev-signage-hero-title ev-pickup-title">${escapeHtml(ev.name)}</h3>
-          ${timeLineHtml}
+      <div class="signage-featured__stage">
+        <div class="signage-featured__media">${mediaHtml}</div>
+        <div class="signage-featured__panel">
+          ${labelRow}
+          <h3 class="signage-featured__title ev-pickup-title">${escapeHtml(ev.name)}</h3>
+          ${signageSpeakersHTML(ev)}
+          ${signageTimeHTML(ev)}
         </div>
       </div>
     </article>`;
@@ -939,21 +938,24 @@ export function initEventsSection() {
 
     if (isSignageEvent) {
       const scheduleTimed = events.filter((e) => e.cat !== "permanent" && e.day);
-      const carouselEvents = sortSignageCarouselEvents([...scheduleTimed, ...permanents]);
+      const featuredCarousel = pickSignageFeaturedCarousel(events, [...FEATURED_EVENT_IDS]);
 
-      if (pickupHost) {
-        if (carouselEvents.length) {
-          pickupHost.hidden = false;
-          pickupHost.innerHTML = signageEventPageHeroHTML(carouselEvents);
-          wireSignageEventPageHero(pickupHost);
+      if (signageFeaturedHost) {
+        if (featuredCarousel.length) {
+          signageFeaturedHost.hidden = false;
+          signageFeaturedHost.innerHTML = featuredPickupMarkup(featuredCarousel, true);
+          initEvPickupCarousel(
+            signageFeaturedHost.querySelector(".ev-pickup-hero"),
+            { signage: true },
+          );
         } else {
-          pickupHost.hidden = true;
-          pickupHost.innerHTML = "";
+          signageFeaturedHost.hidden = true;
+          signageFeaturedHost.innerHTML = "";
         }
       }
 
       if (listHost) {
-        listHost.innerHTML = signageScheduleGridHTML(scheduleTimed, permanents);
+        listHost.innerHTML = signageScheduleGridHTML(scheduleTimed);
       }
 
       if (sectionRoot) sectionRoot.setAttribute("aria-busy", "false");

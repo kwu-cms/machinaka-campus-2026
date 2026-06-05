@@ -16,6 +16,12 @@ import {
 } from "./lib/responsive-image.js";
 import { withViewTransition, tagViewTransitionPair } from "./lib/view-transition.js";
 import { resolveSignageHeroStartIndex } from "./signage-hero-state.js";
+import {
+  facultyHeroOverlayHTML,
+  mountSignageShellChrome,
+  signageFooterHTML,
+  signageScreeningTopHTML,
+} from "./signage-layout.js";
 
 const MOVIE_QUERY_PARAM = "movie_id";
 
@@ -399,27 +405,27 @@ ${creditsHtml}`;
       </article>`;
     }
 
-    /** 縦型サイネージ（上映）：左サムネ＋右テキスト（あらすじは上部スライド） */
-    function movieCardSignageListHTML(m) {
+    /** 縦型サイネージ（上映）：日別ポスター格子（画像＋下にタイトル・監督） */
+    function movieCardSignagePosterHTML(m) {
       const titleShown = formatDisplayTitle(m.title);
       const meta = metaLine(m, true);
       const metaBlock = meta
-        ? `<p class="mv-signage-list-meta">${escapeHtml(meta)}</p>`
+        ? `<p class="signage-poster-meta">${escapeHtml(meta)}</p>`
         : "";
       const thumb = thumbSrc(m.thumbPath);
       const mediaHtml = thumb
         ? thumbPictureHTML(thumb, {
-            alt: "",
+            alt: `${titleShown}のキービジュアル`,
             loading: "lazy",
-            sizes: "160px",
-            width: 240,
-            height: 240,
+            sizes: "(max-width: 1080px) 50vw, 480px",
+            width: 480,
+            height: 480,
           })
-        : `<div class="mv-signage-list-media-placeholder" aria-hidden="true"></div>`;
-      return `<article class="mv-card mv-card--signage-list mv-card--signage-media" data-movie-id="${escapeHtml(m.id)}">
-        <div class="mv-signage-list-media">${mediaHtml}</div>
-        <div class="mv-signage-list-body">
-          <p class="mv-signage-list-title">${escapeHtml(titleShown)}</p>
+        : `<div class="signage-poster-media-placeholder" aria-hidden="true"></div>`;
+      return `<article class="mv-card mv-card--signage-poster" data-movie-id="${escapeHtml(m.id)}" role="presentation">
+        <div class="signage-poster-media">${mediaHtml}</div>
+        <div class="signage-poster-caption">
+          <p class="signage-poster-title">${escapeHtml(titleShown)}</p>
           ${metaBlock}
         </div>
       </article>`;
@@ -444,12 +450,14 @@ ${creditsHtml}`;
       return { heroHost, programBody };
     }
 
-    function applySignageScreeningLayout({ chromeHtml, heroHtml, scheduleHtml }) {
+    function applySignageScreeningLayout({ heroHtml, scheduleHtml }) {
       const { heroHost, programBody } = ensureSignageScreeningShell();
-      if (programBody && chromeHtml) {
-        const existing = programBody.querySelector(".signage-screening-chrome");
-        if (existing) existing.outerHTML = chromeHtml;
-        else programBody.insertAdjacentHTML("afterbegin", chromeHtml);
+      if (programBody) {
+        mountSignageShellChrome(
+          programBody,
+          signageScreeningTopHTML(),
+          signageFooterHTML({ mode: "screening" }),
+        );
       }
       listHost.innerHTML = scheduleHtml;
       if (!heroHost) return;
@@ -461,22 +469,6 @@ ${creditsHtml}`;
         heroHost.hidden = true;
         heroHost.innerHTML = "";
       }
-    }
-
-    /** 上映サイネージ：プログラム名・会場・時間（列見出しと重複しない共通情報） */
-    function signageScreeningChromeHTML(timeDisplay, venue) {
-      return `<div class="signage-screening-chrome">
-        <header class="signage-screening-chrome__head">
-          <p class="signage-screening-chrome__kicker">上映プログラム</p>
-          <h1 class="signage-screening-chrome__title">卒業制作選抜展「南女シネマ」</h1>
-          <p class="signage-screening-chrome__tagline">映画つくった　宝物みつけた</p>
-        </header>
-        <p class="signage-screening-chrome__meta">
-          <span class="signage-screening-chrome__venue">${escapeHtml(venue)}</span>
-          <span class="signage-screening-chrome__time">${escapeHtml(timeDisplay)}</span>
-          <span class="signage-screening-chrome__note">入場無料</span>
-        </p>
-      </div>`;
     }
 
     function mvProgramColTitleSignageHtml(label, headingId) {
@@ -502,20 +494,16 @@ ${creditsHtml}`;
                 height: 608,
               })
             : `<div class="signage-mv-page-slide-placeholder" aria-hidden="true"></div>`;
-          const infoFloat = mvFloatPanelAsideHTML(
-            m,
-            "signage-mv-page-synopsis-float mv-float-panel",
-            undefined,
-            `sg-${j}`,
-          );
-          return `<figure class="signage-mv-page-slide${active}">${media}${infoFloat}</figure>`;
+          return `<figure class="signage-mv-page-slide${active}">${media}</figure>`;
         })
         .join("");
-      return `<div class="signage-mv-page-hero">
-        <div class="signage-mv-page-slideshow" role="region" aria-roledescription="カルーセル" aria-label="上映作品ビジュアル">
+      const overlayHtml = facultyHeroOverlayHTML();
+      return `<div class="signage-hero signage-mv-page-hero">
+        <div class="signage-mv-page-slideshow" role="region" aria-roledescription="カルーセル" aria-label="上映ビジュアル">
           <div class="signage-mv-page-slides-inner">${slidesHtml}</div>
           <div class="signage-mv-page-dots" aria-hidden="false"></div>
         </div>
+        ${overlayHtml}
       </div>`;
     }
 
@@ -543,11 +531,7 @@ ${creditsHtml}`;
         const b = document.createElement("button");
         b.type = "button";
         b.className = "signage-mv-page-dot";
-        const panel = slideEl.querySelector(".mv-float-panel");
-        b.setAttribute(
-          "aria-label",
-          panel && panel.textContent.trim() ? panel.textContent.trim() : `スライド ${j + 1}`,
-        );
+        b.setAttribute("aria-label", `スライド ${j + 1}`);
         b.addEventListener("click", () => {
           setActive(j);
           if (timer) window.clearInterval(timer);
@@ -789,7 +773,7 @@ ${creditsHtml}`;
 
         movieDialogNavIds = moviesInDisplayOrder().map((m) => m.id);
 
-        const cardRenderer = signageScreening ? movieCardSignageListHTML : movieCardHTML;
+        const cardRenderer = signageScreening ? movieCardSignagePosterHTML : movieCardHTML;
 
         const signageHeroMovies =
           signageScreening && movies.length
@@ -823,12 +807,8 @@ ${creditsHtml}`;
         const bodyHtml =
           html ||
           '<p class="mv-load-error" role="alert">上映作品データがありません。スプレッドシートの「上映」シート（列名・公開設定）を確認してください。</p>';
-        const signageChrome = signageScreening
-          ? signageScreeningChromeHTML(MV_PROGRAM_SLOT_TIME, MV_PROGRAM_SLOT_VENUE)
-          : "";
         if (signageScreening) {
           applySignageScreeningLayout({
-            chromeHtml: signageChrome,
             heroHtml: signagePageHero || "",
             scheduleHtml: bodyHtml,
           });
@@ -857,18 +837,10 @@ ${creditsHtml}`;
         if (deepMovieId && byId[deepMovieId]) openForId(deepMovieId, { fromUrl: true });
       } catch {
         movieDialogNavIds = [];
-        const signageChrome =
-          document.body.dataset.signage === "screening"
-            ? signageScreeningChromeHTML(
-                PROGRAM_TIMELINE.screening.timeDisplay,
-                PROGRAM_TIMELINE.screening.venue,
-              )
-            : "";
         const errHtml =
           '<p class="mv-load-error" role="alert">上映作品一覧を読み込めませんでした。スプレッドシートの共有（リンクを知っている全員が閲覧可）とネットワークを確認し、しばらくしてから再度お試しください。</p>';
         if (document.body.dataset.signage === "screening") {
           applySignageScreeningLayout({
-            chromeHtml: signageChrome,
             heroHtml: "",
             scheduleHtml: errHtml,
           });

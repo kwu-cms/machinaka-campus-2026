@@ -30,10 +30,17 @@ export function storeSignageHeroIndex(mode, index) {
 
 /** @param {SignageHeroMode} mode */
 export function readActiveSignageHeroIndex(mode) {
+  if (mode === "event") {
+    const slides = document.querySelectorAll(
+      ".ev-signage-hero-carousel .ev-signage-hero-slide.ev-pickup-slide",
+    );
+    for (let i = 0; i < slides.length; i += 1) {
+      if (slides[i].classList.contains("is-active")) return i;
+    }
+    return 0;
+  }
   const selector =
-    mode === "event"
-      ? "#ev-signage-hero .signage-mv-page-slideshow, #event .signage-mv-page-slideshow"
-      : "#mv-signage-hero .signage-mv-page-slideshow, #screening .signage-mv-page-slideshow";
+    "#mv-signage-hero .signage-mv-page-slideshow, #screening .signage-mv-hero-host .signage-mv-page-slideshow";
   const root = document.querySelector(selector);
   if (!root) return 0;
   const slides = root.querySelectorAll(".signage-mv-page-slide");

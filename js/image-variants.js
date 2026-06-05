@@ -351,6 +351,12 @@ export const IMAGE_VARIANT_WIDTHS = Object.freeze({
     480,
     240
   ],
+  "qr_cinema": [
+    640
+  ],
+  "qr_site": [
+    640
+  ],
   "screening-slides/screening_1": [
     960,
     480

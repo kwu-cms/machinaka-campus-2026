@@ -1,0 +1,1901 @@
+/*
+ * signage.css — 縦型サイネージ専用（1080×1920 想定）
+ * body[data-signage] のみ。通常サイトには影響しない。
+ * ?signage=screening | ?signage=event | signage=cycle
+ */
+
+html.is-signage {
+  overflow-x: hidden;
+  scroll-padding-top: 0;
+  height: 100%;
+}
+
+body.is-signage-vertical {
+  overflow-x: hidden;
+  height: 100%;
+}
+
+/* 1080×1920 縦型：タイポグラフィ・レイアウト共通トークン */
+body[data-signage] {
+  --sg-kicker: clamp(0.82rem, 1.65vh, 0.98rem);
+  --sg-title: clamp(1.65rem, 3.85vh, 2.15rem);
+  --sg-tagline: clamp(1.08rem, 2.35vh, 1.32rem);
+  --sg-meta: clamp(0.98rem, 2.05vh, 1.15rem);
+  --sg-col-date: clamp(1.52rem, 3.15vh, 1.92rem);
+  --sg-list-title: clamp(0.96rem, 2.05vh, 1.14rem);
+  --sg-list-meta: clamp(0.76rem, 1.55vh, 0.88rem);
+  --sg-list-desc: clamp(0.72rem, 1.45vh, 0.82rem);
+  --sg-float-title: clamp(1rem, 2.15vh, 1.18rem);
+  --sg-float-meta: clamp(0.78rem, 1.55vh, 0.9rem);
+  --sg-float-body: clamp(0.8rem, 1.65vh, 0.94rem);
+  --sg-gap: clamp(0.55rem, 1.25vh, 0.9rem);
+  --sg-col-gap: 15px;
+  --sg-hero-h: clamp(380px, 30vh, 520px);
+  --sg-event-row-h: clamp(5.5rem, 13.5vh, 16vh);
+  --sg-dark-bg: var(--bg-main);
+  --sg-dark-text: var(--text-light);
+}
+
+body[data-signage="screening"] {
+  --sg-accent-rgb: var(--brand-purple-rgb);
+  --sg-footer-bg: var(--brand-purple);
+  /* フッターを 2/3 高さにし、差分を作品リスト（screening-body 1fr）へ */
+  --sg-h-footer: calc(14.5vh * 2 / 3);
+  --sg-faculty-catch: clamp(0.58rem, 1.37vh, 1.37vh);
+  --sg-faculty-body: clamp(0.39rem, 0.79vh, 0.79vh);
+  --sg-faculty-attr-role: clamp(0.38rem, 0.77vh, 0.77vh);
+  --sg-faculty-attr-name: clamp(0.56rem, 1.13vh, 1.13vh);
+  /* ヒーロー 90% 高さ — 作品リストは screening-body の 1fr で自動拡大 */
+  --sg-hero-h: clamp(410px, 32.4vh, 562px);
+}
+
+body[data-signage="event"] {
+  --sg-accent-rgb: var(--brand-blue-rgb);
+  --sg-hero-panel-w: min(52%, 30rem);
+  --sg-hero-panel-bg: rgba(255, 255, 255, 0.94);
+  --sg-hero-panel-border: rgba(13, 13, 13, 0.08);
+  --sg-footer-bg: var(--brand-blue);
+  /* フッター 2/3 高さ。常設・当日案内は非表示のためスケジュール（1fr）へ集約 */
+  --sg-h-footer: calc(14.5vh * 2 / 3);
+}
+
+body[data-signage] .hero-promo-stack {
+  display: none !important;
+}
+
+body[data-signage] header.nav,
+body[data-signage] main > .hero,
+body[data-signage] main > #news,
+body[data-signage] main > #about,
+body[data-signage] main > #access,
+body[data-signage] > .footer {
+  display: none !important;
+}
+
+body[data-signage="screening"] #program .program-item:not(#screening),
+body[data-signage="event"] #program .program-item:not(#event) {
+  display: none !important;
+}
+
+body[data-signage] main {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+  height: 100vh;
+  height: 100dvh;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+}
+
+/* 1080×1920：通常サイトの #program 余白を外し、幅いっぱいに */
+body[data-signage] #program {
+  margin: 0;
+  padding: 0;
+  padding-block: 0;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+body[data-signage] #program > .container {
+  max-width: none;
+  width: 100%;
+  margin: 0;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+  padding: 0;
+  border-radius: 0;
+  box-shadow: none;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+body[data-signage="screening"] #program .program-list,
+body[data-signage="screening"] #screening.program-item {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+body[data-signage] #screening .program-body.signage-shell,
+body[data-signage] #event .program-body.signage-shell {
+  padding-top: 0;
+  padding-bottom: 0;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  gap: var(--sg-gap);
+}
+
+body[data-signage] .signage-top {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sg-gap);
+  min-width: 0;
+}
+
+body[data-signage] .signage-footer-host {
+  flex: 0 0 var(--sg-h-footer, auto);
+  min-width: 0;
+  height: var(--sg-h-footer, auto);
+  min-height: var(--sg-h-footer, auto);
+  max-height: var(--sg-h-footer, auto);
+  overflow: hidden;
+}
+
+body[data-signage="screening"] #screening .screening-body {
+  flex: 1 1 auto;
+  display: grid;
+  grid-template-rows: var(--sg-hero-h) minmax(0, 1fr);
+  grid-template-areas:
+    "hero"
+    "schedule";
+  gap: var(--sg-gap);
+  min-height: 0;
+  overflow: hidden;
+}
+
+body[data-signage="screening"] #mv-signage-hero,
+body[data-signage="screening"] #screening .signage-mv-hero-host {
+  grid-area: hero;
+  min-width: 0;
+}
+
+body[data-signage="screening"] #screening .mv-section {
+  grid-area: schedule;
+  order: unset;
+  flex: unset;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+body[data-signage="screening"] #screening .mv-schedule-main {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+body[data-signage="screening"] #screening .screening-hero-split {
+  display: none !important;
+}
+
+body[data-signage] #program .section-label {
+  margin-bottom: 0.2rem;
+}
+
+body[data-signage] #program .section-title {
+  margin-bottom: 0.65rem;
+}
+
+body[data-signage="screening"] #program > .container > .section-label,
+body[data-signage="screening"] #program > .container > .section-title {
+  display: none;
+}
+
+body[data-signage] #program .program-list {
+  border-top: none;
+}
+
+body[data-signage] #program .program-item {
+  border-bottom: none;
+}
+
+body[data-signage] .reveal {
+  opacity: 1;
+  transform: none;
+  transition: none;
+}
+
+body[data-signage] #program .program-head {
+  min-height: unset;
+  padding-block: 0.35rem 0.5rem;
+}
+
+body[data-signage="screening"] #program .program-head {
+  padding-block: 0.35rem 0.55rem;
+}
+
+/* 上映サイネージ：スライドショーは非表示。教員メッセージは下部パネル */
+body[data-signage="screening"] #screening.program-item {
+  overflow: visible;
+}
+
+body[data-signage="event"] #event.program-item {
+  overflow: visible;
+}
+
+body[data-signage="screening"] #screening .screening-hero-split__media {
+  display: none !important;
+}
+
+body[data-signage="screening"] #screening .program-copy.screening-intro {
+  display: none;
+}
+
+body[data-signage="screening"] #screening .screening-program-lede-stack {
+  display: none !important;
+}
+
+body[data-signage="screening"] #screening > header.program-head {
+  display: none !important;
+}
+
+/* ── サイネージ：ヘッダー・情報バー・フッター ── */
+body[data-signage] .signage-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: clamp(0.35rem, 0.8vh, 0.5rem) clamp(0.75rem, 1.8vw, 1rem);
+  background: var(--surface-elevated);
+  border-bottom: 1px solid var(--rule);
+  box-sizing: border-box;
+}
+
+body[data-signage] .signage-header__main {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding-left: 0.85rem;
+  border-left: 3px solid rgba(var(--sg-accent-rgb), 0.92);
+}
+
+body[data-signage] .signage-header__kicker {
+  margin: 0 0 0.22rem;
+  font-family: "DM Mono", monospace;
+  font-size: var(--sg-kicker);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(var(--sg-accent-rgb), 0.88);
+}
+
+body[data-signage] .signage-header__title {
+  margin: 0 0 0.22rem;
+  font-family: "Shippori Mincho B1", serif;
+  font-size: var(--sg-title);
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  line-height: 1.28;
+  color: var(--text-dark);
+}
+
+body[data-signage] .signage-header__tagline {
+  margin: 0;
+  font-family: "Shippori Mincho B1", serif;
+  font-size: var(--sg-tagline);
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  line-height: 1.45;
+  color: var(--dim);
+}
+
+body[data-signage] .signage-badge {
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 0.55rem 0.7rem;
+  max-width: 7.5rem;
+  font-family: "Noto Sans JP", sans-serif;
+  font-size: clamp(0.72rem, 1.45vh, 0.86rem);
+  font-weight: 800;
+  line-height: 1.35;
+  text-align: center;
+  color: var(--text-dark);
+  background: rgba(var(--sg-accent-rgb), 0.12);
+  border: 2px solid rgba(var(--sg-accent-rgb), 0.55);
+  border-radius: 999px;
+  box-sizing: border-box;
+}
+
+body[data-signage] .signage-infobar {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  background: var(--sg-dark-bg);
+  color: var(--sg-dark-text);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+body[data-signage] .signage-infobar__cell {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0.2rem;
+  min-height: 3.25rem;
+  padding: clamp(0.45rem, 0.95vh, 0.6rem) clamp(0.5rem, 1vw, 0.65rem);
+  border-right: 1px solid rgba(255, 255, 255, 0.12);
+  box-sizing: border-box;
+}
+
+body[data-signage] .signage-infobar__cell:last-child {
+  border-right: none;
+}
+
+body[data-signage] .signage-infobar__icon {
+  flex: 0 0 auto;
+  opacity: 0.92;
+  filter: brightness(0) invert(1);
+}
+
+body[data-signage] .signage-infobar__text {
+  font-family: "DM Mono", monospace;
+  font-size: clamp(0.78rem, 1.55vh, 0.92rem);
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  line-height: 1.35;
+}
+
+body[data-signage] .signage-infobar__sub {
+  font-family: "Noto Sans JP", sans-serif;
+  font-size: clamp(0.62rem, 1.2vh, 0.72rem);
+  font-weight: 500;
+  line-height: 1.4;
+  opacity: 0.78;
+}
+
+/* 上映：日時・会場は白ヘッダー内（黒 infobar は使わない） */
+body[data-signage="screening"] .signage-header--screening {
+  flex-direction: row;
+  align-items: flex-start;
+  padding: clamp(0.45rem, 0.95vh, 0.65rem) clamp(0.75rem, 1.8vw, 1rem);
+}
+
+body[data-signage="screening"] .signage-header--screening .signage-header__main {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+body[data-signage="screening"] .signage-header__meta {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(0.35rem, 0.75vw, 0.55rem);
+  margin-top: clamp(0.45rem, 0.9vh, 0.6rem);
+  padding-top: clamp(0.45rem, 0.9vh, 0.6rem);
+  border-top: 1px solid var(--rule);
+}
+
+body[data-signage="screening"] .signage-header__meta-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+body[data-signage="screening"] .signage-header__meta-cell--date,
+body[data-signage="screening"] .signage-header__meta-cell--time {
+  flex-direction: row;
+  align-items: center;
+  gap: clamp(0.28rem, 0.55vw, 0.38rem);
+}
+
+body[data-signage="screening"] .signage-header__meta-cell--venue {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: clamp(0.28rem, 0.55vw, 0.38rem) clamp(0.35rem, 0.65vw, 0.45rem);
+}
+
+body[data-signage="screening"] .signage-header__meta-icon {
+  flex: 0 0 auto;
+  width: clamp(1rem, 2vh, 1.15rem);
+  height: clamp(1rem, 2vh, 1.15rem);
+  opacity: 0.72;
+}
+
+body[data-signage="screening"] .signage-header__meta-text {
+  font-family: "DM Mono", monospace;
+  font-size: var(--sg-meta);
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  line-height: 1.35;
+  color: rgba(17, 17, 17, 0.88);
+}
+
+body[data-signage="screening"] .signage-header__meta-text--venue {
+  font-family: "Noto Sans JP", sans-serif;
+  font-weight: 700;
+}
+
+body[data-signage="screening"] .signage-header__meta-sub {
+  flex: 1 1 100%;
+  margin: 0 0 0 calc(clamp(1rem, 2vh, 1.15rem) + clamp(0.28rem, 0.55vw, 0.38rem));
+  font-family: "Noto Sans JP", sans-serif;
+  font-size: clamp(0.72rem, 1.45vh, 0.86rem);
+  font-weight: 500;
+  line-height: 1.4;
+  color: rgba(17, 17, 17, 0.58);
+}
+
+body[data-signage="screening"] .signage-top {
+  gap: 0;
+}
+
+body[data-signage] .signage-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  height: 100%;
+  min-height: 0;
+  padding: clamp(0.45rem, 0.9vh, 0.65rem) clamp(0.65rem, 1.3vw, 0.85rem);
+  background: var(--sg-footer-bg, var(--sg-dark-bg));
+  color: var(--sg-dark-text);
+  border-radius: 2px;
+  box-sizing: border-box;
+}
+
+body[data-signage] .signage-footer__lead {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-family: "Noto Sans JP", sans-serif;
+  font-size: clamp(1.17rem, 2.34vh, 1.4rem);
+  line-height: 1.42;
+}
+
+body[data-signage] .signage-footer__overview-title {
+  margin: 0 0 clamp(0.14rem, 0.28vh, 0.2rem);
+  font-family: "Shippori Mincho B1", serif;
+  font-size: clamp(1.65rem, 3.3vh, 1.99rem);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  line-height: 1.35;
+}
+
+body[data-signage] .signage-footer__overview-line {
+  margin: 0;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+body[data-signage] .signage-footer__overview-line + .signage-footer__overview-line {
+  margin-top: clamp(0.06rem, 0.12vh, 0.1rem);
+}
+
+body[data-signage] .signage-footer__qr {
+  flex: 0 0 auto;
+  text-align: right;
+}
+
+body[data-signage] .signage-footer__qr-heading {
+  margin: 0 0 clamp(0.28rem, 0.55vh, 0.4rem);
+  max-width: 22rem;
+  font-family: "Noto Sans JP", sans-serif;
+  font-size: clamp(0.62rem, 1.25vh, 0.74rem);
+  font-weight: 700;
+  line-height: 1.45;
+  text-align: right;
+}
+
+body[data-signage] .signage-footer__qr-list {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: flex-end;
+  gap: clamp(0.45rem, 0.9vw, 0.65rem);
+}
+
+body[data-signage] .signage-footer__qr-item {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(0.18rem, 0.35vh, 0.28rem);
+}
+
+body[data-signage] .signage-footer__qr-img {
+  display: block;
+  width: clamp(4.75rem, 9.5vh, 7.25rem);
+  height: clamp(4.75rem, 9.5vh, 7.25rem);
+  object-fit: contain;
+  background: #fff;
+  border-radius: 3px;
+  box-sizing: border-box;
+}
+
+body[data-signage] .signage-footer__qr-label {
+  font-family: "Noto Sans JP", sans-serif;
+  font-size: clamp(0.62rem, 1.25vh, 0.78rem);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1.3;
+  color: var(--sg-dark-text);
+  text-align: center;
+  white-space: nowrap;
+}
+
+body[data-signage="screening"] #screening .mv-schedule-main .mv-program-cols {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(0.45rem, 0.95vh, 0.65rem) var(--sg-col-gap);
+  align-items: stretch;
+  margin-top: 0;
+  flex: 1 1 auto;
+  min-height: 0;
+  height: 100%;
+  padding: clamp(0.35rem, 0.75vh, 0.5rem) var(--sg-col-gap);
+  box-sizing: border-box;
+}
+
+body[data-signage="screening"] #screening .mv-schedule-main .mv-program-col {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.55rem, 1.1vh, 0.75rem);
+  min-height: 0;
+  height: 100%;
+}
+
+body[data-signage="screening"] #screening .mv-program-col-title--signage {
+  flex: 0 0 auto;
+  margin-inline: 0;
+  padding: 0 0 clamp(0.32rem, 0.7vh, 0.42rem);
+  border-bottom: 1px solid rgba(17, 17, 17, 0.14);
+}
+
+body[data-signage="screening"] #screening .mv-schedule-main .mv-program-col-date {
+  font-size: var(--sg-col-date);
+  font-weight: 800;
+  line-height: 1.22;
+  letter-spacing: 0;
+  color: var(--text-dark);
+}
+
+body[data-signage="screening"] #screening .mv-program-col-title--signage .mv-program-col-meta {
+  display: none;
+}
+
+/* ── サイネージ共通：日別列・リストカード ── */
+body[data-signage] .mv-program-col-date,
+body[data-signage] .ev-program-col-date {
+  font-size: var(--sg-col-date);
+  font-weight: 800;
+  line-height: 1.22;
+  letter-spacing: 0;
+  color: var(--text-dark);
+}
+
+body[data-signage] .mv-program-col-title--signage,
+body[data-signage] .ev-program-col-title--signage {
+  border-bottom: 2px solid rgba(var(--sg-accent-rgb), 0.45);
+}
+
+body[data-signage] .mv-signage-list-title,
+body[data-signage] .ev-signage-list-title {
+  margin: 0 0 0.24rem;
+  font-family: "Shippori Mincho B1", serif;
+  font-size: var(--sg-list-title);
+  font-weight: 800;
+  line-height: 1.36;
+  letter-spacing: 0.02em;
+  color: rgba(17, 17, 17, 0.94);
+}
+
+body[data-signage] .mv-signage-list-meta,
+body[data-signage] .ev-signage-list-meta {
+  margin: 0;
+  font-family: "DM Mono", monospace;
+  font-size: var(--sg-list-meta);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 1.42;
+  color: rgba(17, 17, 17, 0.58);
+}
+
+/* ── ポスター格子（上映日別・イベント7/18列・常設） ── */
+body[data-signage] .mv-card--signage-poster,
+body[data-signage] .ev-card--signage-poster {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--rule);
+  border-radius: 0;
+  overflow: hidden;
+  background: var(--surface-elevated);
+  box-shadow: 0 4px 16px rgba(15, 17, 21, 0.06);
+  box-sizing: border-box;
+  cursor: default;
+  transition: none;
+}
+
+/* 通常サイト用 #screening .mv-card の角丸・余白を打ち消す */
+body[data-signage="screening"] #screening .mv-schedule-main .mv-card.mv-card--signage-poster {
+  padding: 0;
+  border: 1px solid var(--rule);
+  border-radius: 0;
+  background: var(--surface-elevated);
+  box-shadow: 0 4px 16px rgba(15, 17, 21, 0.06);
+  cursor: default;
+  transition: none;
+}
+
+body[data-signage="screening"] #screening .mv-schedule-main .mv-card.mv-card--signage-poster:hover,
+body[data-signage="screening"] #screening .mv-schedule-main .mv-card.mv-card--signage-poster:focus-visible {
+  border: 1px solid var(--rule);
+  box-shadow: 0 4px 16px rgba(15, 17, 21, 0.06);
+  outline: none;
+}
+
+body[data-signage="event"] #event .ev-section--signage .ev-card.ev-card--signage-poster,
+body[data-signage="event"] #event .ev-section--signage .ev-card.ev-card--signage-list {
+  border-radius: 0;
+  padding: 0;
+  margin: 0;
+  border: 1px solid var(--rule);
+  border-left-width: 1px;
+  background: var(--surface-elevated);
+  box-shadow: 0 4px 16px rgba(15, 17, 21, 0.06);
+  cursor: default;
+  transition: none;
+}
+
+body[data-signage="event"] #event .ev-section--signage .ev-card.ev-card--signage-poster:hover,
+body[data-signage="event"] #event .ev-section--signage .ev-card.ev-card--signage-poster:focus-visible,
+body[data-signage="event"] #event .ev-section--signage .ev-card.ev-card--signage-list:hover,
+body[data-signage="event"] #event .ev-section--signage .ev-card.ev-card--signage-list:focus-visible {
+  border-radius: 0;
+  border: 1px solid var(--rule);
+  box-shadow: 0 4px 16px rgba(15, 17, 21, 0.06);
+  outline: none;
+}
+
+body[data-signage] .signage-poster-media {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: rgba(15, 17, 21, 0.06);
+  position: relative;
+}
+
+body[data-signage] .signage-poster-media picture,
+body[data-signage] .signage-poster-media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+body[data-signage] .signage-poster-media-placeholder {
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  background: linear-gradient(
+    145deg,
+    rgba(var(--sg-accent-rgb), 0.32) 0%,
+    rgba(45, 42, 52, 0.92) 42%,
+    rgba(15, 17, 21, 1) 100%
+  );
+}
+
+body[data-signage] .signage-poster-caption {
+  flex: 0 0 auto;
+  padding: clamp(0.28rem, 0.55vh, 0.36rem) clamp(0.38rem, 0.75vw, 0.48rem);
+  border-top: 1px solid var(--rule);
+  background: var(--surface-elevated);
+}
+
+body[data-signage] .signage-poster-title {
+  margin: 0;
+  font-family: "Shippori Mincho B1", serif;
+  font-size: clamp(0.78rem, 1.55vh, 0.9rem);
+  font-weight: 800;
+  line-height: 1.32;
+  letter-spacing: 0.02em;
+  color: var(--text-dark);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+body[data-signage] .signage-poster-meta {
+  margin: 0.1rem 0 0;
+  font-family: "DM Mono", monospace;
+  font-size: clamp(0.66rem, 1.25vh, 0.74rem);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 1.35;
+  color: var(--dim);
+}
+
+/* 上映日別ポスター：イベントカードと同じ情報サイズ・画像は残り高さ */
+body[data-signage="screening"] #screening .mv-card--signage-poster .signage-poster-media {
+  flex: 1 1 0;
+  min-height: 0;
+  aspect-ratio: auto;
+}
+
+body[data-signage="screening"] #screening .mv-card--signage-poster .signage-poster-caption {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: clamp(0.13rem, 0.27vh, 0.19rem);
+  flex: 0 0 auto;
+  padding: clamp(0.37rem, 0.73vh, 0.48rem) clamp(0.51rem, 1vw, 0.64rem);
+}
+
+body[data-signage="screening"] #screening .mv-card--signage-poster .signage-poster-title {
+  font-size: clamp(1.35rem, 2.69vh, 1.56rem);
+  line-height: 1.34;
+}
+
+body[data-signage="screening"] #screening .mv-card--signage-poster .signage-poster-meta {
+  margin: 0;
+  font-size: clamp(1.08rem, 2.12vh, 1.25rem);
+  line-height: 1.38;
+}
+
+body[data-signage] .mv-card--signage-list:not(.mv-card--signage-media),
+body[data-signage] .ev-card--signage-list:not(.ev-card--signage-media) {
+  cursor: default;
+  text-align: left;
+  padding: clamp(0.55rem, 1.1vh, 0.68rem) clamp(0.62rem, 1.2vw, 0.72rem);
+  min-height: unset;
+  border-left-width: 4px;
+  box-shadow: 0 4px 18px rgba(15, 17, 21, 0.06);
+  box-sizing: border-box;
+}
+
+body[data-signage="screening"] #screening .mv-schedule-main .mv-program-col-list {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.45rem, 0.95vh, 0.65rem);
+  min-height: 0;
+  overflow: hidden;
+}
+
+body[data-signage="event"] #event .ev-program-col-list {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: clamp(0.45rem, 0.95vh, 0.65rem);
+  min-height: 0;
+  overflow: hidden;
+}
+
+
+body[data-signage="screening"] #screening .mv-schedule-main .mv-program-col-meta {
+  font-size: var(--sg-list-meta);
+  font-weight: 600;
+  letter-spacing: 0.035em;
+  color: rgba(17, 17, 17, 0.74);
+  gap: 0.4rem 0.5rem;
+}
+
+body[data-signage="screening"] #screening .mv-schedule-main .mv-program-col-time {
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: rgba(17, 17, 17, 0.82);
+}
+
+body[data-signage="screening"] #screening .mv-schedule-main .mv-program-col-venue {
+  font-size: var(--sg-list-meta);
+  font-weight: 600;
+  color: rgba(17, 17, 17, 0.72);
+}
+
+body[data-signage="screening"] #screening .mv-schedule-main .mv-program-col-pin {
+  width: 1rem;
+  height: 1rem;
+  opacity: 0.72;
+}
+
+/* ページ先頭：全幅ビジュアル（上映ヒーロー） */
+body[data-signage="screening"] #screening .signage-hero.signage-mv-page-hero {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  position: relative;
+  box-sizing: border-box;
+}
+
+body[data-signage="screening"] #screening .signage-mv-page-slideshow {
+  position: relative;
+  border-radius: 0;
+  overflow: hidden;
+  border: none;
+  box-shadow: 0 12px 40px rgba(15, 17, 21, 0.18);
+  background: #0f1115;
+}
+
+body[data-signage="screening"] #screening .signage-mv-page-slides-inner {
+  position: relative;
+  width: 100%;
+  height: var(--sg-hero-h);
+  min-height: var(--sg-hero-h);
+  max-height: var(--sg-hero-h);
+  aspect-ratio: unset;
+  background: rgba(15, 17, 21, 0.92);
+}
+
+body[data-signage="screening"] #screening .signage-mv-page-slide,
+body[data-signage="event"] #event .signage-mv-page-slide {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+  pointer-events: none;
+}
+
+body[data-signage="screening"] #screening .signage-mv-page-slide.is-active,
+body[data-signage="event"] #event .signage-mv-page-slide.is-active {
+  opacity: 1;
+  z-index: 1;
+  pointer-events: auto;
+}
+
+body[data-signage="screening"] #screening .signage-mv-page-slide img,
+body[data-signage="event"] #event .signage-mv-page-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  position: relative;
+  z-index: 0;
+  pointer-events: none;
+}
+
+body[data-signage="screening"] #screening .signage-mv-page-slide picture,
+body[data-signage="event"] #event .signage-mv-page-slide picture {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+body[data-signage="screening"] #screening .signage-mv-page-slide-placeholder,
+body[data-signage="event"] #event .signage-mv-page-slide-placeholder {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  z-index: 0;
+  background: linear-gradient(
+    145deg,
+    rgba(var(--brand-purple-rgb), 0.38) 0%,
+    rgba(45, 42, 52, 0.96) 42%,
+    rgba(15, 17, 21, 1) 100%
+  );
+}
+
+body[data-signage="screening"] #screening .signage-mv-page-slide::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    to left,
+    rgba(15, 17, 21, 0.72) 0%,
+    rgba(15, 17, 21, 0.35) 42%,
+    rgba(15, 17, 21, 0.08) 68%,
+    transparent 100%
+  );
+}
+
+body[data-signage="screening"] #screening .signage-mv-page-synopsis-float {
+  display: none !important;
+}
+
+body[data-signage="screening"] #screening .signage-hero__overlay {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  width: min(56%, 34rem);
+  max-width: calc(100% - 1rem);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: clamp(0.4rem, 0.85vh, 0.6rem);
+  padding: clamp(0.85rem, 1.65vh, 1.1rem) clamp(0.95rem, 2vw, 1.2rem);
+  box-sizing: border-box;
+  color: var(--text-light);
+  pointer-events: none;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.45);
+}
+
+body[data-signage="screening"] #screening .signage-hero__catch {
+  margin: 0;
+  font-family: "Shippori Mincho B1", serif;
+  font-size: var(--sg-faculty-catch);
+  font-weight: 800;
+  line-height: 1.42;
+  letter-spacing: 0.04em;
+}
+
+body[data-signage="screening"] #screening .signage-hero__body {
+  flex-shrink: 1;
+  min-height: 0;
+  padding-block: clamp(0.4rem, 0.81vh, 0.56rem);
+}
+
+body[data-signage="screening"] #screening .signage-hero__body p {
+  margin: 0;
+  font-family: "Noto Sans JP", sans-serif;
+  font-size: var(--sg-faculty-body);
+  font-weight: 500;
+  line-height: 1.58;
+  opacity: 0.96;
+  text-align: justify;
+  text-justify: inter-character;
+}
+
+body[data-signage="screening"] #screening .signage-hero__attribution {
+  margin: clamp(0.15rem, 0.35vh, 0.25rem) 0 0;
+  padding-top: clamp(0.2rem, 0.45vh, 0.35rem);
+  border-top: 1px solid rgba(255, 255, 255, 0.22);
+  text-align: right;
+}
+
+body[data-signage="screening"] #screening .signage-hero__attr-title {
+  margin: 0;
+  font-family: "Noto Sans JP", sans-serif;
+  font-size: var(--sg-faculty-attr-role);
+  font-weight: 500;
+  line-height: 1.4;
+  opacity: 0.88;
+}
+
+body[data-signage="screening"] #screening .signage-hero__attr-name {
+  margin: 0.18rem 0 0;
+  font-family: "Shippori Mincho B1", serif;
+  font-size: var(--sg-faculty-attr-name);
+  font-weight: 800;
+  line-height: 1.35;
+  letter-spacing: 0.12em;
+}
+
+body[data-signage="event"] #event .signage-mv-page-synopsis-float {
+  position: absolute;
+  right: 18px;
+  bottom: 18px;
+  z-index: 2;
+  width: min(46%, 26rem);
+  max-width: calc(100% - 36px);
+  max-height: calc(100% - 36px);
+  margin: 0;
+  padding: 0.624rem 0.806rem 0.715rem;
+  box-sizing: border-box;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(15, 17, 21, 0.58);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 12px 44px rgba(0, 0, 0, 0.38);
+  overflow: hidden;
+}
+
+body[data-signage="screening"] #screening .signage-mv-page-synopsis-float .mv-float-panel-title,
+body[data-signage="event"] #event .signage-mv-page-synopsis-float .mv-float-panel-title {
+  font-size: var(--sg-float-title);
+  margin-bottom: 0.32rem;
+}
+
+body[data-signage="screening"] #screening .signage-mv-page-synopsis-float .mv-float-panel-date-badge,
+body[data-signage="event"] #event .signage-mv-page-synopsis-float .mv-float-panel-date-badge {
+  font-size: var(--sg-float-meta);
+  padding: 0.18rem 0.52rem 0.2rem;
+}
+
+body[data-signage="screening"] #screening .signage-mv-page-synopsis-float .mv-float-panel-meta-line,
+body[data-signage="event"] #event .signage-mv-page-synopsis-float .mv-float-panel-meta-line {
+  font-size: var(--sg-float-meta);
+  line-height: 1.4;
+}
+
+body[data-signage="screening"] #screening .signage-mv-page-synopsis-float .mv-float-panel-synopsis,
+body[data-signage="event"] #event .signage-mv-page-synopsis-float .mv-float-panel-synopsis {
+  font-size: var(--sg-float-body);
+  line-height: 1.48;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 8;
+  overflow: hidden;
+}
+
+body[data-signage="screening"] #screening .signage-mv-page-synopsis-float .mv-float-panel-lead,
+body[data-signage="event"] #event .signage-mv-page-synopsis-float .mv-float-panel-lead {
+  font-size: calc(var(--sg-float-meta) * 0.88);
+}
+
+body[data-signage="screening"] #screening .signage-mv-page-dots {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(0.55rem, 1.2vh, 0.75rem);
+  z-index: 4;
+  transform: translateX(-50%);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  justify-content: center;
+  padding: 0.35rem 0.55rem;
+  margin: 0;
+  background: rgba(15, 17, 21, 0.42);
+  border-radius: 999px;
+}
+
+body[data-signage="screening"] #screening .signage-mv-page-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  border: 1px solid rgba(17, 17, 17, 0.24);
+  background: rgba(17, 17, 17, 0.08);
+  padding: 0;
+  cursor: pointer;
+}
+
+body[data-signage="screening"] #screening .signage-mv-page-dot.is-active {
+  background: rgba(var(--sg-accent-rgb), 0.88);
+  border-color: rgba(var(--sg-accent-rgb), 0.92);
+}
+
+body[data-signage] .signage-list-badge {
+  display: inline-block;
+  margin: 0 0 0.2rem;
+  padding: 0.12rem 0.42rem 0.14rem;
+  font-family: "DM Mono", monospace;
+  font-size: clamp(0.62rem, 1.2vh, 0.7rem);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  line-height: 1.2;
+  color: rgba(var(--sg-accent-rgb), 0.95);
+  background: rgba(var(--sg-accent-rgb), 0.1);
+  border: 1px solid rgba(var(--sg-accent-rgb), 0.28);
+  border-radius: 2px;
+}
+
+/* イベントサイネージ：規定色のカテゴリラベル（インライン） */
+body[data-signage="event"] #event .ev-cat {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  margin: 0;
+  font-size: clamp(0.62rem, 1.2vh, 0.72rem);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+  padding: 0.14rem 0.48rem 0.16rem;
+  border-radius: 2px;
+}
+
+body[data-signage="event"] #event .ev-cat-lecture {
+  background: rgba(var(--brand-blue-rgb), 0.14);
+  color: rgba(2, 52, 96, 0.98);
+}
+
+body[data-signage="event"] #event .ev-cat-workshop {
+  background: rgba(var(--brand-magenta-rgb), 0.12);
+  color: rgba(120, 14, 18, 0.98);
+}
+
+body[data-signage="event"] #event .ev-cat-permanent {
+  background: rgba(var(--brand-black-rgb), 0.1);
+  color: rgba(var(--brand-black-rgb), 0.88);
+}
+
+body[data-signage="event"] #event .ev-signage-list-labels,
+body[data-signage="event"] #event .ev-signage-hero-labels {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.28rem 0.38rem;
+  margin: 0 0 0.28rem;
+}
+
+body[data-signage="event"] #event .ev-signage-apply {
+  display: inline-flex;
+  align-items: center;
+  font-family: "DM Mono", monospace;
+  font-size: clamp(0.58rem, 1.1vh, 0.66rem);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  line-height: 1.2;
+  color: rgba(17, 17, 17, 0.62);
+  padding: 0.1rem 0.36rem 0.12rem;
+  border: 1px solid rgba(17, 17, 17, 0.16);
+  border-radius: 2px;
+  background: rgba(17, 17, 17, 0.04);
+}
+
+body[data-signage="event"] #event .ev-signage-list-title,
+body[data-signage="event"] #event .signage-aside-compact__title {
+  margin: 0 0 0.22rem;
+  font-family: "Shippori Mincho B1", serif;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: rgba(17, 17, 17, 0.94);
+}
+
+body[data-signage="event"] #event .ev-signage-meta-line {
+  display: flex;
+  align-items: flex-start;
+  gap: clamp(0.32rem, 0.65vw, 0.42rem);
+  margin: 0 0 0.14rem;
+}
+
+body[data-signage="event"] #event .ev-signage-meta-line:last-child {
+  margin-bottom: 0;
+}
+
+body[data-signage="event"] #event .ev-signage-meta-icon {
+  flex: 0 0 auto;
+  width: clamp(0.95rem, 1.85vh, 1.1rem);
+  height: clamp(0.95rem, 1.85vh, 1.1rem);
+  margin-top: 0.14em;
+  opacity: 0.78;
+}
+
+body[data-signage="event"] #event .ev-signage-meta-text {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+body[data-signage="event"] #event .ev-signage-speakers .ev-signage-meta-text {
+  font-family: "Noto Sans JP", sans-serif;
+  font-weight: 500;
+  line-height: 1.48;
+  color: rgba(17, 17, 17, 0.72);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+body[data-signage="event"] #event .ev-signage-time .ev-signage-meta-text {
+  font-family: "DM Mono", monospace;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1.35;
+  color: rgba(17, 17, 17, 0.58);
+}
+
+/* 日別ポスター：情報テキスト 4/3・画像は残り高さに追従 */
+body[data-signage="event"] #event .ev-card--signage-list .signage-poster-media {
+  flex: 1 1 0;
+  min-height: 0;
+  aspect-ratio: auto;
+}
+
+body[data-signage="event"] #event .ev-signage-poster-caption {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: clamp(0.13rem, 0.27vh, 0.19rem);
+  min-height: 0;
+  flex: 0 0 auto;
+  padding: clamp(0.37rem, 0.73vh, 0.48rem) clamp(0.51rem, 1vw, 0.64rem);
+}
+
+body[data-signage="event"] #event .ev-signage-poster-caption .ev-signage-list-labels {
+  margin: 0 0 clamp(0.11rem, 0.21vh, 0.16rem);
+  gap: clamp(0.37rem, 0.51vw, 0.51rem);
+}
+
+body[data-signage="event"] #event .ev-signage-poster-caption .ev-cat {
+  font-size: clamp(1.08rem, 2.08vh, 1.25rem);
+  padding: clamp(0.19rem, 0.37vh, 0.21rem) clamp(0.64rem, 1.25vw, 0.64rem);
+}
+
+body[data-signage="event"] #event .ev-signage-poster-caption .ev-signage-apply {
+  font-size: clamp(1rem, 1.91vh, 1.14rem);
+  padding: clamp(0.13rem, 0.26vh, 0.16rem) clamp(0.48rem, 0.94vw, 0.48rem);
+}
+
+body[data-signage="event"] #event .ev-signage-poster-caption .ev-signage-list-title,
+body[data-signage="event"] #event .ev-signage-poster-caption .signage-poster-title {
+  margin: 0;
+  font-size: clamp(1.35rem, 2.69vh, 1.56rem);
+  line-height: 1.34;
+}
+
+body[data-signage="event"] #event .ev-signage-poster-caption .ev-signage-meta-line {
+  margin: 0;
+  gap: clamp(0.29rem, 0.6vw, 0.4rem);
+}
+
+body[data-signage="event"] #event .ev-signage-poster-caption .ev-signage-speakers .ev-signage-meta-text {
+  font-size: clamp(1.08rem, 2.12vh, 1.25rem);
+  line-height: 1.38;
+  -webkit-line-clamp: 2;
+}
+
+body[data-signage="event"] #event .ev-signage-poster-caption .ev-signage-time .ev-signage-meta-text {
+  font-size: clamp(1.04rem, 2.04vh, 1.21rem);
+}
+
+body[data-signage="event"] #event .ev-signage-poster-caption .ev-signage-meta-icon {
+  width: clamp(1.25rem, 2.43vh, 1.46rem);
+  height: clamp(1.25rem, 2.43vh, 1.46rem);
+  margin-top: 0.1em;
+}
+
+body[data-signage="event"] #event .ev-card--signage-aside-compact .signage-aside-compact__title {
+  font-size: clamp(0.72rem, 1.47vh, 0.87rem);
+  line-height: 1.32;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+body[data-signage="event"] #event .ev-card--signage-aside-compact .ev-signage-speakers .ev-signage-meta-text {
+  font-size: clamp(0.55rem, 1.1vh, 0.64rem);
+  -webkit-line-clamp: 2;
+}
+
+body[data-signage="event"] #event .ev-card--signage-aside-compact .ev-signage-time .ev-signage-meta-text {
+  font-size: clamp(0.53rem, 1.07vh, 0.63rem);
+}
+
+body[data-signage="event"] #event .ev-card--signage-aside-compact .ev-signage-meta-icon {
+  width: clamp(0.68rem, 1.33vh, 0.78rem);
+  height: clamp(0.68rem, 1.33vh, 0.78rem);
+}
+
+body[data-signage="event"] #event .signage-featured__panel .ev-signage-speakers .ev-signage-meta-text {
+  font-size: clamp(0.78rem, 1.55vh, 0.92rem);
+  -webkit-line-clamp: 3;
+}
+
+body[data-signage="event"] #event .signage-featured__panel .ev-signage-time .ev-signage-meta-text {
+  font-size: clamp(0.84rem, 1.65vh, 0.98rem);
+}
+
+body[data-signage] .signage-list-desc {
+  margin: 0.12rem 0 0.18rem;
+  font-family: "Noto Sans JP", sans-serif;
+  font-size: var(--sg-list-desc);
+  font-weight: 400;
+  line-height: 1.48;
+  color: rgba(17, 17, 17, 0.62);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+body[data-signage="event"] #event .ev-section--signage .ev-card--signage-list {
+  flex: 1 1 0;
+  min-height: 0;
+}
+
+body[data-signage] .mv-signage-list-media,
+body[data-signage] .ev-signage-list-media {
+  flex: 0 0 auto;
+  height: 100%;
+  width: auto;
+  aspect-ratio: 1 / 1;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background: rgba(15, 17, 21, 0.06);
+  position: relative;
+}
+
+body[data-signage] .mv-signage-list-media picture,
+body[data-signage] .ev-signage-list-media picture {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+body[data-signage] .mv-signage-list-media img,
+body[data-signage] .ev-signage-list-media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+body[data-signage] .mv-signage-list-media-placeholder,
+body[data-signage] .ev-signage-list-media-placeholder,
+body[data-signage="event"] #event .ev-signage-thumb-placeholder {
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  background: linear-gradient(
+    145deg,
+    rgba(var(--sg-accent-rgb), 0.38) 0%,
+    rgba(45, 42, 52, 0.96) 42%,
+    rgba(15, 17, 21, 1) 100%
+  );
+}
+
+body[data-signage="screening"] #screening .mv-signage-list-body,
+body[data-signage="event"] #event .ev-signage-list-body {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  padding: clamp(0.38rem, 0.75vh, 0.5rem) clamp(0.5rem, 1vw, 0.62rem);
+}
+
+body[data-signage="screening"] #screening .mv-signage-list-body .mv-signage-list-title {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  margin-bottom: 0.16rem;
+}
+
+body[data-signage="event"] #event .ev-signage-list-body .ev-signage-list-title {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+body[data-signage="screening"] #screening .mv-signage-col-empty {
+  margin: 0.35rem 0 0;
+  padding: 0.65rem 0.75rem;
+  font-size: var(--sg-list-meta);
+  line-height: 1.55;
+  color: rgba(17, 17, 17, 0.55);
+  background: rgba(17, 17, 17, 0.04);
+  border-radius: 2px;
+}
+
+/* 1080×1920 縦型ディスプレイ（9:16）向けの密度調整 */
+@media (min-width: 1000px) and (min-height: 1700px) {
+  body[data-signage="screening"] {
+    /* 38.4vh の 90% */
+    --sg-hero-h: clamp(475px, 34.56vh, 626px);
+  }
+
+  body[data-signage] {
+    --sg-event-row-h: clamp(5.25rem, 11.8vh, 14vh);
+    --sg-gap: clamp(0.5rem, 1.1vh, 0.75rem);
+  }
+
+  body[data-signage] #program > .container {
+    padding: 0;
+  }
+
+  body[data-signage="screening"] #screening .signage-hero__overlay {
+    width: min(58%, 36rem);
+  }
+
+  body[data-signage="event"] #event .signage-featured__panel {
+    width: min(54%, 32rem);
+  }
+}
+
+body[data-signage="event"] #program > .container > .section-label,
+body[data-signage="event"] #program > .container > .section-title,
+body[data-signage="event"] #program .program-chapter-nav {
+  display: none;
+}
+
+body[data-signage="event"] #event .signage-featured-host {
+  padding-inline: 0;
+  box-sizing: border-box;
+}
+
+body[data-signage="event"] #event .ev-section--signage {
+  padding-inline: clamp(0.5rem, 1.1vw, 0.75rem);
+  box-sizing: border-box;
+}
+
+body[data-signage="event"] #event .signage-featured {
+  border-left: none;
+  border-right: none;
+}
+
+body[data-signage="event"] #event .ev-program-col-title--signage {
+  padding-inline: 0;
+}
+
+body[data-signage="event"] #program .program-list,
+body[data-signage="event"] #event.program-item {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* イベント：ヘッダー → ヒーロー（固定高） → スケジュール → フッター */
+body[data-signage="event"] #event .program-body.signage-shell {
+  display: grid;
+  grid-template-rows: auto var(--sg-hero-h) minmax(0, 1fr) var(--sg-h-footer);
+  gap: var(--sg-gap);
+  height: 100%;
+  min-height: 0;
+  align-content: stretch;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+body[data-signage="event"] #event .program-body.signage-shell > .signage-top {
+  grid-row: 1;
+}
+
+body[data-signage="event"] #event .program-body.signage-shell > .signage-featured-host {
+  grid-row: 2;
+}
+
+body[data-signage="event"] #event .program-body.signage-shell > .ev-section--signage {
+  grid-row: 3;
+  min-height: 0;
+  overflow: hidden;
+}
+
+body[data-signage="event"] #event .signage-aside-host {
+  display: none !important;
+}
+
+body[data-signage="event"] #event .program-body.signage-shell > .signage-footer-host {
+  grid-row: 4;
+  height: var(--sg-h-footer);
+  min-height: var(--sg-h-footer);
+  max-height: var(--sg-h-footer);
+}
+
+body[data-signage="event"] #event > header.program-head {
+  display: none !important;
+}
+
+body[data-signage="event"] #event .program-copy {
+  display: none !important;
+}
+
+body[data-signage="event"] #event .signage-featured-host {
+  flex: 0 0 auto;
+  min-width: 0;
+  height: var(--sg-hero-h);
+  min-height: var(--sg-hero-h);
+  max-height: var(--sg-hero-h);
+  overflow: hidden;
+}
+
+body[data-signage="event"] #event .ev-signage-hero-carousel {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: var(--sg-hero-h);
+  overflow: hidden;
+  background: #0f1115;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+body[data-signage="event"] #event .ev-signage-hero-track {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: var(--sg-hero-h);
+}
+
+body[data-signage="event"] #event .ev-signage-hero-slide {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+  pointer-events: none;
+}
+
+body[data-signage="event"] #event .ev-signage-hero-slide.is-active {
+  opacity: 1;
+  z-index: 1;
+  pointer-events: auto;
+}
+
+body[data-signage="event"] #event .ev-signage-hero-slide .signage-featured__stage {
+  height: 100%;
+  min-height: var(--sg-hero-h);
+}
+
+body[data-signage="event"] #event .ev-signage-hero-controls {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(0.45rem, 0.95vh, 0.65rem);
+  transform: translateX(-50%);
+  z-index: 3;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  justify-content: center;
+  padding: 0.35rem 0.55rem;
+  margin: 0;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(13, 13, 13, 0.1);
+  border-radius: 999px;
+  box-shadow: 0 4px 16px rgba(13, 13, 13, 0.1);
+}
+
+body[data-signage="event"] #event .ev-signage-hero-controls .ev-pickup-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  border: 1px solid rgba(13, 13, 13, 0.2);
+  background: rgba(13, 13, 13, 0.12);
+  padding: 0;
+  cursor: pointer;
+}
+
+body[data-signage="event"] #event .ev-signage-hero-controls .ev-pickup-dot.is-active {
+  background: rgba(var(--sg-accent-rgb), 0.92);
+  border-color: rgba(var(--sg-accent-rgb), 0.95);
+}
+
+body[data-signage="event"] #event .ev-section--signage {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+body[data-signage="event"] #event .signage-featured-hero {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  box-shadow: 0 8px 28px rgba(13, 13, 13, 0.08);
+}
+
+body[data-signage="event"] #event .signage-featured__stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: var(--sg-hero-h);
+  overflow: hidden;
+  background: var(--uni-grey);
+}
+
+body[data-signage="event"] #event .signage-featured__media {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: var(--sg-hero-panel-w);
+  z-index: 0;
+  background: rgba(15, 17, 21, 0.08);
+  overflow: hidden;
+}
+
+body[data-signage="event"] #event .signage-featured__media::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(28%, 9rem);
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(255, 255, 255, 0.18) 42%,
+    rgba(255, 255, 255, 0.55) 100%
+  );
+}
+
+body[data-signage="event"] #event .signage-featured__media picture {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+}
+
+body[data-signage="event"] #event .signage-featured__media img,
+body[data-signage="event"] #event .signage-featured__media .ev-pickup-media-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+}
+
+body[data-signage="event"] #event .signage-featured__panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: clamp(0.28rem, 0.55vh, 0.4rem);
+  width: var(--sg-hero-panel-w);
+  max-width: calc(100% - 1rem);
+  min-width: 0;
+  padding: clamp(0.75rem, 1.5vh, 1rem) clamp(0.85rem, 1.8vw, 1.1rem);
+  background: var(--sg-hero-panel-bg);
+  color: var(--text-dark);
+  border-left: 1px solid var(--sg-hero-panel-border);
+  box-shadow: -10px 0 28px rgba(13, 13, 13, 0.06);
+  box-sizing: border-box;
+  backdrop-filter: blur(6px);
+}
+
+body[data-signage="event"] #event .signage-featured__panel .signage-featured__title,
+body[data-signage="event"] #event .signage-featured__panel .ev-pickup-title {
+  margin: 0 0 0.36rem;
+  font-family: "Shippori Mincho B1", serif;
+  font-size: clamp(1.2rem, 2.65vh, 1.58rem);
+  font-weight: 800;
+  line-height: 1.38;
+  letter-spacing: 0.02em;
+  color: rgba(var(--brand-black-rgb), 0.94);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  overflow: hidden;
+}
+
+body[data-signage="event"] #event .signage-aside {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(0.3rem, 0.63vh, 0.43rem);
+  align-items: stretch;
+  height: 100%;
+  min-height: 0;
+}
+
+body[data-signage="event"] #event .signage-aside__panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+  padding: clamp(0.33rem, 0.7vh, 0.45rem) clamp(0.37rem, 0.73vw, 0.48rem);
+  background: rgba(var(--bg-light-rgb), 1);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-md);
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+body[data-signage="event"] #event .signage-aside__label {
+  flex: 0 0 auto;
+  margin: 0 0 clamp(0.12rem, 0.24vh, 0.18rem);
+  font-family: "DM Mono", monospace;
+  font-size: clamp(0.52rem, 1.02vh, 0.62rem);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: rgba(var(--sg-accent-rgb), 0.92);
+}
+
+body[data-signage="event"] #event .signage-aside__guide-list {
+  flex: 1 1 auto;
+  margin: 0;
+  padding: 0 0 0 1.05em;
+  list-style: disc;
+  min-height: 0;
+  overflow: hidden;
+}
+
+body[data-signage="event"] #event .signage-aside__guide-item {
+  margin: 0 0 clamp(0.1rem, 0.2vh, 0.14rem);
+  font-family: "Noto Sans JP", sans-serif;
+  font-size: clamp(0.58rem, 1.14vh, 0.68rem);
+  line-height: 1.42;
+  color: var(--dim);
+}
+
+body[data-signage="event"] #event .signage-aside__guide-item:last-child {
+  margin-bottom: 0;
+}
+
+body[data-signage="event"] #event .signage-aside__permanent-list {
+  flex: 1 1 auto;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.18rem, 0.36vh, 0.24rem);
+  min-height: 0;
+  overflow: hidden;
+}
+
+body[data-signage="event"] #event .ev-card--signage-aside-compact {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  gap: clamp(0.24rem, 0.47vw, 0.34rem);
+  align-items: stretch;
+  flex: 1 1 auto;
+  min-height: 0;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+  cursor: default;
+}
+
+body[data-signage="event"] #event .signage-aside-compact__media {
+  position: relative;
+  min-height: 0;
+  height: 100%;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: rgba(15, 17, 21, 0.06);
+}
+
+body[data-signage="event"] #event .signage-aside-compact__media .ev-signage-thumb-placeholder {
+  min-height: 100%;
+}
+
+body[data-signage="event"] #event .signage-aside-compact__media picture,
+body[data-signage="event"] #event .signage-aside-compact__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+body[data-signage="event"] #event .signage-aside-compact__media-placeholder {
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  background: linear-gradient(
+    145deg,
+    rgba(var(--sg-accent-rgb), 0.32) 0%,
+    rgba(45, 42, 52, 0.92) 42%,
+    rgba(15, 17, 21, 1) 100%
+  );
+}
+
+body[data-signage="event"] #event .signage-aside-compact__body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.12rem;
+  min-width: 0;
+}
+
+
+body[data-signage="event"] #event .signage-aside__empty {
+  margin: 0;
+  font-size: var(--sg-list-meta);
+  color: var(--dim);
+}
+
+/* サイネージ共通：フッター高さ 2/3 に合わせて QR・余白を縮小 */
+body[data-signage="event"] .signage-footer,
+body[data-signage="screening"] .signage-footer {
+  padding: clamp(0.3rem, 0.6vh, 0.43rem) clamp(0.43rem, 0.87vw, 0.57rem);
+}
+
+body[data-signage="event"] .signage-footer__lead,
+body[data-signage="screening"] .signage-footer__lead {
+  font-size: clamp(1.17rem, 2.34vh, 1.4rem);
+  line-height: 1.42;
+}
+
+body[data-signage="event"] .signage-footer__overview-title,
+body[data-signage="screening"] .signage-footer__overview-title {
+  font-size: clamp(1.65rem, 3.3vh, 1.99rem);
+}
+
+body[data-signage="event"] .signage-footer__qr-heading,
+body[data-signage="screening"] .signage-footer__qr-heading {
+  margin: 0 0 clamp(0.18rem, 0.37vh, 0.27rem);
+  font-size: clamp(0.52rem, 1.04vh, 0.62rem);
+  line-height: 1.38;
+}
+
+body[data-signage="event"] .signage-footer__qr-list,
+body[data-signage="screening"] .signage-footer__qr-list {
+  gap: clamp(0.3rem, 0.6vw, 0.43rem);
+}
+
+body[data-signage="event"] .signage-footer__qr-img,
+body[data-signage="screening"] .signage-footer__qr-img {
+  width: clamp(4.1rem, 8.23vh, 6.31rem);
+  height: clamp(4.1rem, 8.23vh, 6.31rem);
+}
+
+body[data-signage="event"] .signage-footer__qr-label,
+body[data-signage="screening"] .signage-footer__qr-label {
+  font-size: clamp(0.52rem, 1.04vh, 0.65rem);
+}
+
+body[data-signage="event"] #event .ev-signage-schedule {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+body[data-signage="event"] #event .ev-signage-schedule-grid.ev-program-cols {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(0.45rem, 0.95vh, 0.65rem) var(--sg-col-gap);
+  align-items: stretch;
+  margin-top: 0;
+  flex: 1 1 auto;
+  min-height: 0;
+  height: 100%;
+  width: 100%;
+  padding-inline: var(--sg-col-gap);
+  box-sizing: border-box;
+}
+
+body[data-signage="event"] #event .ev-signage-day {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.55rem, 1.1vh, 0.75rem);
+  min-height: 0;
+  min-width: 0;
+}
+
+body[data-signage="event"] #event .ev-program-col-title--signage {
+  flex: 0 0 auto;
+  margin: 0;
+  padding-bottom: clamp(0.32rem, 0.7vh, 0.42rem);
+  border-bottom: 1px solid rgba(17, 17, 17, 0.14);
+}
+
+body[data-signage="event"] #event .ev-signage-day-empty {
+  margin: 0;
+  padding: 0.55rem 0.65rem;
+  font-size: var(--sg-list-meta);
+  line-height: 1.5;
+  color: rgba(17, 17, 17, 0.55);
+  background: rgba(17, 17, 17, 0.04);
+  border-radius: 2px;
+}
