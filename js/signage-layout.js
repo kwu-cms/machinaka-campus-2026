@@ -99,6 +99,7 @@ export function signageScreeningTopHTML() {
 export function signageEventTopHTML() {
   return signageHeaderHTML({
     mode: "event",
+    kicker: "イベント",
     title: "レクチャー・ワークショップ",
     tagline: `${SIGNAGE_EVENT_DATES}｜${SIGNAGE_EVENT_VENUE_LINE}`,
   });

@@ -11,7 +11,7 @@ import { fileURLToPath } from "node:url";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
 const baseUrl = process.argv[2] || "http://localhost:8080";
-const durationSec = Number.parseInt(process.argv[3] || "4", 10);
+const durationSec = Math.max(5, Number.parseInt(process.argv[3] || "6", 10));
 const waitMs = durationSec * 1000 + 800;
 
 const outDir = join(root, "tmp/signage-check");
