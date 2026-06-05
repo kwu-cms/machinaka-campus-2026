@@ -54,6 +54,7 @@ export function inferProfileFromStem(stem) {
   if (/^evt-/i.test(base)) return "event";
   if (stem.includes("screening-slides/")) return "screening";
   if (/^guest_/i.test(base) || /^irodori_/i.test(base)) return "guest";
+  if (/^signage_poster$/i.test(base)) return "signage-poster";
   return "misc";
 }
 

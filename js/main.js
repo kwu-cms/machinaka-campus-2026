@@ -17,6 +17,8 @@ function signageSearchParams() {
   }
 }
 
+/** @typedef {"poster"|"screening"|"event"} SignageViewMode */
+
 /** サイネージの1画面あたり秒数（`duration=60`）。既定 60、最小 5、最大 3600 */
 function parseSignageDurationSeconds(raw) {
   const n = Number.parseInt(String(raw ?? ""), 10);
@@ -24,10 +26,17 @@ function parseSignageDurationSeconds(raw) {
   return Math.min(3600, Math.max(5, n));
 }
 
+/** @param {string} view */
+function normalizeSignageView(view, fallback = "screening") {
+  const v = String(view || "").toLowerCase();
+  if (v === "poster" || v === "screening" || v === "event") return v;
+  return fallback;
+}
+
 /**
  * 縦型サイネージ（1080×1920 想定）。
- * - `?signage=screening|event` または `#signage-screening` / `#signage-event`
- * - 交互表示: `?signage=cycle&duration=60`（`view=screening|event` で開始画面）
+ * - `?signage=screening|event|poster` または `#signage-screening` / `#signage-event` / `#signage-poster`
+ * - 交互表示: `?signage=cycle&duration=60`（ポスター→上映→イベント。`view=` で開始画面）
  * - 別表記: `?signage=screening,event&duration=60` / `?signage=screening&cycle=1&duration=60`
  */
 (function initSignageMode() {
@@ -36,28 +45,27 @@ function parseSignageDurationSeconds(raw) {
     let q = String(params.get("signage") || "").toLowerCase();
 
     if (q === "cycle" || q === "rotate" || q === "both") {
-      const view = String(params.get("view") || params.get("phase") || "screening").toLowerCase();
-      return view === "event" ? "event" : "screening";
+      return normalizeSignageView(params.get("view") || params.get("phase"), "poster");
     }
 
     if (q.includes(",")) {
       const parts = q
         .split(",")
         .map((s) => s.trim())
-        .filter((s) => s === "screening" || s === "event");
+        .filter((s) => s === "screening" || s === "event" || s === "poster");
       if (parts.length) {
-        const view = String(params.get("view") || parts[0] || "screening").toLowerCase();
-        return view === "event" ? "event" : "screening";
+        return normalizeSignageView(params.get("view") || parts[0], parts[0]);
       }
     }
 
-    if (q === "event" || q === "screening") return q;
+    if (q === "event" || q === "screening" || q === "poster") return q;
 
     const h = String(window.location.hash || "")
       .replace(/^#/, "")
       .toLowerCase();
     if (h === "signage-event") return "event";
     if (h === "signage-screening") return "screening";
+    if (h === "signage-poster") return "poster";
     return null;
   }
 
@@ -66,11 +74,36 @@ function parseSignageDurationSeconds(raw) {
   document.documentElement.classList.add("is-signage");
   document.body.classList.add("is-signage-vertical");
   document.body.dataset.signage = mode;
-  const suffix = mode === "event" ? "イベント（サイネージ）" : "上映プログラム（サイネージ）";
-  document.title = `${document.title} — ${suffix}`;
+  const suffixByMode = {
+    poster: "ポスター（サイネージ）",
+    screening: "上映プログラム（サイネージ）",
+    event: "イベント（サイネージ）",
+  };
+  document.title = `${document.title} — ${suffixByMode[mode] || "サイネージ"}`;
 })();
 
-/** 上映 ⇄ イベントを一定間隔で URL 遷移して切り替え（キオスク用） */
+/** ポスター画像のみ全画面表示（cycle の1面） */
+(function initSignagePosterView() {
+  if (document.body.dataset.signage !== "poster") return;
+
+  const main = document.querySelector("main");
+  if (!main) return;
+
+  const host = document.createElement("div");
+  host.className = "signage-poster-view";
+  host.setAttribute("role", "img");
+  host.setAttribute("aria-label", "まちなかキャンパス 2026 サイネージポスター");
+  host.innerHTML = pictureHTML("signage_poster", "signage-poster", {
+    alt: "MEDIA x MOTOMACHI まちなかキャンパス 2026",
+    logicalPath: "./images/signage_poster.png",
+    loading: "eager",
+    fetchpriority: "high",
+    class: "signage-poster-view__img",
+  });
+  main.appendChild(host);
+})();
+
+/** ポスター → 上映 → イベントを一定間隔で URL 遷移して切り替え（キオスク用） */
 (function initSignageCycle() {
   const params = signageSearchParams();
   const rawSignage = String(params.get("signage") || "").toLowerCase();
@@ -79,22 +112,22 @@ function parseSignageDurationSeconds(raw) {
     params.get("rotate") === "1" ||
     params.get("alternate") === "1";
 
-  /** @type {("screening"|"event")[]} */
+  /** @type {SignageViewMode[]} */
   let modes = [];
   if (rawSignage === "cycle" || rawSignage === "rotate" || rawSignage === "both") {
-    modes = ["screening", "event"];
+    modes = ["poster", "screening", "event"];
   } else if (rawSignage.includes(",")) {
     modes = rawSignage
       .split(",")
       .map((s) => s.trim())
-      .filter((s) => s === "screening" || s === "event");
+      .filter((s) => s === "screening" || s === "event" || s === "poster");
   } else if (cycleFlag && (rawSignage === "screening" || rawSignage === "event")) {
     modes = ["screening", "event"];
   }
 
   if (modes.length < 2) return;
   const current = document.body.dataset.signage;
-  if (current !== "screening" && current !== "event") return;
+  if (current !== "screening" && current !== "event" && current !== "poster") return;
 
   const durationSec = parseSignageDurationSeconds(params.get("duration"));
   const idx = Math.max(0, modes.indexOf(current));
@@ -107,7 +140,9 @@ function parseSignageDurationSeconds(raw) {
     rawSignage.includes(",");
 
   window.setTimeout(() => {
-    storeSignageHeroIndex(current, readActiveSignageHeroIndex(current));
+    if (current === "screening" || current === "event") {
+      storeSignageHeroIndex(current, readActiveSignageHeroIndex(current));
+    }
     const p = new URLSearchParams(params);
     if (useCycleParam) {
       p.set("signage", "cycle");

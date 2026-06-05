@@ -27,6 +27,11 @@
       "sizes": "(max-width: 480px) 120px, 240px",
       "match": ["*machinaka_campus*"]
     },
+    "signage-poster": {
+      "widths": [1080, 1226],
+      "sizes": "100vw",
+      "match": ["signage_poster.png"]
+    },
     "misc": {
       "widths": [960, 640],
       "sizes": "(max-width: 768px) 100vw, 960px",

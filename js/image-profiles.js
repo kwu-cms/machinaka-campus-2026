@@ -26,6 +26,12 @@ export const IMAGE_PROFILES = {
     defaultWidth: 480,
     aspect: { width: 120, height: 170 },
   },
+  "signage-poster": {
+    widths: [1080, 1226],
+    sizes: "100vw",
+    defaultWidth: 1080,
+    aspect: { width: 1080, height: 1920 },
+  },
   guest: {
     widths: [480, 240],
     sizes: "(max-width: 480px) 50vw, 240px",

@@ -404,5 +404,9 @@ export const IMAGE_VARIANT_WIDTHS = Object.freeze({
   "screening-slides/slide-06": [
     960,
     480
+  ],
+  "signage_poster": [
+    1080,
+    1226
   ]
 });

@@ -30,7 +30,7 @@ export function initScreeningMovies() {
     const sectionRoot = document.querySelector("#screening .mv-section");
     const dialog = document.getElementById("movie-detail-dialog");
     if (!listHost || !dialog) return;
-    if (document.body.dataset.signage === "event") {
+    if (document.body.dataset.signage === "event" || document.body.dataset.signage === "poster") {
       if (sectionRoot) sectionRoot.setAttribute("aria-busy", "false");
       return;
     }

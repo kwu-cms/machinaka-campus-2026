@@ -24,7 +24,6 @@ const SIGNAGE_FOOTER_OVERVIEW_TITLE = "まちなかキャンパス 2026";
 const SIGNAGE_FOOTER_OVERVIEW_LINES = Object.freeze([
   SIGNAGE_EVENT_DATES,
   "こうべまちづくり会館・元町映画館",
-  "展示・イベント・上映",
 ]);
 
 /** サイネージ下段「当日のご案内」（開催概要・フッターと重複しない実務向け） */
@@ -37,45 +36,21 @@ const SIGNAGE_EVENT_DAY_GUIDE = Object.freeze([
 /**
  * @param {{ mode: "screening" | "event", kicker: string, title: string, tagline: string, badge?: string }} opts
  */
-export function signageHeaderHTML({ mode, kicker, title, tagline, badge = "" }) {
+export function signageHeaderHTML({ mode, kicker = "", title, tagline, badge = "" }) {
+  const kickerHtml = kicker
+    ? `<p class="signage-header__kicker">${escapeHtml(kicker)}</p>`
+    : "";
   const badgeHtml = badge
     ? `<p class="signage-badge" aria-label="${escapeHtml(badge)}">${escapeHtml(badge)}</p>`
     : "";
   return `<header class="signage-header signage-header--${escapeHtml(mode)}" data-signage-zone="header">
   <div class="signage-header__main">
-    <p class="signage-header__kicker">${escapeHtml(kicker)}</p>
+    ${kickerHtml}
     <h1 class="signage-header__title">${escapeHtml(title)}</h1>
     <p class="signage-header__tagline">${escapeHtml(tagline)}</p>
   </div>
   ${badgeHtml}
 </header>`;
-}
-
-const SIGNAGE_SCREENING_VENUE_ADDRESS = "神戸市中央区元町通4-1-12";
-
-/** 上映サイネージ：ヘッダー内メタ行（日付・時間・会場） */
-function signageHeaderScreeningMetaHTML() {
-  const { timeDisplay, venue } = PROGRAM_TIMELINE.screening;
-  return `<div class="signage-header__meta" role="group" aria-label="上映会場・日時">
-  <div class="signage-header__meta-cell signage-header__meta-cell--date">
-    <img class="signage-header__meta-icon" src="./images/icon-calendar-days.svg" alt="" width="18" height="18" decoding="async" aria-hidden="true" />
-    <span class="signage-header__meta-text">7/18（土） – 19（日）</span>
-  </div>
-  <div class="signage-header__meta-cell signage-header__meta-cell--time">
-    <img class="signage-header__meta-icon" src="./images/icon-calendar-days.svg" alt="" width="18" height="18" decoding="async" aria-hidden="true" />
-    <span class="signage-header__meta-text">${escapeHtml(timeDisplay)}</span>
-  </div>
-  <div class="signage-header__meta-cell signage-header__meta-cell--venue">
-    <img class="signage-header__meta-icon" src="./images/fa-location-pin.svg" alt="" width="18" height="18" decoding="async" aria-hidden="true" />
-    <span class="signage-header__meta-text signage-header__meta-text--venue">${escapeHtml(venue)}</span>
-    <span class="signage-header__meta-sub">${escapeHtml(SIGNAGE_SCREENING_VENUE_ADDRESS)}</span>
-  </div>
-</div>`;
-}
-
-/** @deprecated ヘッダー統合のため未使用。互換のため残置 */
-export function signageInfobarScreeningHTML() {
-  return signageHeaderScreeningMetaHTML();
 }
 
 /**
@@ -112,21 +87,19 @@ export function signageFooterHTML({ mode }) {
 }
 
 export function signageScreeningTopHTML() {
-  return `<header class="signage-header signage-header--screening" data-signage-zone="header">
-  <div class="signage-header__main">
-    <p class="signage-header__kicker">上映プログラム</p>
-    <h1 class="signage-header__title">卒業制作選抜展「南女シネマ」</h1>
-    <p class="signage-header__tagline">映画つくった　宝物みつけた</p>
-    ${signageHeaderScreeningMetaHTML()}
-  </div>
-</header>`;
+  const { timeDisplay, venue } = PROGRAM_TIMELINE.screening;
+  return signageHeaderHTML({
+    mode: "screening",
+    kicker: "上映プログラム",
+    title: "卒業制作選抜展「南女シネマ」",
+    tagline: `${SIGNAGE_EVENT_DATES}｜${timeDisplay}｜${venue}`,
+  });
 }
 
 export function signageEventTopHTML() {
   return signageHeaderHTML({
     mode: "event",
-    kicker: "イベントプログラム",
-    title: "イベント",
+    title: "レクチャー・ワークショップ",
     tagline: `${SIGNAGE_EVENT_DATES}｜${SIGNAGE_EVENT_VENUE_LINE}`,
   });
 }

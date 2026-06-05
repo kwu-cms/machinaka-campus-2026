@@ -171,7 +171,7 @@ export function initEventsSection() {
   /** @type {Record<string, object>} */
   let byId = {};
 
-  if (document.body.dataset.signage === "screening") {
+  if (document.body.dataset.signage === "screening" || document.body.dataset.signage === "poster") {
     if (sectionRoot) sectionRoot.setAttribute("aria-busy", "false");
     return;
   }
