@@ -16,7 +16,8 @@
     "deploy:prod": "bash scripts/deploy-prod.sh",
     "serve": "python3 -m http.server 8080",
     "setup:env": "test -f .env || cp .env.example .env",
-    "optimize:images": "node scripts/optimize-images.mjs"
+    "optimize:images": "node scripts/optimize-images.mjs",
+    "generate:ogp": "node scripts/generate-ogp.mjs"
   },
   "devDependencies": {
     "sharp": "^0.33.5"

@@ -343,6 +343,10 @@ export const IMAGE_VARIANT_WIDTHS = Object.freeze({
   "image_9": [
     960
   ],
+  "image_ogp": [
+    960,
+    640
+  ],
   "irodori_icon": [
     480,
     240
