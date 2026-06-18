@@ -141,8 +141,8 @@ export const TEST_PAGE_NOTICE = Object.freeze({
 });
 
 export const EXHIBITION_UI = Object.freeze({
-  "mode": "simple",
-  "fullDetailFrom": "2026-06-12"
+  "mode": "auto",
+  "fullDetailFrom": "2026-07-18"
 });
 
 export const FEATURED_EVENT_IDS = Object.freeze([
