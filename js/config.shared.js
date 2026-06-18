@@ -118,10 +118,10 @@ export const TEST_PAGE_NOTICE = Object.freeze({
   STORAGE_KEY: "mxm2026_testPageNoticeDismissed_v1",
 });
 
-/** 展示作品 UI: simple（領域＋一覧）/ full（カルーセル＋詳細モーダル）/ auto（日付で切替） */
+/** 展示作品 UI: simple（画像一覧のみ）/ full（カルーセル＋詳細モーダル）/ auto（日付で切替） */
 export const EXHIBITION_UI = Object.freeze({
   mode: "auto",
-  fullDetailFrom: "2026-06-12",
+  fullDetailFrom: "2026-07-18",
 });
 
 export const FEATURED_EVENT_IDS = Object.freeze(["evt-01", "evt-04"]);
