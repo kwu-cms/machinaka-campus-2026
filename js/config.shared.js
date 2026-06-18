@@ -120,7 +120,7 @@ export const TEST_PAGE_NOTICE = Object.freeze({
 
 /** 展示作品 UI: simple（領域＋一覧）/ full（カルーセル＋詳細モーダル）/ auto（日付で切替） */
 export const EXHIBITION_UI = Object.freeze({
-  mode: "auto",
+  mode: "simple",
   fullDetailFrom: "2026-06-12",
 });
 

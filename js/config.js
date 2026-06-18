@@ -141,7 +141,7 @@ export const TEST_PAGE_NOTICE = Object.freeze({
 });
 
 export const EXHIBITION_UI = Object.freeze({
-  "mode": "auto",
+  "mode": "simple",
   "fullDetailFrom": "2026-06-12"
 });
 
