@@ -197,9 +197,7 @@ export function applyResponsiveImageToImg(img, stem, profileName) {
     img.removeAttribute("srcset");
     img.removeAttribute("sizes");
   }
-  if (!img.getAttribute("src") || img.src.includes(`${stem}-`)) {
-    img.src = variantUrl(stem, dw, "jpeg");
-  }
+  img.src = variantUrl(stem, dw, "jpeg");
 }
 
 /**

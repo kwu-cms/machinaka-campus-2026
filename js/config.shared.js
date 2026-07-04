@@ -121,7 +121,7 @@ export const TEST_PAGE_NOTICE = Object.freeze({
 /** 展示作品 UI: simple（画像一覧のみ）/ full（カルーセル＋詳細モーダル）/ auto（日付で切替） */
 export const EXHIBITION_UI = Object.freeze({
   mode: "auto",
-  fullDetailFrom: "2026-07-18",
+  fullDetailFrom: "2026-07-04",
 });
 
 export const FEATURED_EVENT_IDS = Object.freeze(["evt-01", "evt-04"]);

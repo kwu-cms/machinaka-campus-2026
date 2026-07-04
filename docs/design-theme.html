@@ -1,0 +1,1524 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>まちなかキャンパス 2026 — デザインテーマ（参照用）</title>
+    <style>
+      /* 単一 HTML 完結（外部 .css ファイルへの link なし） */
+      @import url("https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Shippori+Mincho+B1:wght@400;800&family=Noto+Sans+JP:wght@400;500;700&display=swap");
+
+      /* 参照用ページのみ。サイトのテクスチャ背景・ヒーロー写真は意図的に省略 */
+      :root {
+        --font-sans: "Noto Sans JP", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", Meiryo,
+          sans-serif;
+        --font-serif: "Shippori Mincho B1", "Hiragino Mincho ProN", "Yu Mincho", serif;
+        --font-mono: "DM Mono", ui-monospace, "Cascadia Mono", "SFMono-Regular", Menlo, monospace;
+        --bg-main: #0f1115;
+        /* 甲南女子大学公式 Web パレット（Adobe Color 由来） */
+        --uni-burgundy: #8c2034;
+        --uni-burgundy-rgb: 140, 32, 52;
+        --uni-red: #c6171d;
+        --uni-red-rgb: 198, 23, 29;
+        --uni-navy: #034c8c;
+        --uni-navy-rgb: 3, 76, 140;
+        --uni-lime: #88e56e;
+        --uni-lime-rgb: 136, 229, 110;
+        --uni-grey: #f2f2f2;
+        --uni-grey-rgb: 242, 242, 242;
+        --bg-light: var(--uni-grey);
+        --bg-light-rgb: var(--uni-grey-rgb);
+        --brand-surface: var(--uni-grey);
+        --text-dark: #0d0d0d;
+        --text-light: #fff;
+        --brand-black: #0d0d0d;
+        --brand-blue: var(--uni-navy);
+        --brand-magenta: var(--uni-red);
+        --brand-purple: #4c4784;
+        --brand-black-rgb: 13, 13, 13;
+        --brand-blue-rgb: var(--uni-navy-rgb);
+        --brand-magenta-rgb: var(--uni-red-rgb);
+        --brand-purple-rgb: 76, 71, 132;
+        --accent: var(--uni-red);
+        --accent-2: var(--uni-navy);
+        --accent-3: var(--uni-burgundy);
+        --accent-hover: #a51217;
+        --rule: rgba(13, 13, 13, 0.12);
+        --dim: rgba(13, 13, 13, 0.45);
+        --venue-pin-a: var(--uni-red);
+        --venue-pin-b: var(--brand-purple);
+        --shell-max: 1100px;
+        --shell-pad: clamp(1.25rem, 4vw, 2.5rem);
+        --program-stack-sm: clamp(0.65rem, 1.8vw, 0.95rem);
+        --program-stack-md: clamp(1.15rem, 3vw, 1.65rem);
+        --program-stack-lg: clamp(1.5rem, 4vw, 2.25rem);
+        --int-fast: 180ms;
+        --int-base: 240ms;
+        --int-slow: 320ms;
+        --int-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+        --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+        --focus-ring: 0 0 0 2px rgba(var(--uni-navy-rgb), 0.38);
+        /* 担当分野（3分野）— 案A: 大学パレット＋イベント黒 */
+        --field-vc: var(--uni-red);
+        --field-vc-rgb: var(--uni-red-rgb);
+        --field-creation: var(--uni-navy);
+        --field-creation-rgb: var(--uni-navy-rgb);
+        --field-social: var(--uni-burgundy);
+        --field-social-rgb: var(--uni-burgundy-rgb);
+        /* 案B: プログラム種別（紺/赤/ワインレッド）と分離 */
+        --field-vc-b: var(--uni-lime);
+        --field-vc-b-rgb: var(--uni-lime-rgb);
+        --field-creation-b: #046aad;
+        --field-creation-b-rgb: 4, 106, 173;
+        --field-social-b: #6b2234;
+        --field-social-b-rgb: 107, 34, 52;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: #fff;
+        color: var(--text-dark);
+        font-family: var(--font-sans);
+        font-weight: 400;
+        line-height: 1.65;
+        font-size: 15px;
+      }
+
+      .doc {
+        max-width: 920px;
+        margin: 0 auto;
+        padding: 2.5rem var(--shell-pad) 4rem;
+      }
+
+      .doc-header {
+        border-bottom: 2px solid var(--text-dark);
+        padding-bottom: 1.5rem;
+        margin-bottom: 2.5rem;
+      }
+
+      .doc-header h1 {
+        font-family: var(--font-serif);
+        font-weight: 800;
+        font-size: 1.75rem;
+        letter-spacing: 0.04em;
+        margin: 0 0 0.5rem;
+      }
+
+      .doc-header p {
+        margin: 0;
+        color: var(--dim);
+        font-size: 0.9rem;
+      }
+
+      section {
+        margin-bottom: 3rem;
+      }
+
+      h2 {
+        font-family: var(--font-serif);
+        font-weight: 800;
+        font-size: 1.35rem;
+        letter-spacing: 0.02em;
+        margin: 0 0 1rem;
+        padding-bottom: 0.35rem;
+        border-bottom: 1px solid var(--rule);
+      }
+
+      h3 {
+        font-family: var(--font-sans);
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--dim);
+        margin: 1.5rem 0 0.75rem;
+      }
+
+      p.note {
+        margin: 0 0 1rem;
+        font-size: 0.88rem;
+        color: var(--dim);
+        line-height: 1.7;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.88rem;
+        margin-bottom: 1rem;
+      }
+
+      th,
+      td {
+        text-align: left;
+        padding: 0.5rem 0.65rem;
+        border-bottom: 1px solid var(--rule);
+        vertical-align: top;
+      }
+
+      th {
+        font-weight: 700;
+        font-size: 0.72rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--dim);
+      }
+
+      code {
+        font-family: var(--font-mono);
+        font-size: 0.82em;
+        background: rgba(13, 13, 13, 0.06);
+        padding: 0.1em 0.35em;
+        border-radius: 2px;
+      }
+
+      .swatches {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 0.75rem;
+      }
+
+      .swatch {
+        border: 1px solid var(--rule);
+        border-radius: 4px;
+        overflow: hidden;
+      }
+
+      .swatch-chip {
+        height: 4rem;
+      }
+
+      .swatch-meta {
+        padding: 0.45rem 0.55rem;
+        font-size: 0.72rem;
+        line-height: 1.45;
+      }
+
+      .swatch-meta strong {
+        display: block;
+        font-family: var(--font-mono);
+        font-size: 0.68rem;
+        font-weight: 500;
+      }
+
+      .panel-demo {
+        background: var(--bg-light);
+        border-radius: 3px;
+        box-shadow: 0 0 0 1px rgba(17, 17, 17, 0.08);
+        padding: 1.5rem;
+        margin: 1rem 0;
+      }
+
+      .type-row {
+        margin-bottom: 1.25rem;
+        padding-bottom: 1.25rem;
+        border-bottom: 1px solid var(--rule);
+      }
+
+      .type-row:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+      }
+
+      .type-meta {
+        font-family: var(--font-mono);
+        font-size: 0.68rem;
+        color: var(--dim);
+        margin: 0 0 0.35rem;
+        letter-spacing: 0.04em;
+      }
+
+      /* --- サイト準拠のタイポサンプル --- */
+      .sample-section-label {
+        font-family: var(--font-mono);
+        font-size: 0.62rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: rgba(17, 17, 17, 0.38);
+        margin: 0 0 0.5rem;
+      }
+
+      .sample-section-title {
+        font-family: var(--font-serif);
+        font-weight: 800;
+        font-size: clamp(1.6rem, 3.5vw, 2.35rem);
+        letter-spacing: 0.02em;
+        margin: 0 0 0.75rem;
+        line-height: 1.2;
+      }
+
+      .sample-program-kicker {
+        font-family: var(--font-mono);
+        font-size: 0.68rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: rgba(17, 17, 17, 0.48);
+        margin: 0 0 0.28rem;
+      }
+
+      .sample-program-title {
+        font-family: var(--font-serif);
+        font-weight: 800;
+        font-size: clamp(1.55rem, 3.5vw, 2.35rem);
+        letter-spacing: 0.02em;
+        line-height: 1.05;
+        margin: 0;
+      }
+
+      .sample-body {
+        font-size: 1.02rem;
+        font-weight: 500;
+        line-height: 1.9;
+        color: rgba(17, 17, 17, 0.88);
+        max-width: 36rem;
+      }
+
+      .sample-facts-dt {
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: rgba(17, 17, 17, 0.48);
+      }
+
+      .sample-facts-dd {
+        font-size: 0.94rem;
+        font-weight: 500;
+        color: rgba(17, 17, 17, 0.88);
+        margin: 0.35rem 0 0;
+      }
+
+      .sample-hero-title {
+        font-family: var(--font-mono);
+        font-weight: 500;
+        font-size: clamp(2.5rem, 8.5vw, 4rem);
+        line-height: 0.92;
+        letter-spacing: -0.02em;
+        margin: 0;
+      }
+
+      .sample-hero-title .x {
+        color: var(--accent);
+        font-style: italic;
+      }
+
+      .sample-hero-series {
+        font-family: var(--font-serif);
+        font-size: clamp(1.12rem, 2.6vw, 1.55rem);
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        margin: 0.5rem 0 0;
+      }
+
+      .dark-strip {
+        background: var(--bg-main);
+        color: var(--text-light);
+        padding: 1.5rem;
+        border-radius: 4px;
+        margin: 1rem 0;
+      }
+
+      .dark-strip .sample-hero-kicker {
+        font-family: var(--font-mono);
+        font-size: 0.62rem;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.42);
+        margin: 0 0 0.85rem;
+      }
+
+      .btn-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.65rem;
+        align-items: center;
+      }
+
+      .btn-hero {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        font-family: var(--font-mono);
+        font-size: 0.58rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        padding: 0.65rem 1rem;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.28);
+        color: rgba(255, 255, 255, 0.88);
+        background: transparent;
+      }
+
+      .btn-light {
+        font-family: var(--font-mono);
+        font-size: 0.72rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        padding: 0.62rem 1rem;
+        border-radius: 10px;
+        border: 1px solid var(--rule);
+        color: rgba(17, 17, 17, 0.78);
+        background: #fff;
+      }
+
+      .tags-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        align-items: center;
+      }
+
+      .ev-cat {
+        font-size: 0.76rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        padding: 0.14rem 0.5rem;
+        border-radius: 2px;
+      }
+
+      .ev-cat-lecture {
+        background: rgba(var(--brand-blue-rgb), 0.14);
+        color: rgba(2, 52, 96, 0.98);
+      }
+
+      .ev-cat-workshop {
+        background: rgba(var(--brand-magenta-rgb), 0.12);
+        color: rgba(120, 14, 18, 0.98);
+      }
+
+      .ev-cat-permanent {
+        background: rgba(var(--brand-black-rgb), 0.1);
+        color: rgba(var(--brand-black-rgb), 0.88);
+      }
+
+      .ev-tag {
+        font-size: 0.74rem;
+        font-weight: 700;
+        padding: 0.22rem 0.62rem;
+        border-radius: 999px;
+        color: #fff;
+        letter-spacing: 0.02em;
+      }
+
+      .ev-tag-lecture {
+        background: var(--brand-blue);
+      }
+
+      .ev-tag-workshop {
+        background: var(--brand-magenta);
+      }
+
+      .ev-tag-permanent {
+        background: rgba(var(--brand-black-rgb), 0.55);
+      }
+
+      .dialog-labels {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+
+      .dialog-program-label {
+        padding: 0.44rem 0.78rem;
+        font-family: var(--font-sans);
+        font-size: 0.76rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        color: #fff;
+      }
+
+      .dialog-program-label--screening {
+        background: var(--brand-purple);
+      }
+
+      .dialog-program-label--lecture {
+        background: var(--brand-blue);
+      }
+
+      .dialog-program-label--workshop {
+        background: var(--brand-magenta);
+      }
+
+      .dialog-program-label--permanent {
+        background: rgba(var(--brand-black-rgb), 0.78);
+      }
+
+      .ev-apply-btn {
+        display: inline-flex;
+        font-size: 0.86rem;
+        font-weight: 700;
+        padding: 0.45rem 1rem;
+        background: var(--brand-magenta);
+        color: #fff;
+        border-radius: 6px;
+        border: 1px solid rgba(var(--brand-magenta-rgb), 0.92);
+      }
+
+      .program-map {
+        display: grid;
+        gap: 0.5rem;
+      }
+
+      .program-map-item {
+        display: flex;
+        align-items: stretch;
+        border: 1px solid var(--rule);
+        border-radius: 2px;
+        overflow: hidden;
+      }
+
+      .program-map-bar {
+        width: 4px;
+        flex-shrink: 0;
+      }
+
+      .program-map-body {
+        padding: 0.65rem 0.85rem;
+        font-size: 0.88rem;
+      }
+
+      .pin-demo {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-size: 0.88rem;
+        font-weight: 600;
+      }
+
+      .pin-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+      }
+
+      .mono-time {
+        font-family: var(--font-mono);
+        font-size: 0.82rem;
+        font-weight: 500;
+        letter-spacing: 0.04em;
+        color: rgba(17, 17, 17, 0.72);
+      }
+
+      .card-white {
+        background: #fff;
+        border: 1px solid var(--rule);
+        padding: 1rem 1.1rem;
+        border-radius: 0;
+      }
+
+      /* 担当分野ラベル（サイト現行 .ev-domain は中立色。以下は制作物向け案） */
+      .ev-domain-base {
+        flex-shrink: 0;
+        display: inline-flex;
+        align-items: center;
+        font-size: 0.68rem;
+        font-weight: 600;
+        letter-spacing: 0.03em;
+        line-height: 1.25;
+        padding: 0.12rem 0.48rem 0.14rem;
+        border-radius: 2px;
+        border: 1px solid transparent;
+      }
+
+      .ev-domain-neutral {
+        color: rgba(17, 17, 17, 0.62);
+        background: rgba(17, 17, 17, 0.055);
+        border-color: rgba(17, 17, 17, 0.11);
+      }
+
+      .ev-domain-vc-a {
+        background: rgba(var(--field-vc-rgb), 0.12);
+        color: rgba(120, 14, 18, 0.98);
+        border-color: rgba(var(--field-vc-rgb), 0.22);
+      }
+
+      .ev-domain-creation-a {
+        background: rgba(var(--field-creation-rgb), 0.14);
+        color: rgba(2, 52, 96, 0.98);
+        border-color: rgba(var(--field-creation-rgb), 0.22);
+      }
+
+      .ev-domain-social-a {
+        background: rgba(var(--field-social-rgb), 0.12);
+        color: rgba(90, 20, 32, 0.98);
+        border-color: rgba(var(--field-social-rgb), 0.22);
+      }
+
+      .ev-domain-vc-b {
+        background: rgba(var(--field-vc-b-rgb), 0.22);
+        color: rgba(28, 72, 22, 0.98);
+        border-color: rgba(var(--field-vc-b-rgb), 0.45);
+      }
+
+      .ev-domain-creation-b {
+        background: rgba(var(--field-creation-b-rgb), 0.12);
+        color: rgba(3, 58, 105, 0.98);
+        border-color: rgba(var(--field-creation-b-rgb), 0.22);
+      }
+
+      .ev-domain-social-b {
+        background: rgba(var(--field-social-b-rgb), 0.12);
+        color: rgba(70, 18, 30, 0.98);
+        border-color: rgba(var(--field-social-b-rgb), 0.22);
+      }
+
+      .field-tag-solid {
+        font-size: 0.74rem;
+        font-weight: 700;
+        padding: 0.22rem 0.62rem;
+        border-radius: 999px;
+        color: #fff;
+        letter-spacing: 0.02em;
+      }
+
+      .field-tag-vc-a {
+        background: var(--field-vc);
+      }
+
+      .field-tag-creation-a {
+        background: var(--field-creation);
+      }
+
+      .field-tag-social-a {
+        background: var(--field-social);
+      }
+
+      .field-tag-vc-b {
+        background: var(--field-vc-b);
+      }
+
+      .field-tag-creation-b {
+        background: var(--field-creation-b);
+      }
+
+      .field-tag-social-b {
+        background: var(--field-social-b);
+      }
+
+      .field-accent-bar {
+        width: 4px;
+        flex-shrink: 0;
+        border-radius: 1px;
+      }
+
+      .field-cards {
+        display: grid;
+        gap: 0.75rem;
+      }
+
+      .field-card {
+        display: flex;
+        align-items: stretch;
+        border: 1px solid var(--rule);
+        border-radius: 2px;
+        overflow: hidden;
+        background: #fff;
+      }
+
+      .field-card-body {
+        padding: 0.75rem 0.9rem;
+        font-size: 0.88rem;
+        line-height: 1.55;
+      }
+
+      .field-card-body strong {
+        display: block;
+        font-family: var(--font-serif);
+        font-weight: 800;
+        font-size: 0.95rem;
+        margin-bottom: 0.35rem;
+      }
+
+      .field-pickup-border {
+        border-left: 4px solid;
+        padding-left: 1rem;
+        margin: 0.5rem 0;
+      }
+
+      @media print {
+        body {
+          background: #fff;
+        }
+        .doc {
+          max-width: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="doc">
+      <header class="doc-header">
+        <h1>まちなかキャンパス 2026 — デザインテーマ</h1>
+        <p>
+          静的サイト（MEDIA x MOTOMACHI）の参照用まとめ。このファイル<strong>単体</strong>で表示できます（スタイルはすべて下記
+          <code>&lt;style&gt;</code> 内。外部 CSS への link なし）。テクスチャ背景・ヒーロー写真・地図などの装飾は除き、色・タイポ・プログラム別アクセント・コンポーネント規則を記載。本番実装の単一ソースは
+          <code>css/tokens.css</code>。
+        </p>
+        <p class="note" style="margin-top: 0.5rem">
+          フォントは <code>@import</code> で Google Fonts を読み込み（要ネット接続）。オフライン時はシステムフォントにフォールバックします。
+        </p>
+        <p>生成日: 2026年（リポジトリ現行版）</p>
+      </header>
+
+      <section id="concept">
+        <h2>コンセプト</h2>
+        <p class="note">
+          フライヤー連動の「街へひらく学び」。甲南女子大学公式色（紺・赤・ワインレッド）をイベントのアクセントに取り込み、パネル地は大学サイトと同系のライトグレー（<code>#F2F2F2</code>）＋白カード。プログラム種別は黒／紺／赤／<strong>紫（上映）</strong>、担当分野の案Bのみライム緑を補助色に。見出しは明朝＋英字モノスペースの対比。
+        </p>
+        <ul>
+          <li>英字ロゴ・ラベル: <strong>DM Mono</strong>（大文字・レタースペース広め）</li>
+          <li>和文見出し・タイトル: <strong>Shippori Mincho B1</strong>（800）</li>
+          <li>本文・UI: <strong>Noto Sans JP</strong>（400 / 500 / 700）</li>
+        </ul>
+      </section>
+
+      <section id="colors">
+        <h2>カラーパレット</h2>
+
+        <h3>甲南女子大学公式（ソース）</h3>
+        <p class="note">
+          大学 Web の Adobe Color テーマをそのまま <code>--uni-*</code> に保持。<code>--brand-blue</code> / <code>--brand-magenta</code> は大学紺・赤、<code>--brand-purple</code> は上映専用の従来紫（#4C4784）として分離。
+        </p>
+        <div class="swatches">
+          <div class="swatch">
+            <div class="swatch-chip" style="background: #8c2034"></div>
+            <div class="swatch-meta"><strong>--uni-burgundy</strong>#8C2034<br />ワインレッド</div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-chip" style="background: #c6171d"></div>
+            <div class="swatch-meta"><strong>--uni-red</strong>#C6171D<br />鮮やかな赤</div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-chip" style="background: #034c8c"></div>
+            <div class="swatch-meta"><strong>--uni-navy</strong>#034C8C<br />紺</div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-chip" style="background: #88e56e"></div>
+            <div class="swatch-meta"><strong>--uni-lime</strong>#88E56E<br />アクセント緑（案B・強調のみ）</div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-chip" style="background: #f2f2f2; border-bottom: 1px solid var(--rule)"></div>
+            <div class="swatch-meta"><strong>--uni-grey</strong>#F2F2F2<br />パネル・サーフェス</div>
+          </div>
+        </div>
+
+        <h3>イベントブランド（大学色へのマッピング）</h3>
+        <div class="swatches">
+          <div class="swatch">
+            <div class="swatch-chip" style="background: #0d0d0d"></div>
+            <div class="swatch-meta"><strong>--brand-black</strong>#0d0d0d<br />展示（フライヤー黒）</div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-chip" style="background: #034c8c"></div>
+            <div class="swatch-meta"><strong>--brand-blue</strong>#034C8C<br />= --uni-navy · レクチャー</div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-chip" style="background: #c6171d"></div>
+            <div class="swatch-meta"><strong>--brand-magenta</strong>#C6171D<br />= --uni-red · WS・リンク</div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-chip" style="background: #4c4784"></div>
+            <div class="swatch-meta"><strong>--brand-purple</strong>#4C4784<br />上映・元町映画館（従来紫）</div>
+          </div>
+        </div>
+
+        <h3>サーフェス・テキスト（装飾背景除く）</h3>
+        <div class="swatches">
+          <div class="swatch">
+            <div class="swatch-chip" style="background: #f2f2f2; border-bottom: 1px solid var(--rule)"></div>
+            <div class="swatch-meta"><strong>--bg-light</strong><br />--brand-surface<br />#F2F2F2</div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-chip" style="background: #ffffff; border-bottom: 1px solid var(--rule)"></div>
+            <div class="swatch-meta"><strong>カード面</strong>#ffffff</div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-chip" style="background: #0f1115"></div>
+            <div class="swatch-meta"><strong>--bg-main</strong>#0f1115<br />ヒーロー等</div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-chip" style="background: #0d0d0d"></div>
+            <div class="swatch-meta"><strong>--text-dark</strong>#0d0d0d</div>
+          </div>
+        </div>
+
+        <h3>補助・互換</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>トークン</th>
+              <th>値</th>
+              <th>用途</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>--accent</code></td>
+              <td>大学赤と同じ（<code>--uni-red</code>）</td>
+              <td>ヒーロー「×」など</td>
+            </tr>
+            <tr>
+              <td><code>--accent-hover</code></td>
+              <td>#a51217</td>
+              <td>申込ボタン hover（赤を少し暗く）</td>
+            </tr>
+            <tr>
+              <td><code>--rule</code></td>
+              <td>rgba(13,13,13,0.12)</td>
+              <td>区切り線</td>
+            </tr>
+            <tr>
+              <td><code>--dim</code></td>
+              <td>rgba(13,13,13,0.45)</td>
+              <td>補助文・セクション注記</td>
+            </tr>
+            <tr>
+              <td><code>--venue-pin-a</code></td>
+              <td>大学赤</td>
+              <td>こうべまちづくり会館（地図）</td>
+            </tr>
+            <tr>
+              <td><code>--venue-pin-b</code></td>
+              <td>紫（上映と同系）</td>
+              <td>元町映画館（地図）</td>
+            </tr>
+            <tr>
+              <td><code>--focus-ring</code></td>
+              <td>紺 38% 光彩</td>
+              <td>フォーカス可視化</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="programs">
+        <h2>プログラム別マッピング</h2>
+        <div class="program-map">
+          <div class="program-map-item">
+            <div class="program-map-bar" style="background: var(--brand-black)"></div>
+            <div class="program-map-body"><strong>展示（Exhibition）</strong> — 黒。program-list 1件目 hover も黒系。</div>
+          </div>
+          <div class="program-map-item">
+            <div class="program-map-bar" style="background: var(--brand-blue)"></div>
+            <div class="program-map-body"><strong>イベント・レクチャー</strong> — 紺（<code>--uni-navy</code>）。カテゴリタグ・モーダルラベル・左ボーダー。</div>
+          </div>
+          <div class="program-map-item">
+            <div class="program-map-bar" style="background: var(--brand-magenta)"></div>
+            <div class="program-map-body"><strong>ワークショップ</strong> — 赤（<code>--uni-red</code>）。申込ボタン・注目バッジの強調。</div>
+          </div>
+          <div class="program-map-item">
+            <div class="program-map-bar" style="background: var(--brand-purple)"></div>
+            <div class="program-map-body"><strong>上映（Screening）</strong> — 紫（<code>--brand-purple</code> #4C4784）。南女シネマ・映画館表記。</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="fields">
+        <h2>担当分野（3分野）カラーリング案</h2>
+        <p class="note">
+          2027年度カリキュラム刷新の3分野（<strong>ヴィジュアルカルチャー</strong>・<strong>クリエイション／AI</strong>・<strong>ソーシャルデザイン</strong>）向けの参照用配色。
+          本番サイトの <code>.ev-domain</code>（担当分野チップ）は現状<strong>中立グレー</strong>のまま。フライヤー・学科案内・スライド等の別制作物では、以下の案A／案Bを使い分け可能。
+        </p>
+        <p class="note">
+          <strong>案A</strong>は大学パレット3色にマッピング（赤＝VC、紺＝クリエイション／AI、ワインレッド＝ソーシャルデザイン）。<strong>上映・映画館</strong>は従来の紫（<code>--brand-purple</code>）のまま。
+          <strong>案B</strong>はプログラム種別（紺／赤／ワインレッド）と被らないよう、ライム緑・明るい紺・深いワインレッドで分野専用色を定義。
+        </p>
+
+        <h3>案A — 既存ブランドへのマッピング（推奨・統一しやすい）</h3>
+        <div class="swatches">
+          <div class="swatch">
+            <div class="swatch-chip" style="background: #c6171d"></div>
+            <div class="swatch-meta">
+              <strong>ヴィジュアルカルチャー</strong>
+              #C6171D<br />
+              <code>--field-vc</code><br />
+              = --uni-red
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-chip" style="background: #034c8c"></div>
+            <div class="swatch-meta">
+              <strong>クリエイション／AI</strong>
+              #034C8C<br />
+              <code>--field-creation</code><br />
+              = --uni-navy
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-chip" style="background: #8c2034"></div>
+            <div class="swatch-meta">
+              <strong>ソーシャルデザイン</strong>
+              #8C2034<br />
+              <code>--field-social</code><br />
+              = --uni-burgundy
+            </div>
+          </div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>分野</th>
+              <th>メイン</th>
+              <th>チップ背景（淡）</th>
+              <th>チップ文字</th>
+              <th>タグ（ソリッド）</th>
+              <th>用途イメージ</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>ヴィジュアルカルチャー</td>
+              <td><code>#C6171D</code></td>
+              <td><code>rgba(198,23,29,0.12)</code></td>
+              <td><code>rgba(120,14,18,0.98)</code></td>
+              <td><code>#C6171D</code></td>
+              <td>映像文化・批評・視覚理論</td>
+            </tr>
+            <tr>
+              <td>クリエイション／AI</td>
+              <td><code>#034C8C</code></td>
+              <td><code>rgba(3,76,140,0.14)</code></td>
+              <td><code>rgba(2,52,96,0.98)</code></td>
+              <td><code>#034C8C</code></td>
+              <td>制作・プロトタイプ・AI／デジタル</td>
+            </tr>
+            <tr>
+              <td>ソーシャルデザイン</td>
+              <td><code>#8C2034</code></td>
+              <td><code>rgba(140,32,52,0.12)</code></td>
+              <td><code>rgba(90,20,32,0.98)</code></td>
+              <td><code>#8C2034</code></td>
+              <td>フィールドワーク・まち・参加</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>案B — 分野専用色（カテゴリ色と分離したい場合）</h3>
+        <div class="swatches">
+          <div class="swatch">
+            <div class="swatch-chip" style="background: #88e56e"></div>
+            <div class="swatch-meta">
+              <strong>ヴィジュアルカルチャー</strong>
+              #88E56E（ライム）<br />
+              <code>--field-vc-b</code> = --uni-lime
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-chip" style="background: #046aad"></div>
+            <div class="swatch-meta">
+              <strong>クリエイション／AI</strong>
+              #046AAD（明るい紺）<br />
+              <code>--field-creation-b</code>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-chip" style="background: #6b2234"></div>
+            <div class="swatch-meta">
+              <strong>ソーシャルデザイン</strong>
+              #6B2234（深いワインレッド）<br />
+              <code>--field-social-b</code>
+            </div>
+          </div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>分野</th>
+              <th>メイン</th>
+              <th>チップ背景（淡）</th>
+              <th>チップ文字</th>
+              <th>備考</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>ヴィジュアルカルチャー</td>
+              <td><code>#88E56E</code></td>
+              <td><code>rgba(136,229,110,0.22)</code></td>
+              <td><code>rgba(28,72,22,0.98)</code></td>
+              <td>大学アクセント緑。ソリッドタグより淡チップ向き</td>
+            </tr>
+            <tr>
+              <td>クリエイション／AI</td>
+              <td><code>#046AAD</code></td>
+              <td><code>rgba(4,106,173,0.12)</code></td>
+              <td><code>rgba(3,58,105,0.98)</code></td>
+              <td>公式紺より明るく、レクチャー紺と区別</td>
+            </tr>
+            <tr>
+              <td>ソーシャルデザイン</td>
+              <td><code>#6B2234</code></td>
+              <td><code>rgba(107,34,52,0.12)</code></td>
+              <td><code>rgba(70,18,30,0.98)</code></td>
+              <td>公式ワインレッドより深く、上映・WS赤と併用しやすい</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>ラベル・タグの見え方（サンプル）</h3>
+        <p class="type-meta">現行サイト（中立）</p>
+        <div class="tags-row" style="margin-bottom: 1rem">
+          <span class="ev-domain-base ev-domain-neutral">クリエイション/AI</span>
+          <span class="ev-domain-base ev-domain-neutral">ソーシャルデザイン</span>
+          <span class="ev-domain-base ev-domain-neutral">ヴィジュアルカルチャー</span>
+        </div>
+
+        <p class="type-meta">案A — 担当分野チップ（.ev-cat と同系の淡色背景）</p>
+        <div class="tags-row" style="margin-bottom: 0.5rem">
+          <span class="ev-domain-base ev-domain-vc-a">ヴィジュアルカルチャー</span>
+          <span class="ev-domain-base ev-domain-creation-a">クリエイション/AI</span>
+          <span class="ev-domain-base ev-domain-social-a">ソーシャルデザイン</span>
+        </div>
+        <div class="tags-row" style="margin-bottom: 1.25rem">
+          <span class="field-tag-solid field-tag-vc-a">ヴィジュアルカルチャー</span>
+          <span class="field-tag-solid field-tag-creation-a">クリエイション/AI</span>
+          <span class="field-tag-solid field-tag-social-a">ソーシャルデザイン</span>
+        </div>
+
+        <p class="type-meta">案B — 担当分野チップ</p>
+        <div class="tags-row" style="margin-bottom: 0.5rem">
+          <span class="ev-domain-base ev-domain-vc-b">ヴィジュアルカルチャー</span>
+          <span class="ev-domain-base ev-domain-creation-b">クリエイション/AI</span>
+          <span class="ev-domain-base ev-domain-social-b">ソーシャルデザイン</span>
+        </div>
+        <div class="tags-row" style="margin-bottom: 1.25rem">
+          <span class="field-tag-solid field-tag-vc-b">ヴィジュアルカルチャー</span>
+          <span class="field-tag-solid field-tag-creation-b">クリエイション/AI</span>
+          <span class="field-tag-solid field-tag-social-b">ソーシャルデザイン</span>
+        </div>
+
+        <h3>カード・強調線の例</h3>
+        <div class="field-cards">
+          <div class="field-card">
+            <div class="field-accent-bar" style="background: var(--field-vc)"></div>
+            <div class="field-card-body">
+              <strong>案A · ヴィジュアルカルチャー</strong>
+              左アクセント 4px = メイン色。パネル上は白カード＋細罫線。
+            </div>
+          </div>
+          <div class="field-card">
+            <div class="field-accent-bar" style="background: var(--field-creation)"></div>
+            <div class="field-card-body">
+              <strong>案A · クリエイション／AI</strong>
+              イベント CSV の担当分野列の多くがこの系統。
+            </div>
+          </div>
+          <div class="field-card">
+            <div class="field-accent-bar" style="background: var(--field-social)"></div>
+            <div class="field-card-body">
+              <strong>案A · ソーシャルデザイン</strong>
+              フィールドワーク・地域連携イベント向け。
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-demo" style="margin-top: 1rem">
+          <p class="field-pickup-border" style="border-color: var(--field-creation)">
+            <span class="ev-domain-base ev-domain-creation-a">クリエイション/AI</span>
+            注目カルーセル左ボーダー例（案A・紺）
+          </p>
+          <p class="field-pickup-border" style="border-color: var(--field-vc-b)">
+            <span class="ev-domain-base ev-domain-vc-b">ヴィジュアルカルチャー</span>
+            注目パネル左ボーダー例（案B・ライム）
+          </p>
+          <p class="field-pickup-border" style="border-color: var(--field-social-b)">
+            <span class="ev-domain-base ev-domain-social-b">ソーシャルデザイン</span>
+            注目パネル左ボーダー例（案B・深ワインレッド）
+          </p>
+        </div>
+
+        <h3>2軸の使い分け（整理）</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>軸</th>
+              <th>例</th>
+              <th>案Aの色</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>プログラム種別</td>
+              <td>レクチャー / WS / 常設 / 上映</td>
+              <td>紺 / 赤 / 黒 / 紫</td>
+            </tr>
+            <tr>
+              <td>学科担当分野</td>
+              <td>VC / クリエイション／AI / SD</td>
+              <td>赤 / 紺 / ワインレッド（案A）</td>
+            </tr>
+            <tr>
+              <td>展示プログラム</td>
+              <td>P01 Exhibition</td>
+              <td>黒</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="note">
+          同一画面で「カテゴリ＝紺」「担当分野＝紺」が並ぶと区別しづらい場合は、担当分野のみ<strong>案B</strong>（ライム等）にする、または担当分野は常に<strong>中立チップ</strong>（現行）のまま別アイコンで示す運用も可。
+        </p>
+
+        <h3>実装用 CSS 変数（コピー用）</h3>
+        <pre
+          style="
+            margin: 0;
+            padding: 1rem;
+            background: rgba(13, 13, 13, 0.05);
+            border-radius: 4px;
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            line-height: 1.6;
+            overflow-x: auto;
+          "
+        ><code>/* 大学公式（tokens.css） */
+--uni-burgundy: #8c2034;
+--uni-burgundy-rgb: 140, 32, 52;
+--uni-red: #c6171d;
+--uni-red-rgb: 198, 23, 29;
+--uni-navy: #034c8c;
+--uni-navy-rgb: 3, 76, 140;
+--uni-lime: #88e56e;
+--uni-lime-rgb: 136, 229, 110;
+--uni-grey: #f2f2f2;
+--uni-grey-rgb: 242, 242, 242;
+
+/* 案A（担当分野） */
+--field-vc: var(--uni-red);
+--field-vc-rgb: var(--uni-red-rgb);
+--field-creation: var(--uni-navy);
+--field-creation-rgb: var(--uni-navy-rgb);
+--field-social: var(--uni-burgundy);
+--field-social-rgb: var(--uni-burgundy-rgb);
+
+/* 案B */
+--field-vc-b: var(--uni-lime);
+--field-vc-b-rgb: var(--uni-lime-rgb);
+--field-creation-b: #046aad;
+--field-creation-b-rgb: 4, 106, 173;
+--field-social-b: #6b2234;
+--field-social-b-rgb: 107, 34, 52;</code></pre>
+      </section>
+
+      <section id="typography">
+        <h2>タイポグラフィ</h2>
+        <p class="note">Google Fonts: DM Mono, Shippori Mincho B1 (400/800), Noto Sans JP (400/500/700)。M PLUS 1 Code はサイト読み込みにあるが主要UIでは未使用。</p>
+
+        <div class="panel-demo">
+          <p class="sample-section-label">- About</p>
+          <h2 class="sample-section-title" style="margin: 0">開催概要</h2>
+          <p class="type-meta">.section-label + .section-title</p>
+        </div>
+
+        <div class="type-row">
+          <p class="sample-program-kicker">- P02 - Event</p>
+          <p class="sample-program-title">イベント</p>
+          <p class="type-meta">.program-kicker + .program-title（プログラム見出し）</p>
+        </div>
+
+        <div class="type-row">
+          <p class="sample-body">
+            本文は Noto Sans JP 500、line-height 1.65〜1.9。開催概要 .about-copy は 1.02rem / 1.9。
+          </p>
+          <p class="type-meta">.about-copy / 一般本文</p>
+        </div>
+
+        <div class="type-row">
+          <p class="sample-facts-dt">会期</p>
+          <p class="sample-facts-dd">2026年7月18日（土）・19日（日）</p>
+          <p class="type-meta">.facts dt / dd</p>
+        </div>
+
+        <div class="dark-strip">
+          <p class="sample-hero-kicker">Machi-naka campus / Kobe motomachi</p>
+          <p class="sample-hero-title">MEDIA <span class="x">x</span><br />MOTOMACHI</p>
+          <p class="sample-hero-series">まちなかキャンパス 2026</p>
+          <p class="type-meta" style="color: rgba(255,255,255,0.5); margin-top: 1rem">.hero-kicker / .hero-title / .hero-series（ダーク面上）</p>
+        </div>
+
+        <div class="type-row">
+          <p class="mono-time">7/18（土） 13:00 – 14:30</p>
+          <p class="type-meta">DM Mono — 時刻・会場ラベル（.program-venue, .ev-pickup-date-line 等）</p>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>要素</th>
+              <th>フォント</th>
+              <th>サイズ目安</th>
+              <th>ウェイト</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>ヒーロー英字</td>
+              <td>DM Mono</td>
+              <td>clamp(2.5rem, 8.5vw, 6.5rem)</td>
+              <td>500</td>
+            </tr>
+            <tr>
+              <td>セクション見出し</td>
+              <td>Shippori Mincho B1</td>
+              <td>clamp(1.6rem, 3.5vw, 2.35rem)</td>
+              <td>800</td>
+            </tr>
+            <tr>
+              <td>イベントカード見出し</td>
+              <td>Shippori Mincho B1</td>
+              <td>clamp(1.02rem, 2.15vw, 1.12rem)</td>
+              <td>800</td>
+            </tr>
+            <tr>
+              <td>モーダルタイトル</td>
+              <td>Shippori Mincho B1</td>
+              <td>clamp(1.18rem, 2.9vw, 1.48rem)</td>
+              <td>800</td>
+            </tr>
+            <tr>
+              <td>ラベル・キッカー</td>
+              <td>DM Mono</td>
+              <td>0.62〜0.68rem</td>
+              <td>400〜500, UPPERCASE</td>
+            </tr>
+            <tr>
+              <td>本文</td>
+              <td>Noto Sans JP</td>
+              <td>0.86〜1.02rem</td>
+              <td>400 / 500</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="components">
+        <h2>コンポーネント</h2>
+
+        <h3>パネル・カード</h3>
+        <div class="panel-demo">
+          <p class="sample-section-label">- Program</p>
+          <p class="sample-program-title" style="font-size: 1.5rem">展示</p>
+          <p class="note" style="margin-top: 1rem">
+            #program / #about / #access / #news の .container — background
+            <code>--bg-light</code>, border-radius 3px, box-shadow 0 0 0 1px rgba(17,17,17,0.08)
+          </p>
+        </div>
+        <div class="card-white" style="max-width: 280px">
+          <strong>会場カード</strong><br />
+          <span style="font-size: 0.88rem; color: var(--dim)">白背景・1px 罫線・hover で軽い影</span>
+        </div>
+
+        <h3>ボタン</h3>
+        <div class="dark-strip">
+          <div class="btn-row">
+            <span class="btn-hero">Schedule</span>
+            <span class="btn-hero">Access</span>
+          </div>
+          <p class="type-meta" style="color: rgba(255,255,255,0.45); margin: 0.75rem 0 0">.btn（ヒーロー）ピル型・白 hover</p>
+        </div>
+        <div class="btn-row" style="margin-top: 1rem">
+          <span class="btn-light">Instagram</span>
+        </div>
+        <p class="type-meta">.btn-light — 角丸 10px・白面・DM Mono uppercase</p>
+        <p style="margin-top: 1rem"><span class="ev-apply-btn">申込はこちら</span></p>
+        <p class="type-meta">.ev-apply-btn — 大学赤・角丸 6px・700</p>
+
+        <h3>カテゴリ・タグ</h3>
+        <div class="tags-row">
+          <span class="ev-cat ev-cat-lecture">レクチャー</span>
+          <span class="ev-cat ev-cat-workshop">ワークショップ</span>
+          <span class="ev-cat ev-cat-permanent">常設</span>
+        </div>
+        <p class="type-meta">.ev-cat-* — 淡色背景＋濃い文字（角丸 2px）</p>
+        <div class="tags-row" style="margin-top: 0.75rem">
+          <span class="ev-tag ev-tag-lecture">タグ</span>
+          <span class="ev-tag ev-tag-workshop">タグ</span>
+          <span class="ev-tag ev-tag-permanent">タグ</span>
+        </div>
+        <p class="type-meta">.ev-tag — ピル型・白文字・ソリッド背景</p>
+
+        <h3>モーダル企画ラベル</h3>
+        <div class="dialog-labels">
+          <span class="dialog-program-label dialog-program-label--lecture">レクチャー</span>
+          <span class="dialog-program-label dialog-program-label--workshop">ワークショップ</span>
+          <span class="dialog-program-label dialog-program-label--screening">上映</span>
+          <span class="dialog-program-label dialog-program-label--permanent">常設</span>
+        </div>
+        <p class="type-meta">左上フルブリード・角丸なし・白文字</p>
+
+        <h3>地図ピン（色のみ）</h3>
+        <p>
+          <span class="pin-demo"><span class="pin-dot" style="background: var(--venue-pin-a)"></span>会館A</span>
+          &nbsp;&nbsp;
+          <span class="pin-demo"><span class="pin-dot" style="background: var(--venue-pin-b)"></span>会館B（上映）</span>
+        </p>
+      </section>
+
+      <section id="layout">
+        <h2>レイアウト・リズム</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>トークン</th>
+              <th>値</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>--shell-max</code></td>
+              <td>1100px（.container 最大幅）</td>
+            </tr>
+            <tr>
+              <td><code>--shell-pad</code></td>
+              <td>clamp(1.25rem, 4vw, 2.5rem)</td>
+            </tr>
+            <tr>
+              <td><code>--nav-h</code></td>
+              <td>76px（scroll-padding-top）</td>
+            </tr>
+            <tr>
+              <td><code>--program-stack-sm/md/lg</code></td>
+              <td>プログラム記事内の縦余白段階</td>
+            </tr>
+            <tr>
+              <td>セクション padding</td>
+              <td>clamp(3rem, 8vw, 4.5rem) 0（一般 section）</td>
+            </tr>
+            <tr>
+              <td>パネル section padding</td>
+              <td>clamp(1.5rem, 4vw, 2.75rem) block</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="motion">
+        <h2>モーション</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>トークン</th>
+              <th>値</th>
+              <th>用途</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>--int-fast</code></td>
+              <td>180ms</td>
+              <td>ホバー（カード・会場）</td>
+            </tr>
+            <tr>
+              <td><code>--int-base</code></td>
+              <td>240ms</td>
+              <td>ボタン・プログラム行</td>
+            </tr>
+            <tr>
+              <td><code>--int-slow</code></td>
+              <td>320ms</td>
+              <td>画像ホバー等</td>
+            </tr>
+            <tr>
+              <td><code>--int-ease</code></td>
+              <td>cubic-bezier(0.2, 0.8, 0.2, 1)</td>
+              <td>汎用</td>
+            </tr>
+            <tr>
+              <td><code>--ease-out</code></td>
+              <td>cubic-bezier(0.16, 1, 0.3, 1)</td>
+              <td>.reveal スクロールイン</td>
+            </tr>
+            <tr>
+              <td>カルーセル fade</td>
+              <td>約 1.1s ease-in-out</td>
+              <td>上映・注目スライド</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="ui-refresh-2026">
+        <h2>UI 刷新（2026）— モックとモーション原則</h2>
+        <p class="note">
+          本番は <code>css/motion.css</code> + <code>js/scroll-choreography.js</code>。情報設計・CSV 連携は現行のまま。トーンは<strong>編集デザイン（B）</strong>：ダークヒーロー＋明るいプログラム帯。
+        </p>
+
+        <h3>モーション原則</h3>
+        <ul>
+          <li><code>prefers-reduced-motion: reduce</code> — パララックス・横スクロール自動・View Transitions を無効</li>
+          <li><code>body[data-signage]</code> — 演出ゼロ（サイネージ専用）</li>
+          <li>パララックス — ヒーロー内のみ、最大 36px 相当、<code>transform</code> のみ</li>
+          <li>モーダル — ネイティブ <code>&lt;dialog&gt;</code>、モバイル全画面 / デスクトップ 95dvh</li>
+        </ul>
+
+        <h3>ヒーロー（ダーク・多層）</h3>
+        <div class="ui-mock ui-mock-hero">
+          <div class="ui-mock-hero__bg"></div>
+          <div class="ui-mock-hero__scrim"></div>
+          <p class="ui-mock-hero__kicker">Machi-naka campus</p>
+          <h4 class="ui-mock-hero__title">MEDIA <em>x</em> MOTOMACHI</h4>
+        </div>
+
+        <h3>イベントカード（タイル）</h3>
+        <div class="ui-mock ui-mock-ev-card">
+          <span class="ui-mock-ev-card__accent"></span>
+          <div class="ui-mock-ev-card__body">
+            <span class="ui-mock-ev-card__cat">レクチャー</span>
+            <strong class="ui-mock-ev-card__title">機能とデザイン——デザインは暮らしを豊かにする</strong>
+            <span class="ui-mock-ev-card__time">13:00–14:30</span>
+          </div>
+        </div>
+
+        <h3>没入型モーダル</h3>
+        <div class="ui-mock ui-mock-dialog">
+          <div class="ui-mock-dialog__media"></div>
+          <div class="ui-mock-dialog__panel">
+            <span class="ui-mock-dialog__label">レクチャー</span>
+            <strong>機能とデザイン——…</strong>
+            <p>本文スクロール領域（画像 45–55vh + 下段コンテンツ）</p>
+          </div>
+        </div>
+
+        <style>
+          .ui-mock { margin: 1rem 0 1.5rem; border-radius: 8px; overflow: hidden; }
+          .ui-mock-hero {
+            position: relative;
+            min-height: 140px;
+            background: #0f1115;
+            color: #fff;
+            padding: 1.25rem;
+          }
+          .ui-mock-hero__bg {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(120deg, #1a2030, #0f1115 55%, #2a1520);
+            opacity: 0.9;
+          }
+          .ui-mock-hero__scrim {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(15, 17, 21, 0.85), transparent 50%);
+          }
+          .ui-mock-hero__kicker,
+          .ui-mock-hero__title {
+            position: relative;
+            margin: 0;
+          }
+          .ui-mock-hero__kicker {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            letter-spacing: 0.14em;
+            opacity: 0.72;
+          }
+          .ui-mock-hero__title {
+            font-family: var(--font-serif);
+            font-weight: 800;
+            font-size: 1.35rem;
+            margin-top: 0.35rem;
+          }
+          .ui-mock-hero__title em {
+            color: #c6171d;
+            font-style: italic;
+          }
+          .ui-mock-ev-card {
+            display: grid;
+            grid-template-columns: 4px 1fr;
+            background: #fff;
+            box-shadow: 0 12px 40px rgba(13, 13, 13, 0.08);
+          }
+          .ui-mock-ev-card__accent {
+            background: #034c8c;
+          }
+          .ui-mock-ev-card__body {
+            padding: 0.85rem 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+          }
+          .ui-mock-ev-card__cat {
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: #034c8c;
+          }
+          .ui-mock-ev-card__title {
+            font-family: var(--font-serif);
+            font-size: 0.95rem;
+          }
+          .ui-mock-ev-card__time {
+            font-family: var(--font-mono);
+            font-size: 0.62rem;
+            color: rgba(13, 13, 13, 0.45);
+          }
+          .ui-mock-dialog {
+            border: 1px solid var(--rule);
+            max-width: 280px;
+          }
+          .ui-mock-dialog__media {
+            height: 100px;
+            background: linear-gradient(135deg, #4c4784, #034c8c);
+          }
+          .ui-mock-dialog__panel {
+            padding: 0.75rem;
+            font-size: 0.8rem;
+          }
+          .ui-mock-dialog__label {
+            display: inline-block;
+            background: #034c8c;
+            color: #fff;
+            font-size: 0.62rem;
+            padding: 0.15rem 0.4rem;
+            margin-bottom: 0.35rem;
+          }
+        </style>
+      </section>
+
+      <section id="copy">
+        <h2>表記・コピー（参考）</h2>
+        <table>
+          <tbody>
+            <tr>
+              <th>イベント英字</th>
+              <td>MEDIA x MOTOMACHI（×は大学赤・イタリック）</td>
+            </tr>
+            <tr>
+              <th>和文シリーズ</th>
+              <td>まちなかキャンパス 2026</td>
+            </tr>
+            <tr>
+              <th>キャッチ</th>
+              <td>問いを、街へひらく。</td>
+            </tr>
+            <tr>
+              <th>プログラムキッカー例</th>
+              <td>- P01 - Exhibition / - P02 - Event / - P03 - Screening</td>
+            </tr>
+            <tr>
+              <th>上映プログラム名</th>
+              <td>卒業制作選抜展「南女シネマ」</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="source">
+        <h2>ソースファイル</h2>
+        <ul>
+          <li><code>css/tokens.css</code> — デザイントークン</li>
+          <li><code>docs/STYLEGUIDE.md</code> — トークン説明</li>
+          <li><code>css/nav-hero.css</code> — ヒーロー・セクション見出し・.btn</li>
+          <li><code>css/sections-program-core.css</code> — プログラムパネル・タイムライン</li>
+          <li><code>css/sections-movies-events-dialogs.css</code> — 上映・イベント・モーダル</li>
+          <li><code>css/sections-about-access.css</code> — 開催概要・アクセス</li>
+          <li><code>css/motion.css</code> — UI 刷新（スクロール・没入モーダル・章ナビ）</li>
+          <li><code>js/scroll-choreography.js</code> — ヒーローパララックス</li>
+        </ul>
+      </section>
+    </div>
+  </body>
+</html>

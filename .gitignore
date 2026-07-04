@@ -8,6 +8,16 @@ Thumbs.db
 # GitHub Actions が Pages 用に組み立てるローカル検証用（任意）
 _site/
 
+# ローカル環境（SSH・URL 上書き）
+.env
+.dev-server.pid
+
+# npm
+node_modules/
+
+# 一時ファイル
+tmp/
+
 # Editor / local
 .cursor/
 *.swp

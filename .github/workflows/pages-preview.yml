@@ -1,0 +1,43 @@
+name: Build preview (develop)
+
+# develop: スプレッドシート参照の config（テスト用）。成果物は Artifact のみ（Pages 本番は main）。
+on:
+  push:
+    branches:
+      - develop
+    paths:
+      - "index.html"
+      - "css/**"
+      - "js/**"
+      - "data/**"
+      - "images/**"
+      - "scripts/**"
+      - ".github/workflows/pages-preview.yml"
+      - "package.json"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-preview:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Generate config (sheet / live spreadsheet)
+        run: node scripts/generate-config.mjs sheet
+
+      - name: Assemble site
+        run: bash scripts/assemble-site.sh _site
+
+      - name: Upload preview artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: site-preview-sheet
+          path: _site
+          retention-days: 14

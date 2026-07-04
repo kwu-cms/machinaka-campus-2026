@@ -45,10 +45,12 @@ function exhibitionRowToRecord(r) {
   const authorType = String(r["作者区分"] || "").trim();
   const year = String(r["制作年"] || "").trim();
   const media = String(r["メディア種別"] || "").trim();
+  const displayMethod = String(r["展示方法"] || "").trim();
   const description = String(r["作品説明"] || "").trim();
   const exhibitionDate = String(r["展示日"] || "").trim();
   const imagePath = resolveExhibitionImagePath(r["画像ファイル名"] || "");
   const relatedUrl = String(r["関連URL（任意）"] || r["関連URL"] || "").trim();
+  const notes = String(r["備考"] || r["メモ"] || "").trim();
 
   const displayTitle = title || domain;
   const sortNum = (() => {
@@ -64,10 +66,12 @@ function exhibitionRowToRecord(r) {
     authorType,
     year,
     media,
+    displayMethod,
     description,
     exhibitionDate,
     imagePath,
     relatedUrl,
+    notes,
     displayTitle,
     sort: sortNum,
   };
@@ -78,6 +82,18 @@ function isPublishableExhibition(item) {
   if (!/^exhi-\d+$/i.test(item.id)) return false;
   if (!item.displayTitle) return false;
   return true;
+}
+
+/** @param {ReturnType<typeof exhibitionRowToRecord>} item */
+function hasExhibitionImage(item) {
+  if (resolveImageStem(item.imagePath)) return true;
+  return /^https?:\/\//i.test(String(item.imagePath || ""));
+}
+
+/** ページ上のカルーセル／グリッドに載せる作品（画像ありのみ） */
+/** @param {ReturnType<typeof exhibitionRowToRecord>} item */
+function isListedExhibition(item) {
+  return isPublishableExhibition(item) && hasExhibitionImage(item);
 }
 
 /** @param {ReturnType<typeof exhibitionRowToRecord>} item */
@@ -110,11 +126,10 @@ function cardPictureHtml(item) {
   });
 }
 
-/** シンプル表示: タイトル確定かつ画像あり */
+/** シンプル表示: 画像あり */
 /** @param {ReturnType<typeof exhibitionRowToRecord>} item */
 function isConfirmedExhibitionForSimple(item) {
-  if (!String(item.title || "").trim()) return false;
-  return Boolean(resolveImageStem(item.imagePath));
+  return hasExhibitionImage(item);
 }
 
 /** @param {ReturnType<typeof exhibitionRowToRecord>} item */
@@ -198,7 +213,8 @@ function renderExhibitionSimple(track, sectionRoot, items) {
  */
 function renderExhibitionFull(track, sectionRoot, items, hooks) {
   applyExhibitionFullChrome(sectionRoot, track);
-  track.innerHTML = items.map(exhibitionCardHtml).join("");
+  const visibleItems = items.filter(isListedExhibition);
+  track.innerHTML = visibleItems.map(exhibitionCardHtml).join("");
   initExhibitionCarousel();
   hooks.bindCards();
   hooks.openDeepLink();
@@ -214,27 +230,11 @@ function exhibitionCardHtml(item) {
 }
 
 /** @param {ReturnType<typeof exhibitionRowToRecord>} item */
-function exhibitionMetaHtml(item) {
-  const author = String(item.author || "").trim();
-  const tags = [item.domain, item.authorType, item.year, item.media]
+function exhibitionCreditsLine(item) {
+  return [item.domain, item.year, item.media]
     .map((v) => String(v || "").trim())
-    .filter(Boolean);
-  if (!author && !tags.length) return "";
-
-  const parts = [];
-  if (author) {
-    parts.push(`<p class="exhibition-dialog-author">${escapeHtml(author)}</p>`);
-  }
-  if (tags.length) {
-    parts.push(
-      `<div class="exhibition-dialog-tags-bar">
-        <ul class="exhibition-dialog-tags" aria-label="作品属性">
-          ${tags.map((t) => `<li class="exhibition-dialog-tag">${escapeHtml(t)}</li>`).join("")}
-        </ul>
-      </div>`,
-    );
-  }
-  return `<div class="exhibition-dialog-meta-inner">${parts.join("")}</div>`;
+    .filter(Boolean)
+    .join(" · ");
 }
 
 function initExhibitionCarousel() {
@@ -352,8 +352,10 @@ export function initExhibitionSection() {
 
   const panelEl = dialog.querySelector(".event-dialog-panel");
   const titleEl = dialog.querySelector("#exhibition-dialog-title");
+  const introEl = dialog.querySelector(".exhibition-dialog-intro");
+  const authorEl = dialog.querySelector("#exhibition-dialog-author");
+  const creditsEl = dialog.querySelector("#exhibition-dialog-credits");
   const programLabelEl = dialog.querySelector("#exhibition-dialog-program-label");
-  const metaEl = dialog.querySelector(".exhibition-dialog-meta");
   const bodyEl = dialog.querySelector("#exhibition-dialog-body");
   const mediaWrap = dialog.querySelector(".exhibition-dialog-media");
   const thumbEl = dialog.querySelector(".exhibition-dialog-thumb");
@@ -364,14 +366,25 @@ export function initExhibitionSection() {
   /** @type {Record<string, ReturnType<typeof exhibitionRowToRecord>>} */
   let byId = {};
   /** @type {string[]} */
-  let exhibitionNavIds = [];
+  let exhibitionListedNavIds = [];
+  /** @type {string[]} */
+  let exhibitionAllNavIds = [];
+  /** @type {"listed"|"all"} */
+  let exhibitionNavScope = "listed";
   /** @type {string | null} */
   let exhibitionDialogCurrentId = null;
 
   if (sectionRoot) sectionRoot.setAttribute("aria-busy", "true");
 
   function getExhibitionNavState(id) {
-    const ids = exhibitionNavIds.length ? exhibitionNavIds : [id];
+    const ids =
+      exhibitionNavScope === "all"
+        ? exhibitionAllNavIds.length
+          ? exhibitionAllNavIds
+          : [id]
+        : exhibitionListedNavIds.length
+          ? exhibitionListedNavIds
+          : [id];
     if (ids.length <= 1) return { ids, index: 0 };
     const index = ids.indexOf(id);
     if (index < 0) return { ids: [id], index: 0 };
@@ -408,32 +421,41 @@ export function initExhibitionSection() {
       const matrix = parseCSV(text.replace(/^\uFEFF/, ""));
       if (!matrix.length) throw new Error("empty");
       const headers = matrix[0].map((h) => h.trim());
-      const items = matrix
+      const allItems = matrix
         .slice(1)
         .map((row) => exhibitionRowToRecord(rowToObj(headers, row)))
         .filter(isPublishableExhibition)
         .sort((a, b) => a.sort - b.sort);
 
-      byId = Object.fromEntries(items.map((item) => [item.id, item]));
-      exhibitionNavIds = items.map((item) => item.id);
+      const listedItems = allItems.filter(isListedExhibition);
 
-      if (!items.length) {
+      byId = Object.fromEntries(allItems.map((item) => [item.id, item]));
+      exhibitionListedNavIds = listedItems.map((item) => item.id);
+      exhibitionAllNavIds = allItems.map((item) => item.id);
+
+      const openDeepLink = () => {
+        const deepId = getQueryParam(EXHIBITION_QUERY_PARAM);
+        if (deepId && byId[deepId]) {
+          openForId(deepId, { fromUrl: true, navScope: "all" });
+        }
+      };
+
+      if (!allItems.length) {
         track.innerHTML = `<p class="exh-empty">展示作品の情報を読み込めませんでした。</p>`;
         return;
       }
 
       const uiMode = resolveExhibitionUiMode();
       if (uiMode === "simple") {
-        renderExhibitionSimple(track, sectionRoot, items);
+        renderExhibitionSimple(track, sectionRoot, listedItems);
+        openDeepLink();
+      } else if (!listedItems.length) {
+        track.innerHTML = `<p class="exh-empty">展示作品の情報を読み込めませんでした。</p>`;
+        openDeepLink();
       } else {
-        renderExhibitionFull(track, sectionRoot, items, {
+        renderExhibitionFull(track, sectionRoot, listedItems, {
           bindCards,
-          openDeepLink: () => {
-            const deepId = getQueryParam(EXHIBITION_QUERY_PARAM);
-            if (deepId && byId[deepId]) {
-              openForId(deepId, { fromUrl: true });
-            }
-          },
+          openDeepLink,
         });
       }
     })
@@ -445,30 +467,29 @@ export function initExhibitionSection() {
     });
 
   function fillDialog(item) {
-    if (!titleEl || !bodyEl || !metaEl || !mediaWrap || !thumbEl || !programLabelEl) return;
+    if (!titleEl || !bodyEl || !mediaWrap || !thumbEl || !programLabelEl) return;
 
     programLabelEl.textContent = PROGRAM_TIMELINE.exhibition.label.replace(/\s*\n\s*/g, "");
-    titleEl.textContent = item.displayTitle;
+    titleEl.textContent = String(item.title || item.displayTitle || "").trim();
+
+    const author = String(item.author || "").trim();
+    const credits = exhibitionCreditsLine(item);
+    if (authorEl) {
+      authorEl.textContent = author;
+      authorEl.hidden = !author;
+    }
+    if (creditsEl) {
+      creditsEl.textContent = credits;
+      creditsEl.hidden = !credits;
+    }
+    if (introEl) {
+      introEl.hidden = !author && !credits;
+    }
 
     const desc = item.description.trim();
-    const url = item.relatedUrl.trim();
-    let bodyHtml = "";
-    if (desc) {
-      bodyHtml += `<p class="exhibition-dialog-desc">${escapeHtml(desc).replace(/\n/g, "<br>")}</p>`;
-    }
-    if (url) {
-      bodyHtml += `<p class="exhibition-dialog-link"><a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">関連リンク</a></p>`;
-    }
-    if (!bodyHtml) {
-      bodyHtml = `<p class="exhibition-dialog-desc exhibition-dialog-desc--muted">詳細は会場にてご覧ください。</p>`;
-    }
-    bodyEl.innerHTML = bodyHtml;
-
-    const metaHtml = exhibitionMetaHtml(item);
-    if (metaEl) {
-      metaEl.innerHTML = metaHtml;
-      metaEl.hidden = !metaHtml;
-    }
+    bodyEl.innerHTML = desc
+      ? `<p class="exhibition-dialog-desc">${escapeHtml(desc).replace(/\n/g, "<br>")}</p>`
+      : `<p class="exhibition-dialog-desc exhibition-dialog-desc--muted">詳細は会場にてご覧ください。</p>`;
 
     const stem = resolveImageStem(item.imagePath);
     if (stem) {
@@ -497,6 +518,7 @@ export function initExhibitionSection() {
     const sourceEl = opts.sourceEl || null;
 
     const show = () => {
+      if (opts.navScope) exhibitionNavScope = opts.navScope;
       exhibitionDialogCurrentId = id;
       fillDialog(item);
       updateExhibitionDialogNav(id);
@@ -529,6 +551,7 @@ export function initExhibitionSection() {
       const openFromCard = () =>
         openForId(el.getAttribute("data-exhibition-id"), {
           sourceEl: el instanceof HTMLElement ? el : null,
+          navScope: "listed",
         });
       el.addEventListener("click", openFromCard);
       el.addEventListener("keydown", (e) => {

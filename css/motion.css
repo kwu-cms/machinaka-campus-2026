@@ -436,7 +436,10 @@ body:not([data-signage]) #screening .mv-schedule-main .mv-card:focus-visible {
 .immersive-dialog .movie-dialog-credits,
 .immersive-dialog .event-dialog-body,
 .immersive-dialog .movie-dialog-body,
-.immersive-dialog .exhibition-dialog-meta {
+.immersive-dialog .exhibition-dialog-intro,
+.immersive-dialog .exhibition-dialog-author,
+.immersive-dialog .exhibition-dialog-credits,
+.immersive-dialog .exhibition-dialog-body {
   padding-inline: var(--dlg-pad-x);
 }
 
@@ -473,6 +476,28 @@ body:not([data-signage]) #screening .mv-schedule-main .mv-card:focus-visible {
   overflow: visible;
   padding-top: 0;
   padding-bottom: clamp(1.5rem, 3vw, 2rem);
+}
+
+.immersive-dialog .exhibition-dialog-intro {
+  margin: 0 0 0.1rem;
+}
+
+.immersive-dialog .exhibition-dialog-author {
+  margin: 0;
+}
+
+.immersive-dialog .exhibition-dialog-credits {
+  margin: 0;
+}
+
+.immersive-dialog .exhibition-dialog-body {
+  margin-top: 0.85rem;
+  padding-top: 0.95rem;
+  border-top: 1px solid rgba(17, 17, 17, 0.1);
+}
+
+.immersive-dialog .exhibition-dialog-intro[hidden] + .exhibition-dialog-body {
+  margin-top: 0.55rem;
 }
 .immersive-dialog .event-dialog-close,
 .immersive-dialog .movie-dialog-close {

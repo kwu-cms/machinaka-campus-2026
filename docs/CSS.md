@@ -14,9 +14,19 @@
 | 6 | [`css/sections-movies-events-dialogs.css`](../css/sections-movies-events-dialogs.css) | 上映リスト／映画モーダル、イベント一覧・モーダル、展示カルーセル、テストページ notice |
 | 7 | [`css/sections-about-access.css`](../css/sections-about-access.css) | `#about` 本文グリッド、`#access` 会場・地図 |
 | 8 | [`css/access-footer.css`](../css/access-footer.css) | アクセス周辺・フッター（既存） |
-| 9 | [`css/overrides.css`](../css/overrides.css) | メディアクエリ差分、`#news` の表示切替、サイネージ専用など |
+| 9 | [`css/overrides.css`](../css/overrides.css) | メディアクエリ差分、`#news` の表示切替など |
+| 10 | [`css/signage.css`](../css/signage.css) | 縦型サイネージ専用（`body[data-signage]`） |
+| 11 | [`css/motion.css`](../css/motion.css) | UI 刷新（2026）: セクション面・scroll-driven・ヒーローパララックス・章ナビ・没入モーダル・カード／上映横スクロール |
 
 旧来の単一 `css/sections.css` は廃止し、上記 4 断片に分割しています（各ファイル先頭にバナーあり）。
+
+## UI 刷新レイヤー（2026）
+
+- **トークン**: [`css/tokens.css`](../css/tokens.css) の `--section-*` / `--surface-*` / `--modal-*` / `--z-*` / `--hero-parallax-max`
+- **JS**: [`js/scroll-choreography.js`](../js/scroll-choreography.js)（`main.js` から `initScrollChoreography()`）、[`js/lib/view-transition.js`](../js/lib/view-transition.js)（イベント・上映モーダル）
+- **モック・原則**: [`docs/design-theme.html`](./design-theme.html) の「UI 刷新（2026）」
+- **`prefers-reduced-motion`**: `html.reduce-motion` でパララックス無効。scroll-driven は `@media (prefers-reduced-motion: reduce)` でオフ
+- **`body[data-signage]`**: パララックス・章ナビ・scroll-driven・ホバー演出を無効（`motion.css` 末尾）
 
 ## 主要メディアクエリ（目安）
 
@@ -35,8 +45,10 @@
 
 ## BODY 属性
 
-- **`body[data-signage="screening"|"event"]`** … 縦型サイネージ。多くのルールは [`overrides.css`](../css/overrides.css) 後半にあります。
+- **`body[data-signage="poster"|"screening"|"event"]`** … 縦型サイネージ（1080×1920 想定）。ルールは [`signage.css`](../css/signage.css)。
+- ポスター→上映→イベントの自動巡回: `?signage=cycle&duration=60`（[`main.js`](../js/main.js) の `initSignageCycle`）
 
 ## 関連
 
 - 掲載テキスト・データの更新場所: [`CONTENT.md`](./CONTENT.md)
+- サイネージ・ループ（自動送り）設定: [`SIGNAGE_AND_LOOPS.md`](./SIGNAGE_AND_LOOPS.md)

@@ -7,6 +7,7 @@
     "config:sheet": "node scripts/generate-config.mjs sheet",
     "config:local": "node scripts/generate-config.mjs local",
     "sync:data": "node scripts/sync-sheets.mjs",
+    "export:exhibitions": "node scripts/export-exhibitions-json.mjs",
     "build:test": "bash scripts/build.sh test",
     "build:prod": "bash scripts/build.sh prod",
     "assemble": "bash scripts/assemble-site.sh _site",
@@ -14,7 +15,8 @@
     "deploy:full": "bash scripts/deploy.sh full",
     "deploy:heteml": "bash scripts/deploy-heteml.sh",
     "deploy:prod": "bash scripts/deploy-prod.sh",
-    "serve": "python3 -m http.server 8080",
+    "dev": "node scripts/dev-server.mjs",
+    "serve": "node scripts/dev-server.mjs",
     "setup:env": "test -f .env || cp .env.example .env",
     "optimize:images": "node scripts/optimize-images.mjs",
     "generate:ogp": "node scripts/generate-ogp.mjs"

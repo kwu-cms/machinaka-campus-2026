@@ -10,7 +10,9 @@ on:
       - "js/**"
       - "data/**"
       - "images/**"
+      - "scripts/**"
       - ".github/workflows/pages.yml"
+      - "package.json"
   workflow_dispatch:
 
 permissions:
@@ -31,16 +33,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Assemble public site for Pages
-        run: |
-          mkdir -p _site
-          cp index.html _site/
-          cp -r css js data images _site/
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
 
-      - name: Inject public site origin for OGP
-        run: |
-          ORIGIN="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}"
-          sed -i "s|__SITE_ORIGIN__|${ORIGIN}|g" _site/index.html
+      - name: Sync spreadsheet CSV into data/
+        run: node scripts/sync-sheets.mjs
+
+      - name: Generate config (local / bundled CSV)
+        run: node scripts/generate-config.mjs local
+
+      - name: Assemble public site for Pages
+        env:
+          SITE_ORIGIN: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
+        run: bash scripts/assemble-site.sh _site
 
       - uses: actions/upload-pages-artifact@v3
         with:
