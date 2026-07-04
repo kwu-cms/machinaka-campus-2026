@@ -627,6 +627,28 @@
           id="exhibition-dialog-program-label"
         ></span>
         <button type="button" class="event-dialog-close exhibition-dialog-close" aria-label="閉じる">&times;</button>
+        <button
+          type="button"
+          class="exhibition-dialog-nav exhibition-dialog-nav--prev"
+          aria-label="前の作品へ"
+          hidden
+          data-exhibition-dialog-prev
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M15 18l-6-6 6-6" />
+          </svg>
+        </button>
+        <button
+          type="button"
+          class="exhibition-dialog-nav exhibition-dialog-nav--next"
+          aria-label="次の作品へ"
+          hidden
+          data-exhibition-dialog-next
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M9 18l6-6-6-6" />
+          </svg>
+        </button>
         <div class="event-dialog-panel">
           <div class="exhibition-dialog-hero">
             <div class="exhibition-dialog-media" hidden>
@@ -634,28 +656,6 @@
                 <img class="exhibition-dialog-thumb" alt="" width="640" height="480" decoding="async" />
               </div>
             </div>
-            <button
-              type="button"
-              class="exhibition-dialog-nav exhibition-dialog-nav--prev"
-              aria-label="前の作品へ"
-              hidden
-              data-exhibition-dialog-prev
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M15 18l-6-6 6-6" />
-              </svg>
-            </button>
-            <button
-              type="button"
-              class="exhibition-dialog-nav exhibition-dialog-nav--next"
-              aria-label="次の作品へ"
-              hidden
-              data-exhibition-dialog-next
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M9 18l6-6-6-6" />
-              </svg>
-            </button>
           </div>
           <h3 id="exhibition-dialog-title" class="event-dialog-title"></h3>
           <div class="exhibition-dialog-intro">
