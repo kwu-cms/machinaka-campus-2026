@@ -396,7 +396,7 @@ export function initExhibitionSection() {
     const item = byId[id];
     const { ids, index } = getExhibitionNavState(id);
     const multi = ids.length > 1 && item && ids.includes(id);
-    if (!multi) {
+    if (!multi || !hasExhibitionImage(item)) {
       navPrev.hidden = true;
       navNext.hidden = true;
       return;
@@ -580,6 +580,8 @@ export function initExhibitionSection() {
       if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
       const id = exhibitionDialogCurrentId;
       if (!id) return;
+      const item = byId[id];
+      if (!item || !hasExhibitionImage(item)) return;
       const { ids } = getExhibitionNavState(id);
       if (ids.length <= 1) return;
       e.preventDefault();
