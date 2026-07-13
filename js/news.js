@@ -211,7 +211,7 @@ export async function initNews(opts = {}) {
 
     populateNewsList(sectionList, items, opts.observeReveal);
     if (dialogList) populateNewsList(dialogList, items);
-  } catch {
-    /* news.json が無い・fetch不可のときは空のまま */
+  } catch (err) {
+    console.error("[news] failed to load news.json", err);
   }
 }
